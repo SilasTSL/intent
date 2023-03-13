@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const Transaction = require('./models/transaction');
 const methodOverride = require('method-override');
+const ejs_mate = require('ejs-mate');
 
 const app = express();
 
@@ -18,6 +19,8 @@ db.once("open", () => {
     console.log("Database connected");
 });
 
+//Setting app engine to ejs mate:
+app.engine('ejs', ejs_mate);
 
 //Setting app to reference view folder:
 app.set('view engine', 'ejs');
