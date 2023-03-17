@@ -1,8 +1,18 @@
 <% layout('layouts/boilerplate')%>
-<h1><%= transaction.title %></h1>
-<h2><%= transaction.date %></h2>
-<a href="/transactions/<%= transaction._id%>/edit">Edit</a>
-<a href="/transactions">Back</a>
-<form action="/transactions/<%= transaction._id %>?_method=DELETE" method="POST">
-    <button>Delete Transaction</button>
-</form>
+<div class="card p-5 bg-dark">
+    <h1 class="text-light" ><%= transaction.title %></h1>
+    <div class="card bg-secondary" style="width: 18rem;">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item bg-secondary text-light"><%= transaction.date %></li>
+          <li class="list-group-item bg-secondary text-light"><%= transaction.description %></li>
+          <li class="list-group-item bg-secondary text-light"><%="$ " + transaction.amount %></li>
+        </ul>
+    </div>
+    <div class="button-container d-flex flex-row justify-content-between mt-3">
+        <a class="btn btn-success" href="/transactions/<%= transaction._id%>/edit">Edit</a>
+        <form action="/transactions/<%= transaction._id %>?_method=DELETE" method="POST">
+            <button class="btn btn-danger">Delete Transaction</button>
+        </form>
+        <a class="btn btn-primary" href="/transactions">Back</a>
+    </div>
+</div>
