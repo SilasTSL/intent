@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-const Transaction = require('../models/transaction');
-const amounts = require('./sample-amounts');
-const dates = require('./sample-dates');
-const descriptions = require('./sample-descriptions');
+const Lesson = require('../models/lesson');
+const timings = require('./sample-timings');
+const days = require('./sample-days');
+const colours = require('./sample-colours');
 const titles = require('./sample-titles');
 
 mongoose.connect('mongodb://localhost:27017/stash-db', {
@@ -17,19 +17,19 @@ db.once("open", () => {
 });
 
 const seedDB = async () => {
-    await Transaction.deleteMany({});
+    await Lesson.deleteMany({});
     for (let i = 0; i < 20; i++) {
         const title = titles[Math.floor(Math.random() * titles.length)];
-        const description = descriptions[Math.floor(Math.random() * descriptions.length)];
-        const date = dates[Math.floor(Math.random() * dates.length)];
-        const amount = amounts[Math.floor(Math.random() * amounts.length)];
-        const transaction = new Transaction({
+        const colour = colours[Math.floor(Math.random() * colours.length)];
+        const day = days[Math.floor(Math.random() * days.length)];
+        const timing = timings[Math.floor(Math.random() * timings.length)];
+        const lesson = new Lesson({
             title: title,
-            description: description,
-            date: date,
-            amount: amount
+            colour: colour,
+            day: day,
+            timing: timing
         });
-        await transaction.save();
+        await lesson.save();
     }
 }
 

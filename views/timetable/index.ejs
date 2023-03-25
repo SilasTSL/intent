@@ -1,0 +1,17 @@
+<% layout('layouts/boilerplate')%>
+<h1>TIMETABLE</h1>
+<ul>
+    <% for (let lesson of lessons) {%>
+        <div class="card bg-dark d-flex flex-column p-3 m-2">
+            <h5 class="text-light"><%= lesson.title %></h5>
+            <div class="lesson-body">
+                <h6 class="text-secondary"><%= lesson.day %></h6>
+                <div class="details-container d-flex flex-row justify-content-between">
+                    <h6 class="text-secondary"><%= lesson.timing %></h6>
+                    <h6 class="text-secondary"><%= lesson.colour %></h6>
+                </div>
+                <a class="btn btn-primary" href="/timetable/<%= lesson._id %>">View Lesson</a>
+            </div>
+        </div>
+    <%}%>
+</ul>

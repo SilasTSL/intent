@@ -1,0 +1,32 @@
+<% layout('layouts/boilerplate')%>
+<div class="rows">
+    <h1 class="text-center">Edit Lesson</h1>
+    <div class="col-6 offset-3">
+        <form action="/timetable/<%= lesson._id %>?_method=PUT" method="POST" novalidate class="validated-form">
+            <div class="mb-3">
+                <label class="form-label" for="title">Title</label>
+                <input class="form-control" type="text" id="title" name="lesson[title]" value="<%= lesson.title %>" required>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="day">Day</label>
+                <input class="form-control" type="text" id="day" name="lesson[day]" value="<%= lesson.day %>" required>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="timing">Timing</label>
+                <input class="form-control" type="text" id="timing" name="lesson[timing]" value="<%= lesson.timing %>" required>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label" for="colour">Colour</label>
+                <input class="form-control" type="text" id="colour" name="lesson[colour]" value="<%= lesson.colour %>" required>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between">
+                <button class="btn btn-success">Edit Lesson</button>
+                <a class="btn btn-danger" href="/timetable/<%= lesson._id %>">Back</a>
+            </div>
+        </form>
+    </div>
+</div>

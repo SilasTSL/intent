@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
-const Transaction = require('./models/transaction');
+const Lesson = require('./models/lesson');
 const methodOverride = require('method-override');
 const ejs_mate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
@@ -37,47 +37,47 @@ app.get('/', (req, res) => {
 })
 
 //GET Index page
-app.get('/transactions', catchAsync(async (req, res) => {
-    const transactions = await Transaction.find({});
-    res.render('transactions/index', { transactions });
+app.get('/timetable', catchAsync(async (req, res) => {
+    const lessons = await Lesson.find({});
+    res.render('timetable/index', { lessons });
 }))
 
-//GET make new transaction page
-app.get('/transactions/new', (req, res) => {
-    res.render('transactions/new');
+//GET make new lesson page
+app.get('/timetable/new', (req, res) => {
+    res.render('timetable/new');
 })
 
-//POST make new transaction
-app.post('/transactions', catchAsync(async (req, res) => {
-    const transaction = new Transaction(req.body.transaction);
-    await transaction.save();
-    res.redirect(`/transactions/${transaction._id}`);
+//POST make new lesson
+app.post('/timetable', catchAsync(async (req, res) => {
+    const lesson = new Lesson(req.body.lesson);
+    await lesson.save();
+    res.redirect(`/timetable/${lesson._id}`);
 }))
 
-//GET transaction details page
-app.get('/transactions/:id', catchAsync(async (req, res) => {
-    const transaction = await Transaction.findById(req.params.id);
-    res.render('transactions/show', { transaction });
+//GET lesson details page
+app.get('/timetable/:id', catchAsync(async (req, res) => {
+    const lesson = await Lesson.findById(req.params.id);
+    res.render('timetable/show', { lesson });
 }))
 
-//GET edit transaction page
-app.get('/transactions/:id/edit', catchAsync(async (req, res) => {
-    const transaction = await Transaction.findById(req.params.id);
-    res.render('transactions/edit', { transaction });
+//GET edit lesson page
+app.get('/timetable/:id/edit', catchAsync(async (req, res) => {
+    const lesson = await Lesson.findById(req.params.id);
+    res.render('timetable/edit', { lesson });
 }))
 
-//PUT edit transaction
-app.put('/transactions/:id', catchAsync(async (req, res) => {
+//PUT edit lesson
+app.put('/timetable/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
-    const transaction = await Transaction.findByIdAndUpdate(id, { ...req.body.transaction });
-    res.redirect(`/transactions/${transaction._id}`);
+    const lesson = await Lesson.findByIdAndUpdate(id, { ...req.body.lesson });
+    res.redirect(`/timetable/${lesson._id}`);
 }))
 
-//DELETE transaction
-app.delete('/transactions/:id', catchAsync(async (req, res) => {
+//DELETE lesson
+app.delete('/timetable/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
-    await Transaction.findByIdAndDelete(id);
-    res.redirect('/transactions');
+    await Lesson.findByIdAndDelete(id);
+    res.redirect('/timetable');
 }))
 
 //Error handler:

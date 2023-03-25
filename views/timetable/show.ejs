@@ -1,0 +1,18 @@
+<% layout('layouts/boilerplate')%>
+<div class="card p-5 bg-dark">
+    <h1 class="text-light" ><%= lesson.title %></h1>
+    <div class="card bg-secondary" style="width: 18rem;">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item bg-secondary text-light"><%= lesson.day %></li>
+          <li class="list-group-item bg-secondary text-light"><%= lesson.timing %></li>
+          <li class="list-group-item bg-secondary text-light"><%= lesson.colour %></li>
+        </ul>
+    </div>
+    <div class="button-container d-flex flex-row justify-content-between mt-3">
+        <a class="btn btn-success" href="/timetable/<%= lesson._id%>/edit">Edit</a>
+        <form action="/timetable/<%= lesson._id %>?_method=DELETE" method="POST">
+            <button class="btn btn-danger">Delete Lesson</button>
+        </form>
+        <a class="btn btn-primary" href="/timetable">Back</a>
+    </div>
+</div>
