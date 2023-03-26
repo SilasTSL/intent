@@ -1,11 +1,10 @@
 <% layout('layouts/boilerplate')%>
-<div class="card p-5 bg-dark">
+<div class="card p-5" style="background-color: <%=lesson.colour%>;">
     <h1 class="text-light" ><%= lesson.title %></h1>
-    <div class="card bg-secondary" style="width: 18rem;">
+    <div class="card" style="width: 18rem;">
         <ul class="list-group list-group-flush">
-          <li class="list-group-item bg-secondary text-light"><%= lesson.day %></li>
-          <li class="list-group-item bg-secondary text-light"><%= lesson.timing %></li>
-          <li class="list-group-item bg-secondary text-light"><%= lesson.colour %></li>
+          <li class="list-group-item bg-dark text-light"><%= lesson.day %></li>
+          <li class="list-group-item bg-dark text-light"><%= lesson.timing %></li>
         </ul>
     </div>
     <div class="button-container d-flex flex-row justify-content-between mt-3">

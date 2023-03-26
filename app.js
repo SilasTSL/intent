@@ -82,6 +82,7 @@ app.delete('/timetable/:id', catchAsync(async (req, res) => {
 
 //Error handler:
 app.use((err, req, res, next) => {
+    console.log(err);
     res.send("Error found!");
 })
 

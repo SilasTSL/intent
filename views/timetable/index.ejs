@@ -1,17 +1,59 @@
 <% layout('layouts/boilerplate')%>
-<h1>TIMETABLE</h1>
-<ul>
-    <% for (let lesson of lessons) {%>
-        <div class="card bg-dark d-flex flex-column p-3 m-2">
-            <h5 class="text-light"><%= lesson.title %></h5>
-            <div class="lesson-body">
-                <h6 class="text-secondary"><%= lesson.day %></h6>
-                <div class="details-container d-flex flex-row justify-content-between">
-                    <h6 class="text-secondary"><%= lesson.timing %></h6>
-                    <h6 class="text-secondary"><%= lesson.colour %></h6>
-                </div>
-                <a class="btn btn-primary" href="/timetable/<%= lesson._id %>">View Lesson</a>
+<h1 style="text-align: center; text-decoration: underline;">TIMETABLE</h1>
+<div class="container mt-5" style="max-width: 90%;">
+    <ul style="display: flex; flex-direction: row;">
+        <%
+        let mondayLessons = lessons.filter(x => x.day == "Monday");
+        let tuesdayLessons = lessons.filter(x => x.day == "Tuesday");
+        let wednesdayLessons = lessons.filter(x => x.day == "Wednesday");
+        let thursdayLessons = lessons.filter(x => x.day == "Thursday");
+        let fridayLessons = lessons.filter(x => x.day == "Friday");
+        %>
+        <% if (mondayLessons) { %>
+            <div class="mondayContainer" style="display: flex; flex-direction: column;">
+            <h3>Monday</h1>
+                <% for (lesson of mondayLessons) {%>
+                    <% console.log(lesson) %>
+                    <%- include('../partials/lesson-row', { lesson: lesson }) %>
+                <% } %>
             </div>
-        </div>
-    <%}%>
-</ul>
+        <%}%>
+        <% if (tuesdayLessons) { %>
+            <div class="mondayContainer" style="display: flex; flex-direction: column;">
+            <h3>Tuesday</h1>
+                <% for (lesson of tuesdayLessons) {%>
+                    <% console.log(lesson) %>
+                    <%- include('../partials/lesson-row', { lesson: lesson }) %>
+                <% } %>
+            </div>
+        <%}%>
+        <% if (wednesdayLessons) { %>
+            <div class="mondayContainer" style="display: flex; flex-direction: column;">
+            <h3>Wednesday</h1>
+                <% for (lesson of wednesdayLessons) {%>
+                    <% console.log(lesson) %>
+                    <%- include('../partials/lesson-row', { lesson: lesson }) %>
+                <% } %>
+            </div>
+        <%}%>
+        <% if (thursdayLessons) { %>
+            <div class="mondayContainer" style="display: flex; flex-direction: column;">
+            <h3>Thursday</h1>
+                <% for (lesson of thursdayLessons) {%>
+                    <% console.log(lesson) %>
+                    <%- include('../partials/lesson-row', { lesson: lesson }) %>
+                <% } %>
+            </div>
+        <%}%>
+        <% if (fridayLessons) { %>
+            <div class="mondayContainer" style="display: flex; flex-direction: column;">
+            <h3>Friday</h1>
+                <% for (lesson of fridayLessons) {%>
+                    <% console.log(lesson) %>
+                    <%- include('../partials/lesson-row', { lesson: lesson }) %>
+                <% } %>
+            </div>
+        <%}%>
+    </ul>
+</div>
+
