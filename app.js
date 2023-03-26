@@ -6,6 +6,8 @@ const methodOverride = require('method-override');
 const ejs_mate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
+const joi = require('joi');
+const { lessonSchema } = require('./schemas.js');
 
 const app = express();
 
@@ -33,6 +35,17 @@ app.use(express.urlencoded({extended: true}));
 //Allow us to override method types (can use PUT etc.):
 app.use(methodOverride('_method'));
 
+//Middleware for validating Lesson (second layer after Client side)
+const validateLesson = (req, res, next) => {
+    const { error } = lessonSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(",")
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+}
+
 app.get('/', (req, res) => {
     res.render('home');
 })
@@ -49,8 +62,7 @@ app.get('/timetable/new', (req, res) => {
 })
 
 //POST make new lesson
-app.post('/timetable', catchAsync(async (req, res) => {
-    if (!req.body.lesson) throw new ExpressError("Invalid Lesson Data", 400);
+app.post('/timetable', validateLesson, catchAsync(async (req, res) => {
     const lesson = new Lesson(req.body.lesson);
     await lesson.save();
     res.redirect(`/timetable/${lesson._id}`);
@@ -69,7 +81,7 @@ app.get('/timetable/:id/edit', catchAsync(async (req, res) => {
 }))
 
 //PUT edit lesson
-app.put('/timetable/:id', catchAsync(async (req, res) => {
+app.put('/timetable/:id', validateLesson, catchAsync(async (req, res) => {
     const { id } = req.params;
     const lesson = await Lesson.findByIdAndUpdate(id, { ...req.body.lesson });
     res.redirect(`/timetable/${lesson._id}`);
