@@ -5,6 +5,7 @@ const Lesson = require('./models/lesson');
 const methodOverride = require('method-override');
 const ejs_mate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
+const ExpressError = require('./utils/ExpressError');
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.get('/timetable/new', (req, res) => {
 
 //POST make new lesson
 app.post('/timetable', catchAsync(async (req, res) => {
+    if (!req.body.lesson) throw new ExpressError("Invalid Lesson Data", 400);
     const lesson = new Lesson(req.body.lesson);
     await lesson.save();
     res.redirect(`/timetable/${lesson._id}`);
@@ -80,10 +82,16 @@ app.delete('/timetable/:id', catchAsync(async (req, res) => {
     res.redirect('/timetable');
 }))
 
-//Error handler:
+//No matching path
+app.all('*', (req, res, next) => {
+    next(new ExpressError('Page Not Found', 404));
+})
+
+//Error handler
 app.use((err, req, res, next) => {
-    console.log(err);
-    res.send("Error found!");
+    const { statusCode = 500} = err;
+    if (!err.message) err.message = "Oh no! Something went wrong!";
+    res.status(statusCode).render('errors/error', { err});
 })
 
 
