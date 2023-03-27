@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate')%>
 <div class="rows">
     <h1 class="text-center">Edit Lesson</h1>
-    <div class="col-6 offset-3">
+    <div class="col-8 offset-2">
         <form action="/timetable/<%= lesson._id %>?_method=PUT" method="POST" novalidate class="validated-form">
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
@@ -13,9 +13,12 @@
                 <input class="form-control" type="text" id="day" name="lesson[day]" value="<%= lesson.day %>" required>
                 <div class="valid-feedback">Looks good!</div>
             </div>
-            <div class="mb-3">
-                <label class="form-label" for="timing">Timing</label>
-                <input class="form-control" type="text" id="timing" name="lesson[timing]" value="<%= lesson.timing %>" required>
+            <div class="mb-3" style="display: flex; flex-direction: row; justify-content: space-between;">
+                <label class="form-label px-4" for="timing">Timing Start</label>
+                <input class="form-control" type="text" id="timingStart" name="lesson[timingStart]" required>
+                <div class="valid-feedback">Looks good!</div>
+                <label class="form-label px-4" for="timing">Timing End</label>
+                <input class="form-control" type="text" id="timingEnd" name="lesson[timingEnd]" required>
                 <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="mb-4">

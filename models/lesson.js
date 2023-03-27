@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const LessonSchema = new Schema({
     title: String,
     day: String,
-    timing: String,
+    timingStart: String,
+    timingEnd: String,
     colour: String
 });
 

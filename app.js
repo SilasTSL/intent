@@ -8,6 +8,7 @@ const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
 const joi = require('joi');
 const { lessonSchema } = require('./schemas.js');
+const lesson = require('./models/lesson');
 
 const app = express();
 
@@ -61,11 +62,52 @@ app.get('/timetable/new', (req, res) => {
     res.render('timetable/new');
 })
 
+function doLessonsOverlap(lesson1StartString, lesson1EndString, lesson2StartString, lesson2EndString) {
+    const lesson1Start = parseInt(lesson1StartString);
+    const lesson1End = parseInt(lesson1EndString);
+    const lesson2Start = parseInt(lesson2StartString);
+    const lesson2End = parseInt(lesson2EndString);
+
+    // Check if the start time of lesson1 falls within the duration of lesson2
+    if (lesson1Start >= lesson2Start && lesson1Start < lesson2End) {
+      return true;
+    }
+  
+    // Check if the end time of lesson1 falls within the duration of lesson2
+    if (lesson1End > lesson2Start && lesson1End <= lesson2End) {
+      return true;
+    }
+  
+    // Check if the duration of lesson1 completely overlaps with the duration of lesson2
+    if (lesson1Start <= lesson2Start && lesson1End >= lesson2End) {
+      return true;
+    }
+  
+    // If none of the above conditions are true, the lessons do not overlap
+    return false;
+}
+
 //POST make new lesson
 app.post('/timetable', validateLesson, catchAsync(async (req, res) => {
-    const lesson = new Lesson(req.body.lesson);
-    await lesson.save();
-    res.redirect(`/timetable/${lesson._id}`);
+    const newLessonBody = req.body.lesson;
+    const lessons = await Lesson.find({day: newLessonBody.day});
+    let isValidNewLesson = true;
+
+    for (let lesson of lessons) {
+        if (doLessonsOverlap(lesson.timingStart, lesson.timingEnd, newLessonBody.timingStart, newLessonBody.timingEnd)) {
+            console.log("Timing failed!");
+            isValidNewLesson = false;
+        }
+    }
+
+    if (isValidNewLesson) {
+        const newLesson = new Lesson(req.body.lesson);
+        await newLesson.save();
+        res.redirect(`/timetable/${newLesson._id}`);
+    } else {
+        throw new ExpressError("Timing is wrong!", 400);
+    }
+
 }))
 
 //GET lesson details page
