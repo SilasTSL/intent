@@ -1,7 +1,6 @@
 # Stash
 
-Simple Money-tracker Web Application to keep track of transactions.
-Mainly used for me to learn a new tech-stack.
+Timetable app using Machine Learning to optimise time-blocking and ensure tasks can be done before their deadlines.
 
 Tech Stack:
 - Node.js
