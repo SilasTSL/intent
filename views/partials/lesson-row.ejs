@@ -1,7 +1,7 @@
-<div class="card d-flex flex-column p-3 m-2" style="background-color:<%=lesson.colour%>;">
+<tr class="card d-flex flex-column p-3 m-2" style="background-color:<%=lesson.colour%>;">
     <p class="text-light" style="font-size: 1.1rem;"><%= lesson.title %></p>
     <div class="lesson-body">
     <p class="text-light" style="font-size: 1.1rem;"><%= lesson.timingStart %> - <%= lesson.timingEnd %></p>
     <a class="btn btn-primary" href="/timetable/<%= lesson._id %>">View Lesson</a>
     </div>
-</div>
+</tr>
