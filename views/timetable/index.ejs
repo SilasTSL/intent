@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate')%>
 <h1 style="text-align: center; text-decoration: underline;">TIMETABLE</h1>
 <div class="container mt-5" style="max-width: 100%;">
-    <table style="width: 100%; height: 100%;">
+    <table style="width: 100%; height: 100%; border-collapse: collapse;">
         <thead>
           <tr>
             <th></th>
@@ -22,12 +22,12 @@
                     <td style="vertical-align: top; padding-right: 2rem;"><%= r + ":00 "%></td>
                 <% } else if (lessonFound) { %>
                     <% if (parseInt(lessonFound.timingStart.substring(0, 2)) == r) {%>
-                        <td style="background-color: <%= lessonFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 1px; <% if (parseInt(lessonFound.timingEnd.substring(0, 2)) != r) { %> border-bottom: 0px; <% } %>" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"><%= lessonFound.title %></td>
+                        <td class="<%= lessonFound._id %> lesson-cell" style="background-color: <%= lessonFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(lessonFound.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %>" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"><%= lessonFound.title %></td>
                     <% } else { %>
-                        <td style="background-color: <%= lessonFound.colour %>; cursor: pointer; border: solid black 1px; <% if (parseInt(lessonFound.timingStart.substring(0, 2)) != r) { %> border-top: 0px; <% } %>" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"></td>
+                        <td class="<%= lessonFound._id %> lesson-cell" style="background-color: <%= lessonFound.colour %>; cursor: pointer; border: solid black 2px; position: relative; z-index: 1;<% if (parseInt(lessonFound.timingStart.substring(0, 2)) != r) { %> border-top: 0px; <% } %>" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"></td>
                     <% } %>
                 <% } else { %>
-                    <td href="/edit" style="height: 50px; border: solid black 1px;"></td>
+                    <td href="/edit" style="height: 50px; border: solid #C0C0C0 1px; position: relative;"></td>
                 <% } %>
             <% } %>
             </tr>
@@ -35,5 +35,22 @@
         </tbody>
     </table>
 </div>
-
+<script>
+    const cells = document.querySelectorAll(".lesson-cell");
+    cells.forEach(cell => {
+        cell.addEventListener('mouseover', () => {
+            const sameLessonCells = document.getElementsByClassName(cell.classList[0])
+            console.log(sameLessonCells)
+            for (const sameLessonCell of sameLessonCells) {
+                sameLessonCell.style.opacity = 0.9;
+            }
+        })
+        cell.addEventListener('mouseout', function() {
+            const sameLessonCells = document.getElementsByClassName(cell.classList[0])
+            for (const sameLessonCell of sameLessonCells) {
+                sameLessonCell.style.opacity = 1;
+            }
+        });
+    });
+</script>
 
