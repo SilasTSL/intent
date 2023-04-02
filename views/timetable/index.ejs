@@ -1,39 +1,54 @@
 <% layout('layouts/boilerplate')%>
-<h1 style="text-align: center; text-decoration: underline;">TIMETABLE</h1>
-<div class="container mt-5" style="max-width: 100%;">
-    <table style="width: 100%; height: 100%; border-collapse: collapse;">
-        <thead>
-          <tr>
-            <th></th>
-            <th style="text-align: center;">Monday</th>
-            <th style="text-align: center;">Tuesday</th>
-            <th style="text-align: center;">Wednesday</th>
-            <th style="text-align: center;">Thursday</th>
-            <th style="text-align: center;">Friday</th>
-          </tr>
-        </thead>
-        <tbody>
-        <% const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]; %>
-        <% for (let r=8; r < 18; r++) { %>
-            <tr style="height: 50px;">
-            <% for (let c=0; c < 6; c++) { %>
-                <% let lessonFound = lessons.find(l => l.day == days[c - 1] && parseInt(l.timingStart.substring(0, 2)) <= r && parseInt(l.timingEnd.substring(0, 2)) > r); %>
-                <% if (c == 0) { %>
-                    <td style="vertical-align: top; padding-right: 2rem;"><%= r + ":00 "%></td>
-                <% } else if (lessonFound) { %>
-                    <% if (parseInt(lessonFound.timingStart.substring(0, 2)) == r) {%>
-                        <td class="<%= lessonFound._id %> lesson-cell" style="background-color: <%= lessonFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(lessonFound.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %>" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"><%= lessonFound.title %></td>
-                    <% } else { %>
-                        <td class="<%= lessonFound._id %> lesson-cell" style="background-color: <%= lessonFound.colour %>; cursor: pointer; border: solid black 2px; position: relative; z-index: 1;<% if (parseInt(lessonFound.timingStart.substring(0, 2)) != r) { %> border-top: 0px; <% } %>" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"></td>
-                    <% } %>
-                <% } else { %>
-                    <td href="/edit" style="height: 50px; border: solid #C0C0C0 1px; position: relative;"></td>
-                <% } %>
-            <% } %>
+<div id="main-body" class="container mt-5 mb-5" style="width: 100%;">
+    <div id="timetable" class="mb-5" style="display: flex; flex-direction: column; align-items: center; width: 70%;">
+        <h1 style="text-align: center; text-decoration: underline;">TIMETABLE</h1>
+        <table style="width: 90%; height: 100%; border-collapse: collapse;">
+            <thead>
+            <tr>
+                <th></th>
+                <th style="text-align: center;">Monday</th>
+                <th style="text-align: center;">Tuesday</th>
+                <th style="text-align: center;">Wednesday</th>
+                <th style="text-align: center;">Thursday</th>
+                <th style="text-align: center;">Friday</th>
             </tr>
+            </thead>
+            <tbody>
+            <% const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]; %>
+            <% for (let r=8; r < 18; r++) { %>
+                <tr style="height: 50px;">
+                <% for (let c=0; c < 6; c++) { %>
+                    <% let lessonFound = lessons.find(l => l.day == days[c - 1] && parseInt(l.timingStart.substring(0, 2)) <= r && parseInt(l.timingEnd.substring(0, 2)) > r); %>
+                    <% if (c == 0) { %>
+                        <td style="vertical-align: top; padding-right: 2rem;"><%= r + ":00 "%></td>
+                    <% } else if (lessonFound) { %>
+                        <% if (parseInt(lessonFound.timingStart.substring(0, 2)) == r) {%>
+                            <td class="<%= lessonFound._id %> lesson-cell" style="background-color: <%= lessonFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(lessonFound.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %>" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"><%= lessonFound.title %></td>
+                        <% } else { %>
+                            <td class="<%= lessonFound._id %> lesson-cell" style="background-color: <%= lessonFound.colour %>; cursor: pointer; border: solid black 2px; position: relative; z-index: 1;<% if (parseInt(lessonFound.timingStart.substring(0, 2)) != r) { %> border-top: 0px; <% } %>" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"></td>
+                        <% } %>
+                    <% } else { %>
+                        <td href="/edit" style="height: 50px; border: solid #C0C0C0 1px; position: relative;"></td>
+                    <% } %>
+                <% } %>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+    <div id="todoList" style="width: 30%;">
+        <h3 style="text-align: center; text-decoration: underline; width: 100%;" class="mb-4">TODO LIST</h3>
+        <ul>
+        <% for (let weeklyTask of weeklyTasks) { %>
+            <li>
+                <h5><%= weeklyTask.title %></h5>
+                <h6>Released on: <%= weeklyTask.releasedOn %></h6>
+                <h6>Deadline: <%= weeklyTask.deadline %></h6>
+                <h6>Duration: <%= weeklyTask.duration %> Hrs</h6>
+            </li>
         <% } %>
-        </tbody>
-    </table>
+        </ul>
+    </div>
 </div>
 <script>
     const cells = document.querySelectorAll(".lesson-cell");

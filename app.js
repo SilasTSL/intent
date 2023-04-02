@@ -1,14 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
-const Lesson = require('./models/lesson');
 const methodOverride = require('method-override');
 const ejs_mate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
-const joi = require('joi');
-const { lessonSchema } = require('./schemas.js');
-const lesson = require('./models/lesson');
+const Lesson = require('./models/lesson');
+const WeeklyTask = require('./models/weekly-task');
+const { lessonSchema, weeklyTaskSchema } = require('./schemas.js');
 
 const app = express();
 
@@ -35,10 +34,23 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({extended: true}));
 //Allow us to override method types (can use PUT etc.):
 app.use(methodOverride('_method'));
+//Public folder:
+app.use(express.static('public'));
 
 //Middleware for validating Lesson (second layer after Client side)
 const validateLesson = (req, res, next) => {
     const { error } = lessonSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(",")
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+}
+
+//Middleware for validating weeklyTask (second layer after Client side)
+const validateWeeklyTask = (req, res, next) => {
+    const { error } = weeklyTaskSchema.validate(req.body);
     if (error) {
         const msg = error.details.map(el => el.message).join(",")
         throw new ExpressError(msg, 400);
@@ -54,7 +66,8 @@ app.get('/', (req, res) => {
 //GET Index page
 app.get('/timetable', catchAsync(async (req, res) => {
     const lessons = await Lesson.find({});
-    res.render('timetable/index', { lessons });
+    const weeklyTasks = await WeeklyTask.find({});
+    res.render('timetable/index', { lessons, weeklyTasks });
 }))
 
 //GET make new lesson page
@@ -101,7 +114,7 @@ app.post('/timetable', validateLesson, catchAsync(async (req, res) => {
     }
 
     if (isValidNewLesson) {
-        const newLesson = new Lesson(req.body.lesson);
+        const newLesson = new Lesson(newLessonBody);
         await newLesson.save();
         res.redirect(`/timetable/${newLesson._id}`);
     } else {
@@ -133,6 +146,20 @@ app.put('/timetable/:id', validateLesson, catchAsync(async (req, res) => {
 app.delete('/timetable/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     await Lesson.findByIdAndDelete(id);
+    res.redirect('/timetable');
+}))
+
+
+//WEEKLY TASKS:
+//GET make new weekly task page
+app.get('/weekly-tasks/new', (req, res) => {
+    res.render('weekly-tasks/new');
+})
+
+//POST make new weekly task
+app.post('/weekly-tasks', validateWeeklyTask, catchAsync(async (req, res) => {
+    const newWeeklyTask = new WeeklyTask(req.body.weeklyTask);
+    await newWeeklyTask.save();
     res.redirect('/timetable');
 }))
 

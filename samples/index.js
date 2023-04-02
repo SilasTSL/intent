@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
-const lesson = require('../models/lesson');
 const Lesson = require('../models/lesson');
 const sampleLessons = require('./sample-lessons');
+const WeeklyTask = require('../models/weekly-task');
+const sampleWeeklyTasks = require('./sample-weekly-tasks');
 
 mongoose.connect('mongodb://localhost:27017/stash-db', {
     useNewUrlParser: true,
@@ -19,6 +20,12 @@ const seedDB = async () => {
     for (sampleLesson of sampleLessons) {
         const lesson = new Lesson(sampleLesson);
         await lesson.save();
+    }
+
+    await WeeklyTask.deleteMany({});
+    for (sampleWeeklyTask of sampleWeeklyTasks) {
+        const weeklyTask = new WeeklyTask(sampleWeeklyTask);
+        await weeklyTask.save();
     }
 }
 
