@@ -6,3 +6,5 @@ Tech Stack:
 - Node.js
 - Express.js
 - MongoDB
+- Vercel
+- MongoDB Atlas
