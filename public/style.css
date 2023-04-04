@@ -8,4 +8,8 @@
       flex-direction: column;
       align-items: center;
     }
+
+    #todoList {
+      width: 80% !important;
+    }
 }
