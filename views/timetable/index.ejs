@@ -38,16 +38,16 @@
     </div>
     <div id="todoList" style="width: 30%;">
         <h3 style="text-align: center; text-decoration: underline; width: 100%;" class="mb-4">TODO LIST</h3>
-        <ul>
+        <div class="todoListBody" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
         <% for (let weeklyTask of weeklyTasks) { %>
-            <li>
+            <div class="todoItem" style="background-color: lightblue; width: 75%; margin-bottom: 20px; padding: 15px; border-radius: 15px;">
                 <h5><%= weeklyTask.title %></h5>
                 <h6>Released on: <%= weeklyTask.releasedOn %></h6>
                 <h6>Deadline: <%= weeklyTask.deadline %></h6>
                 <h6>Duration: <%= weeklyTask.duration %> Hrs</h6>
-            </li>
+            </div>
         <% } %>
-        </ul>
+        </div>
     </div>
 </div>
 <script>
