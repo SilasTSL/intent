@@ -1,0 +1,32 @@
+<% layout('layouts/boilerplate')%>
+<div class="rows">
+    <h1 class="text-center mt-5">New Weekly Task</h1>
+    <div class="col-6 offset-3">
+        <form action="/weekly-tasks/<%= weeklyTask._id %>?_method=PUT" method="POST" novalidate class="validated-form">
+            <div class="mb-3">
+                <label class="form-label" for="title">Title</label>
+                <input class="form-control" type="text" id="title" name="weeklyTask[title]" value="<%= weeklyTask.title %>" required>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="releasedOn">Released On</label>
+                <input class="form-control" type="text" id="releasedOn" name="weeklyTask[releasedOn]" value="<%= weeklyTask.releasedOn %>" required>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="deadline">Deadline</label>
+                <input class="form-control" type="text" id="deadline" name="weeklyTask[deadline]" value="<%= weeklyTask.deadline %>" required>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="duration">Duration (in hours)</label>
+                <input class="form-control" type="number" id="duration" name="weeklyTask[duration]" value=<%= weeklyTask.duration %> required>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="d-flex flex-row justify-content-between">
+                <button class="btn btn-success">Edit Task</button>
+                <a class="btn btn-danger" href="/timetable">Back</a>
+            </div>
+        </form>
+    </div>
+</div>

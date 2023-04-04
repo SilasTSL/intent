@@ -123,7 +123,7 @@ app.post('/timetable', validateLesson, catchAsync(async (req, res) => {
 
 }))
 
-//GET lesson details page
+//GET lesson show page
 app.get('/timetable/:id', catchAsync(async (req, res) => {
     const lesson = await Lesson.findById(req.params.id);
     res.render('timetable/show', { lesson });
@@ -160,6 +160,32 @@ app.get('/weekly-tasks/new', (req, res) => {
 app.post('/weekly-tasks', validateWeeklyTask, catchAsync(async (req, res) => {
     const newWeeklyTask = new WeeklyTask(req.body.weeklyTask);
     await newWeeklyTask.save();
+    res.redirect('/timetable');
+}))
+
+//GET weekly task show page
+app.get('/weekly-tasks/:id', catchAsync(async (req, res) => {
+    const weeklyTask = await WeeklyTask.findById(req.params.id);
+    res.render('weekly-tasks/show', { weeklyTask });
+}))
+
+//GET edit weekly task page
+app.get('/weekly-tasks/:id/edit', catchAsync(async (req, res) => {
+    const weeklyTask = await WeeklyTask.findById(req.params.id);
+    res.render('weekly-tasks/edit', { weeklyTask });
+}))
+
+//PUT edit weekly task
+app.put('/weekly-tasks/:id', validateWeeklyTask, catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const weeklyTask = await WeeklyTask.findByIdAndUpdate(id, { ...req.body.weeklyTask });
+    res.redirect(`/weekly-tasks/${weeklyTask._id}`);
+}))
+
+//DELETE weekly task
+app.delete('/weekly-tasks/:id', catchAsync(async (req, res) => {
+    const { id } = req.params;
+    await WeeklyTask.findByIdAndDelete(id);
     res.redirect('/timetable');
 }))
 
