@@ -13,3 +13,9 @@
       width: 80% !important;
     }
 }
+
+.todoItem:hover {
+  opacity: 0.8;
+  border: 1px solid black;
+  transform: scale(1.02);
+}

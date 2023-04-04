@@ -1,0 +1,18 @@
+<% layout('layouts/boilerplate')%>
+<div class="card p-5" style="background-color: lightblue;">
+    <h1 class="text-light" ><%= weeklyTask.title %></h1>
+    <div class="card" style="width: 18rem;">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item bg-dark text-light">Released on <%= weeklyTask.releasedOn %></li>
+          <li class="list-group-item bg-dark text-light">Deadline by <%= weeklyTask.deadline %>></li>
+          <li class="list-group-item bg-dark text-light">Duration <%= weeklyTask.duration %>></li>
+        </ul>
+    </div>
+    <div class="button-container d-flex flex-row justify-content-between mt-3">
+        <a class="btn btn-success" href="/weekly-task/<%= weeklyTask._id%>/edit">Edit</a>
+        <form action="/weekly-task/<%= weeklyTask._id %>?_method=DELETE" method="POST">
+            <button class="btn btn-danger">Delete Lesson</button>
+        </form>
+        <a class="btn btn-primary" href="/timetable">Back</a>
+    </div>
+</div>
