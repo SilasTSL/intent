@@ -63,11 +63,16 @@ app.get('/', (req, res) => {
     res.render('home');
 })
 
+
+
 //GET Index page
 app.get('/timetable', catchAsync(async (req, res) => {
     const lessons = await Lesson.find({});
     const weeklyTasks = await WeeklyTask.find({});
-    res.render('timetable/index', { lessons, weeklyTasks });
+    var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    var today = new Date();
+    var dayOfWeekString = daysOfWeek[today.getDay()];
+    res.render('timetable/index', { lessons, weeklyTasks, dayOfWeekString });
 }))
 
 //GET make new lesson page
