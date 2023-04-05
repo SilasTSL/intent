@@ -126,7 +126,8 @@ app.post('/timetable', validateLesson, catchAsync(async (req, res) => {
 //GET lesson show page
 app.get('/timetable/:id', catchAsync(async (req, res) => {
     const lesson = await Lesson.findById(req.params.id);
-    res.render('timetable/show', { lesson });
+    const sameLessons = await Lesson.find({title: lesson.title});
+    res.render('timetable/show', { sameLessons });
 }))
 
 //GET edit lesson page

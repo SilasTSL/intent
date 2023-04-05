@@ -1,17 +1,24 @@
 <% layout('layouts/boilerplate')%>
-<div class="card p-5" style="background-color: <%=lesson.colour%>;">
-    <h1 class="text-light" ><%= lesson.title %></h1>
-    <div class="card" style="width: 18rem;">
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item bg-dark text-light"><%= lesson.day %></li>
-          <li class="list-group-item bg-dark text-light"><%= lesson.timingStart %> - <%= lesson.timingEnd %></li>
-        </ul>
+<div class="card p-5" style="background-color: <%= sameLessons[0].colour %>; width: 60%; margin-left: auto; margin-right: auto; margin-top: 5%;">
+    <h3 class="text-light" ><%= sameLessons[0].title %></h3>
+    <div style="margin-top: 20px; background-color: white; border-radius: 10px; padding: 10px;">
+        <% for (let lesson of sameLessons) { %>
+            <div style="display: flex; flex-direction: row; justify-content: space-between; padding: 10px;">
+                <p style="font-size: 1.2rem;"><%= lesson.day %> at <%= lesson.timingStart %> - <%= lesson.timingEnd %></p>
+                <div style="display: flex; flex-direction: row;">
+                    <a class="btn btn-success" href="/timetable/<%= lesson._id%>/edit" style="padding-left: 7px; padding-right: 7px; height: 80%; margin-right: 10px;">Edit</a>
+                    <form action="/timetable/<%= lesson._id %>?_method=DELETE" method="POST" style="height: 80%;">
+                        <button class="btn btn-danger" style="height: 100%;">Delete Lesson</button>
+                    </form>
+                </div>
+            </div>
+            <% if (sameLessons.indexOf(lesson) + 1 < sameLessons.length) { %>
+                <hr style="margin: 0px;">
+            <% } %>
+
+        <% } %>
     </div>
     <div class="button-container d-flex flex-row justify-content-between mt-3">
-        <a class="btn btn-success" href="/timetable/<%= lesson._id%>/edit">Edit</a>
-        <form action="/timetable/<%= lesson._id %>?_method=DELETE" method="POST">
-            <button class="btn btn-danger">Delete Lesson</button>
-        </form>
         <a class="btn btn-primary" href="/timetable">Back</a>
     </div>
 </div>
