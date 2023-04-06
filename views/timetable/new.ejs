@@ -1,4 +1,5 @@
 <% layout('layouts/boilerplate')%>
+<% var addedLessons = []; %>
 <div class="rows">
     <h1 class="text-center mt-5">New Lesson</h1>
     <div class="col-6 offset-3">
@@ -13,21 +14,25 @@
                 <input class="form-control" type="text" id="day" name="lesson[day]" required>
                 <div class="valid-feedback">Looks good!</div>
             </div>
-            <div class="mb-3" style="display: flex; flex-direction: row; justify-content: space-between;">
-                <label class="form-label px-4" for="timing">Timing Start</label>
-                <input class="form-control" type="text" id="timingStart" name="lesson[timingStart]" required>
-                <div class="valid-feedback">Looks good!</div>
-                <label class="form-label px-4" for="timing">Timing End</label>
-                <input class="form-control" type="text" id="timingEnd" name="lesson[timingEnd]" required>
-                <div class="valid-feedback">Looks good!</div>
-            </div>
             <div class="mb-4">
                 <label class="form-label" for="colour">Colour</label>
                 <input class="form-control" type="text" id="colour" name="lesson[colour]" required>
                 <div class="valid-feedback">Looks good!</div>
             </div>
-            <div class="d-flex flex-row justify-content-between">
-                <button class="btn btn-success">Add Lesson</button>
+            <div id="timingContainer" class="mb-3" style="display: flex; flex-direction: column; border: 0.5px solid black; border-radius: 10px; padding: 2rem;">
+                <div id="newTimingRow" style="display: flex; flex-direction: row;">
+                    <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing Start</label>
+                    <input class="form-control" type="text" id="timingStart" name="lesson[timingStart]" required>
+                    <div class="valid-feedback">Looks good!</div>
+                    <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing End</label>
+                    <input class="form-control" type="text" id="timingEnd" name="lesson[timingEnd]" required>
+                    <div class="valid-feedback">Looks good!</div>
+                    <button id="addTimingButton" class="btn btn-success" style="margin-left: 2rem; font-size: 0.8rem;" onclick="addTiming()">Add Timing</button>
+                </div>
+            </div>
+
+            <div class="d-flex flex-row justify-content-between mt-5">
+                <button class="btn btn-success" onclick="addLessons()">Add Lesson</button>
                 <a class="btn btn-danger" href="/timetable">Back</a>
             </div>
         </form>

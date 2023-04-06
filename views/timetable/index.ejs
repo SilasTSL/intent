@@ -57,7 +57,6 @@
     cells.forEach(cell => {
         cell.addEventListener('mouseover', () => {
             const sameLessonCells = document.getElementsByClassName(cell.classList[0])
-            console.log(sameLessonCells)
             for (const sameLessonCell of sameLessonCells) {
                 sameLessonCell.style.opacity = 0.8;
                 sameLessonCell.style.borderColor = "#505050";
