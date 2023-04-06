@@ -6,12 +6,12 @@
             <thead>
             <tr>
                 <th></th>
-                <% const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]; %>
-                <% for (let day of days) { %>
-                    <% if (day == dayOfWeekString) { %> 
-                        <th style="text-align: center; font-weight: 900;"><%= day %></th>
+                <% const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; %>
+                <% for (let i = 0; i < 5; i++) { %>
+                    <% if (days[i] == dayOfWeekString) { %> 
+                        <th style="text-align: center; font-weight: 900;"><%= days[i] %></th>
                     <% } else { %> 
-                        <th style="text-align: center; font-weight: 500;"><%= day %></th>
+                        <th style="text-align: center; font-weight: 500;"><%= days[i] %></th>
                     <% } %>
                 <% } %>
             </tr>
