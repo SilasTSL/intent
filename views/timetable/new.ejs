@@ -1,40 +1,108 @@
 <% layout('layouts/boilerplate')%>
-<% var addedLessons = []; %>
 <div class="rows">
     <h1 class="text-center mt-5">New Lesson</h1>
     <div class="col-6 offset-3">
-        <form action="/timetable" method="POST" novalidate class="validated-form">
-            <div class="mb-3">
-                <label class="form-label" for="title">Title</label>
-                <input class="form-control" type="text" id="title" name="lesson[title]" required>
+        <div class="mb-3">
+            <label class="form-label" for="title">Title</label>
+            <input class="form-control" type="text" id="title" name="lesson[title]" required>
+            <div class="valid-feedback">Looks good!</div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="day">Day</label>
+            <input class="form-control" type="text" id="day" name="lesson[day]" required>
+            <div class="valid-feedback">Looks good!</div>
+        </div>
+        <div class="mb-4">
+            <label class="form-label" for="colour">Colour</label>
+            <input class="form-control" type="text" id="colour" name="lesson[colour]" required>
+            <div class="valid-feedback">Looks good!</div>
+        </div>
+        <div id="timingContainer" class="mb-3" style="display: flex; flex-direction: column; border: 0.5px solid black; border-radius: 10px; padding: 2rem;">
+            <div id="newTimingRow" style="display: flex; flex-direction: row;">
+                <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing Start</label>
+                <input class="form-control" type="text" id="timingStart" name="lesson[timingStart]" required>
                 <div class="valid-feedback">Looks good!</div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="day">Day</label>
-                <input class="form-control" type="text" id="day" name="lesson[day]" required>
+                <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing End</label>
+                <input class="form-control" type="text" id="timingEnd" name="lesson[timingEnd]" required>
                 <div class="valid-feedback">Looks good!</div>
+                <button id="addTimingButton" class="btn btn-success" style="margin-left: 2rem; font-size: 0.8rem;">Add Timing</button>
             </div>
-            <div class="mb-4">
-                <label class="form-label" for="colour">Colour</label>
-                <input class="form-control" type="text" id="colour" name="lesson[colour]" required>
-                <div class="valid-feedback">Looks good!</div>
-            </div>
-            <div id="timingContainer" class="mb-3" style="display: flex; flex-direction: column; border: 0.5px solid black; border-radius: 10px; padding: 2rem;">
-                <div id="newTimingRow" style="display: flex; flex-direction: row;">
-                    <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing Start</label>
-                    <input class="form-control" type="text" id="timingStart" name="lesson[timingStart]" required>
-                    <div class="valid-feedback">Looks good!</div>
-                    <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing End</label>
-                    <input class="form-control" type="text" id="timingEnd" name="lesson[timingEnd]" required>
-                    <div class="valid-feedback">Looks good!</div>
-                    <button id="addTimingButton" class="btn btn-success" style="margin-left: 2rem; font-size: 0.8rem;" onclick="addTiming()">Add Timing</button>
-                </div>
-            </div>
+        </div>
 
-            <div class="d-flex flex-row justify-content-between mt-5">
-                <button class="btn btn-success" onclick="addLessons()">Add Lesson</button>
-                <a class="btn btn-danger" href="/timetable">Back</a>
-            </div>
-        </form>
+        <div class="d-flex flex-row justify-content-between mt-5">
+            <button id="addLessonsButton" class="btn btn-success">Add Lesson</button>
+            <a class="btn btn-danger" href="/timetable">Back</a>
+        </div>
     </div>
 </div>
+<script>
+    var addedLessons = [];
+    // Get the timingContainer element
+    const timingContainer = document.getElementById('timingContainer');
+    // Get the timingStart and timingEnd input elements
+    const timingStartInput = document.getElementById('timingStart');
+    const timingEndInput = document.getElementById('timingEnd');
+
+    // Function to add timing and lesson
+    function addTiming() {
+        // Create a new div element for the timing and append it to the timingContainer
+        const newTimingDiv = document.createElement('div');
+        newTimingDiv.innerText = `${timingStartInput.value} - ${timingEndInput.value}`;
+        timingContainer.appendChild(newTimingDiv);
+
+        // Create a new Lesson object and push it to the addedLessons array
+        const newLesson = {
+            title: document.getElementById('title').value,
+            day: document.getElementById('day').value,
+            colour: document.getElementById('colour').value,
+            timingStart: timingStartInput.value,
+            timingEnd: timingEndInput.value
+        };
+        addedLessons.push(newLesson);
+        console.log(addedLessons);
+    }
+
+    // Function to add lessons
+    function addLessons() {
+        if (addedLessons.length === 0) {
+            alert('Please add at least one timing');
+            return;
+        }
+
+        // Convert the addedLessons array to URL-encoded form data
+        const formData = new URLSearchParams();
+        addedLessons.forEach((lesson, index) => {
+            Object.entries(lesson).forEach(([key, value]) => {
+            formData.append(`lessons[${index}][${key}]`, value);
+            });
+        });
+
+        // Make a POST request to /timetable with the addedLessons array as the body of the request
+        fetch('/timetable', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData.toString()
+        })
+        .then(response => {
+            if (response.ok) {
+                // Redirect to the timetable page if the request is successful
+            } else {
+                throw new Error('Failed to add lessons');
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            alert('Failed to add lessons');
+        });
+    }
+
+    // Add event listener for the Add Timing button
+    const addTimingButton = document.getElementById('addTimingButton');
+    addTimingButton.addEventListener('click', addTiming);
+
+    // Add event listener for the Add Timing button
+    const addLessonsButton = document.getElementById('addLessonsButton');
+    addLessonsButton.addEventListener('click', addLessons);
+</script>

@@ -37,15 +37,17 @@ app.use(methodOverride('_method'));
 //Public folder:
 app.use(express.static('public'));
 
-//Middleware for validating Lesson (second layer after Client side)
+//Middleware for validating Lesson (second layer after Client side) (NOT USED)
 const validateLesson = (req, res, next) => {
-    const { error } = lessonSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(",")
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
+    for (let lesson of req.body.lessons) {
+        const { error } = lessonSchema.validate(lesson);
+        if (error) {
+            const msg = error.details.map(el => el.message).join(",");
+            console.log("Lesson Invalidated! Lesson: " + JSON.stringify(lesson));
+            throw new ExpressError(msg, 400);
+        }
     }
+    next();
 }
 
 //Middleware for validating weeklyTask (second layer after Client side)
@@ -105,27 +107,27 @@ function doLessonsOverlap(lesson1StartString, lesson1EndString, lesson2StartStri
     return false;
 }
 
-//POST make new lesson
-app.post('/timetable', validateLesson, catchAsync(async (req, res) => {
-    const newLessonBody = req.body.lesson;
-    const lessons = await Lesson.find({day: newLessonBody.day});
-    let isValidNewLesson = true;
+//POST make new lessons
+app.post('/timetable',  catchAsync(async (req, res) => {
+    console.log("Adding new lesson(s)!");
+    const newLessons = req.body.lessons;
+    console.log("New Lessons: " + newLessons);
+    const lessons = await Lesson.find({day: newLessons[0].day});
 
-    for (let lesson of lessons) {
-        if (doLessonsOverlap(lesson.timingStart, lesson.timingEnd, newLessonBody.timingStart, newLessonBody.timingEnd)) {
-            console.log("Timing failed!");
-            isValidNewLesson = false;
+    for (let newLesson of newLessons) {
+        for (let lesson of lessons) {
+            if (doLessonsOverlap(lesson.timingStart, lesson.timingEnd, newLesson.timingStart, newLesson.timingEnd)) {
+                console.log("Timings overlap!");
+                throw new ExpressError("Timing is wrong!", 400);
+            }
         }
     }
 
-    if (isValidNewLesson) {
+    for (let newLessonBody of newLessons) {
         const newLesson = new Lesson(newLessonBody);
         await newLesson.save();
-        res.redirect(`/timetable/${newLesson._id}`);
-    } else {
-        throw new ExpressError("Timing is wrong!", 400);
     }
-
+    res.redirect(`/timetable`);
 }))
 
 //GET lesson show page
