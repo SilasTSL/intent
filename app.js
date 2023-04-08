@@ -118,7 +118,7 @@ app.post('/timetable',  catchAsync(async (req, res) => {
         for (let lesson of lessons) {
             if (doLessonsOverlap(lesson.timingStart, lesson.timingEnd, newLesson.timingStart, newLesson.timingEnd)) {
                 console.log("Timings overlap!");
-                throw new ExpressError("Timing is wrong!", 400);
+                throw new ExpressError("Timings overlap!", 400);
             }
         }
     }

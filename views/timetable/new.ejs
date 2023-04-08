@@ -17,8 +17,8 @@
             <input class="form-control" type="text" id="colour" name="lesson[colour]" required>
             <div class="valid-feedback">Looks good!</div>
         </div>
-        <div id="timingContainer" class="mb-3" style="display: flex; flex-direction: column; border: 0.5px solid black; border-radius: 10px; padding: 2rem;">
-            <div id="newTimingRow" style="display: flex; flex-direction: row;">
+        <div id="timingContainer" class="mb-3" style="display: flex; flex-direction: column; align-items: center; border: 0.5px solid black; border-radius: 10px; padding: 2rem; width: 100%;">
+            <div id="newTimingRow" style="display: flex; flex-direction: row; width: 100%;">
                 <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing Start</label>
                 <input class="form-control" type="text" id="timingStart" name="lesson[timingStart]" required>
                 <div class="valid-feedback">Looks good!</div>
@@ -47,7 +47,8 @@
     function addTiming() {
         // Create a new div element for the timing and append it to the timingContainer
         const newTimingDiv = document.createElement('div');
-        newTimingDiv.innerText = `${timingStartInput.value} - ${timingEndInput.value}`;
+        newTimingDiv.style = "display: flex; flex-direction: row; justify-content: space-between; width: 95%; align-items: center; margin-top: 1.5rem;";
+        newTimingDiv.innerHTML = `<div>${timingStartInput.value} - ${timingEndInput.value}</div><button class="btn btn-danger">Delete</button></div>`;
         timingContainer.appendChild(newTimingDiv);
 
         // Create a new Lesson object and push it to the addedLessons array
@@ -60,6 +61,22 @@
         };
         addedLessons.push(newLesson);
         console.log(addedLessons);
+
+          // Add onclick event listener to the delete button
+        const deleteButton = newTimingDiv.querySelector(".btn-danger");
+        deleteButton.onclick = function () {
+            // Remove the newTimingDiv element from the DOM
+            newTimingDiv.remove();
+
+            // Remove the corresponding newLesson object from the addedLessons array
+            const index = addedLessons.findIndex(
+            (lesson) =>
+                lesson.timingStart === newLesson.timingStart &&
+                lesson.timingEnd === newLesson.timingEnd
+            );
+            addedLessons.splice(index, 1);
+            console.log("After deletion: " + addedLessons);
+        };
     }
 
     // Function to add lessons
@@ -88,6 +105,7 @@
         .then(response => {
             if (response.ok) {
                 // Redirect to the timetable page if the request is successful
+                window.location.href = "/timetable";
             } else {
                 throw new Error('Failed to add lessons');
             }
