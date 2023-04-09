@@ -25,7 +25,7 @@
                         <td style="vertical-align: top; padding-right: 2rem;"><%= r + ":00 "%></td>
                     <% } else if (lessonFound) { %>
                         <% if (parseInt(lessonFound.timingStart.substring(0, 2)) == r) {%>
-                            <td class="<%= lessonFound._id %> lesson-cell" style="background-color: <%= lessonFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(lessonFound.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"><%= lessonFound.title %></td>
+                            <td class="<%= lessonFound._id %> lesson-cell" style="color: white;background-color: <%= lessonFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(lessonFound.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"><%= lessonFound.title %></td>
                         <% } else { %>
                             <td class="<%= lessonFound._id %> lesson-cell" style="background-color: <%= lessonFound.colour %>; cursor: pointer; border: solid black 2px; position: relative; z-index: 1;<% if (parseInt(lessonFound.timingStart.substring(0, 2)) != r) { %> border-top: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"></td>
                         <% } %>
@@ -44,9 +44,9 @@
         <% for (let weeklyTask of weeklyTasks) { %>
             <div class="todoItem" style="background-color: lightblue; width: 75%; margin-bottom: 20px; padding: 15px; border-radius: 15px; cursor: pointer; transition-duration: 0.4s;" onclick="window.location.href = '/weekly-tasks/<%= weeklyTask._id %>'" >
                 <h5><%= weeklyTask.title %></h5>
-                <h6>Released on: <%= weeklyTask.releasedOn %></h6>
-                <h6>Deadline: <%= weeklyTask.deadline %></h6>
-                <h6>Duration: <%= weeklyTask.duration %> Hrs</h6>
+                <h6><span style="opacity: 0.7; font-size: 0.85rem;">Released on:</span> <%= weeklyTask.releasedOn %></h6>
+                <h6><span style="opacity: 0.7; font-size: 0.85rem;">Deadline:</span> <%= weeklyTask.deadline %></h6>
+                <h6><span style="opacity: 0.7; font-size: 0.85rem;">Duration:</span> <%= weeklyTask.duration %> Hrs</h6>
             </div>
         <% } %>
         </div>

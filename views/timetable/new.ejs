@@ -9,21 +9,59 @@
         </div>
         <div class="mb-3">
             <label class="form-label" for="day">Day</label>
-            <input class="form-control" type="text" id="day" name="lesson[day]" required>
+            <select class="form-select" id="day" name="lesson[day]" required>
+                <option value="" selected disabled>Select a day</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+            </select>
             <div class="valid-feedback">Looks good!</div>
         </div>
         <div class="mb-4">
             <label class="form-label" for="colour">Colour</label>
-            <input class="form-control" type="text" id="colour" name="lesson[colour]" required>
+            <select class="form-select" id="colour" name="lesson[colour]" required>
+                <option value="" selected disabled>Select a colour</option>
+                <option value="#C62828">Red</option>
+                <option value="#1565C0">Blue</option>
+                <option value="#2E7D32">Green</option>
+                <option value="#FFA000">Yellow</option>
+                <option value="#6A1B9A">Purple</option>
+                <option value="#f08731">Orange</option>
+            </select>
             <div class="valid-feedback">Looks good!</div>
         </div>
         <div id="timingContainer" class="mb-3" style="display: flex; flex-direction: column; align-items: center; border: 0.5px solid black; border-radius: 10px; padding: 2rem; width: 100%;">
             <div id="newTimingRow" style="display: flex; flex-direction: row; width: 100%;">
                 <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing Start</label>
-                <input class="form-control" type="text" id="timingStart" name="lesson[timingStart]" required>
+                <select class="form-select" id="timingStart" name="lesson[timingStart]" required>
+                    <option value="" selected disabled>Select a start time</option>
+                    <option value="0800">08:00</option>
+                    <option value="0900">09:00</option>
+                    <option value="1000">10:00</option>
+                    <option value="1100">11:00</option>
+                    <option value="1200">12:00</option>
+                    <option value="1300">13:00</option>
+                    <option value="1400">14:00</option>
+                    <option value="1500">15:00</option>
+                    <option value="1600">16:00</option>
+                    <option value="1700">17:00</option>
+                </select>
                 <div class="valid-feedback">Looks good!</div>
                 <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing End</label>
-                <input class="form-control" type="text" id="timingEnd" name="lesson[timingEnd]" required>
+                <select class="form-select" id="timingEnd" name="lesson[timingEnd]" required>
+                    <option value="" selected disabled>Select an end time</option>
+                    <option value="0900">09:00</option>
+                    <option value="1000">10:00</option>
+                    <option value="1100">11:00</option>
+                    <option value="1200">12:00</option>
+                    <option value="1300">13:00</option>
+                    <option value="1400">14:00</option>
+                    <option value="1500">15:00</option>
+                    <option value="1600">16:00</option>
+                    <option value="1700">17:00</option>
+                </select>
                 <div class="valid-feedback">Looks good!</div>
                 <button id="addTimingButton" class="btn btn-success" style="margin-left: 2rem; font-size: 0.8rem;">Add Timing</button>
             </div>
@@ -45,6 +83,30 @@
 
     // Function to add timing and lesson
     function addTiming() {
+        // Get the selected start and end times
+        const timingStart = timingStartInput.value;
+        const timingEnd = timingEndInput.value;
+
+        // Check that the end time is greater than the start time
+        if (timingEnd <= timingStart) {
+            alert('End time must be greater than start time');
+            return;
+        }
+
+        // Check for time overlap with existing lessons
+        const overlap = addedLessons.some(lesson => {
+            const existingStart = lesson.timingStart;
+            const existingEnd = lesson.timingEnd;
+            return ((timingStart >= existingStart && timingStart < existingEnd) ||
+                    (timingEnd > existingStart && timingEnd <= existingEnd) ||
+                    (timingStart <= existingStart && timingEnd >= existingEnd));
+        });
+
+        if (overlap) {
+            alert('The selected time overlaps with an existing lesson');
+            return;
+        }
+
         // Create a new div element for the timing and append it to the timingContainer
         const newTimingDiv = document.createElement('div');
         newTimingDiv.style = "display: flex; flex-direction: row; justify-content: space-between; width: 95%; align-items: center; margin-top: 1.5rem;";

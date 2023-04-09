@@ -10,12 +10,30 @@
             </div>
             <div class="mb-3">
                 <label class="form-label" for="releasedOn">Released On</label>
-                <input class="form-control" type="text" id="releasedOn" name="weeklyTask[releasedOn]" required>
+                <select class="form-select" id="releasedOn" name="weeklyTask[releasedOn]" required>
+                    <option value="" selected disabled>Select a day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
                 <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="deadline">Deadline</label>
-                <input class="form-control" type="text" id="deadline" name="weeklyTask[deadline]" required>
+                <select class="form-select" id="deadline" name="weeklyTask[deadline]" required>
+                    <option value="" selected disabled>Select a day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
                 <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="mb-3">
