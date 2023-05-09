@@ -8,6 +8,10 @@ const ExpressError = require('./utils/ExpressError');
 const Lesson = require('./models/lesson');
 const WeeklyTask = require('./models/weekly-task');
 const { lessonSchema, weeklyTaskSchema } = require('./schemas.js');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
 
 const app = express();
 
@@ -36,6 +40,23 @@ app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 //Public folder:
 app.use(express.static('public'));
+
+//Configuring Session:
+const sessionConfig = {
+    secret: "thisshouldbeabettersecret!",
+    resave: false,
+    saveUninitialized: true
+}
+app.use(session(sessionConfig));
+
+//Passport:
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 //Middleware for validating Lesson (second layer after Client side) (NOT USED)
 const validateLesson = (req, res, next) => {
@@ -196,6 +217,31 @@ app.delete('/weekly-tasks/:id', catchAsync(async (req, res) => {
     await WeeklyTask.findByIdAndDelete(id);
     res.redirect('/timetable');
 }))
+
+
+
+//LOGIN LOGOUT:
+
+//GET register page
+app.get('/register', (req, res) => {
+    res.render('authentication/register');
+})
+
+//POST register
+app.post('/register', catchAsync(async (req, res) => {
+    try {
+        const { email, username, password } = req.body;
+        const newUser = new User({email, username});
+        const registeredUser = await User.register(newUser, password);
+    } catch(e) {
+        console.log(e);
+        res.redirect('register');
+    }
+
+    res.redirect('/timetable');
+}))
+
+
 
 //No matching path
 app.all('*', (req, res, next) => {
