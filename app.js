@@ -82,14 +82,23 @@ const validateWeeklyTask = (req, res, next) => {
     }
 }
 
+//Middleware for checking login
+const validateIsLoggedIn = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        return res.redirect('/login');
+    }
+    next();
+}
+
+
+
 app.get('/', (req, res) => {
     res.render('home');
 })
 
 
-
 //GET Index page
-app.get('/timetable', catchAsync(async (req, res) => {
+app.get('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     const lessons = await Lesson.find({});
     const weeklyTasks = await WeeklyTask.find({});
     var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -129,7 +138,7 @@ function doLessonsOverlap(lesson1StartString, lesson1EndString, lesson2StartStri
 }
 
 //POST make new lessons
-app.post('/timetable',  catchAsync(async (req, res) => {
+app.post('/timetable', catchAsync(async (req, res) => {
     console.log("Adding new lesson(s)!");
     const newLessons = req.body.lessons;
     console.log("New Lessons: " + newLessons);
@@ -233,14 +242,34 @@ app.post('/register', catchAsync(async (req, res) => {
         const { email, username, password } = req.body;
         const newUser = new User({email, username});
         const registeredUser = await User.register(newUser, password);
+
+        req.login(registeredUser, e => {
+            if (e) return next(e);
+            res.redirect('/timetable');
+        })
     } catch(e) {
         console.log(e);
         res.redirect('register');
     }
-
-    res.redirect('/timetable');
 }))
 
+//GET login page
+app.get('/login', (req, res) => {
+    res.render('authentication/login');
+})
+
+//POST login
+app.post('/login', passport.authenticate('local', {failureRedirect: '/login'}), (req, res) => {
+    res.redirect('/timetable');
+})
+
+//GET logout
+app.get('/logout', (req, res) => {
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        res.redirect('/login');
+    });
+}); 
 
 
 //No matching path
