@@ -99,8 +99,8 @@ app.get('/', (req, res) => {
 
 //GET Index page
 app.get('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const lessons = await Lesson.find({});
-    const weeklyTasks = await WeeklyTask.find({});
+    const lessons = await Lesson.find({userId: req.user.id});
+    const weeklyTasks = await WeeklyTask.find({userId: req.user.id});
     var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     var today = new Date();
     var dayOfWeekString = daysOfWeek[today.getDay()];
@@ -108,7 +108,7 @@ app.get('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 }))
 
 //GET make new lesson page
-app.get('/timetable/new', (req, res) => {
+app.get('/timetable/new', validateIsLoggedIn, (req, res) => {
     res.render('timetable/new');
 })
 
@@ -138,7 +138,7 @@ function doLessonsOverlap(lesson1StartString, lesson1EndString, lesson2StartStri
 }
 
 //POST make new lessons
-app.post('/timetable', catchAsync(async (req, res) => {
+app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     console.log("Adding new lesson(s)!");
     const newLessons = req.body.lessons;
     console.log("New Lessons: " + newLessons);
@@ -154,6 +154,7 @@ app.post('/timetable', catchAsync(async (req, res) => {
     }
 
     for (let newLessonBody of newLessons) {
+        newLessonBody.userId = req.user.id;
         const newLesson = new Lesson(newLessonBody);
         await newLesson.save();
     }
@@ -161,27 +162,27 @@ app.post('/timetable', catchAsync(async (req, res) => {
 }))
 
 //GET lesson show page
-app.get('/timetable/:id', catchAsync(async (req, res) => {
+app.get('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const lesson = await Lesson.findById(req.params.id);
     const sameLessons = await Lesson.find({title: lesson.title});
     res.render('timetable/show', { sameLessons });
 }))
 
 //GET edit lesson page
-app.get('/timetable/:id/edit', catchAsync(async (req, res) => {
+app.get('/timetable/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) => {
     const lesson = await Lesson.findById(req.params.id);
     res.render('timetable/edit', { lesson });
 }))
 
 //PUT edit lesson
-app.put('/timetable/:id', validateLesson, catchAsync(async (req, res) => {
+app.put('/timetable/:id', validateIsLoggedIn, validateLesson, catchAsync(async (req, res) => {
     const { id } = req.params;
     const lesson = await Lesson.findByIdAndUpdate(id, { ...req.body.lesson });
     res.redirect(`/timetable/${lesson._id}`);
 }))
 
 //DELETE lesson
-app.delete('/timetable/:id', catchAsync(async (req, res) => {
+app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     await Lesson.findByIdAndDelete(id);
     res.redirect('/timetable');
@@ -190,31 +191,33 @@ app.delete('/timetable/:id', catchAsync(async (req, res) => {
 
 //WEEKLY TASKS:
 //GET make new weekly task page
-app.get('/weekly-tasks/new', (req, res) => {
+app.get('/weekly-tasks/new', validateIsLoggedIn, (req, res) => {
     res.render('weekly-tasks/new');
 })
 
 //POST make new weekly task
-app.post('/weekly-tasks', validateWeeklyTask, catchAsync(async (req, res) => {
-    const newWeeklyTask = new WeeklyTask(req.body.weeklyTask);
+app.post('/weekly-tasks', validateIsLoggedIn, validateWeeklyTask, catchAsync(async (req, res) => {
+    const newWeeklyTaskBody = req.body.weeklyTask;
+    newWeeklyTaskBody.userId = req.user.id;
+    const newWeeklyTask = new WeeklyTask(newWeeklyTaskBody);
     await newWeeklyTask.save();
     res.redirect('/timetable');
 }))
 
 //GET weekly task show page
-app.get('/weekly-tasks/:id', catchAsync(async (req, res) => {
+app.get('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const weeklyTask = await WeeklyTask.findById(req.params.id);
     res.render('weekly-tasks/show', { weeklyTask });
 }))
 
 //GET edit weekly task page
-app.get('/weekly-tasks/:id/edit', catchAsync(async (req, res) => {
+app.get('/weekly-tasks/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) => {
     const weeklyTask = await WeeklyTask.findById(req.params.id);
     res.render('weekly-tasks/edit', { weeklyTask });
 }))
 
 //PUT edit weekly task
-app.put('/weekly-tasks/:id', validateWeeklyTask, catchAsync(async (req, res) => {
+app.put('/weekly-tasks/:id', validateIsLoggedIn, validateWeeklyTask, catchAsync(async (req, res) => {
     const { id } = req.params;
     const weeklyTask = await WeeklyTask.findByIdAndUpdate(id, { ...req.body.weeklyTask });
     res.redirect(`/weekly-tasks/${weeklyTask._id}`);
