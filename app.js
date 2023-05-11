@@ -58,6 +58,13 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+
+//Locals:
+app.use((req, res, next) => {
+    res.locals.user = req.user;
+    next();
+})
+
 //Middleware for validating Lesson (second layer after Client side) (NOT USED)
 const validateLesson = (req, res, next) => {
     for (let lesson of req.body.lessons) {
