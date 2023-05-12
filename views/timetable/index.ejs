@@ -1,9 +1,9 @@
 <% layout('layouts/boilerplate')%>
-<div id="main-body" class="container mt-5 mb-5" style="width: 100%;">
-    <div id="timetable" class="mb-5" style="display: flex; flex-direction: column; align-items: center; width: 70%;">
+<div id="main-body" class="container mt-5 mb-5" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
+    <div id="timetable" class="mb-5" style="display: flex; flex-direction: column; align-items: center; width: 80%;">
         <div style="display: flex; flex-direction: row; align-items: center;" class="mb-4">
             <h1 style="text-align: center;">TIMETABLE</h1>
-            <a href="/timetable/new" class="newButtons" style="margin-left: 3rem; transition-duration: 0.4s; padding: 1rem; text-decoration: none; color: black; background-color: greenyellow; border-radius: 20px;">New Lesson</a>
+            <a href="/timetable/new" class="newButtons" style="margin-left: 3rem; transition-duration: 0.4s; padding: 1rem; text-decoration: none; color: white; background-color: #4caf50; border-radius: 20px;">New Lesson</a>
         </div>
         <table style="width: 90%; height: 100%; border-collapse: collapse;">
             <thead>
@@ -40,22 +40,6 @@
             <% } %>
             </tbody>
         </table>
-    </div>
-    <div id="todoList" style="width: 30%;">
-        <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 1.5rem;">
-            <h3 style="text-align: center; width: 100%;">TODO LIST</h3>
-            <a href="/weekly-tasks/new" class="newButtons" style="transition-duration: 0.4s; padding: 1rem; white-space: nowrap; width: fit-content; text-align: center; text-decoration: none; color: black; background-color: greenyellow; border-radius: 20px;">New Task</a>
-        </div>
-        <div class="todoListBody" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-        <% for (let weeklyTask of weeklyTasks) { %>
-            <div class="todoItem" style="background-color: lightblue; width: 75%; margin-bottom: 20px; padding: 15px; border-radius: 15px; cursor: pointer; transition-duration: 0.4s;" onclick="window.location.href = '/weekly-tasks/<%= weeklyTask._id %>'" >
-                <h5><%= weeklyTask.title %></h5>
-                <h6><span style="opacity: 0.7; font-size: 0.85rem;">Released on:</span> <%= weeklyTask.releasedOn %></h6>
-                <h6><span style="opacity: 0.7; font-size: 0.85rem;">Deadline:</span> <%= weeklyTask.deadline %></h6>
-                <h6><span style="opacity: 0.7; font-size: 0.85rem;">Duration:</span> <%= weeklyTask.duration %> Hrs</h6>
-            </div>
-        <% } %>
-        </div>
     </div>
 </div>
 <script>

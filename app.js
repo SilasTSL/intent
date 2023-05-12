@@ -197,6 +197,12 @@ app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
 
 
 //WEEKLY TASKS:
+//GET weekly task page:
+app.get('/weekly-tasks', catchAsync(async (req, res) => {
+    const weeklyTasks = await WeeklyTask.find({userId: req.user.id});
+    res.render('weekly-tasks', { weeklyTasks });
+}))
+
 //GET make new weekly task page
 app.get('/weekly-tasks/new', validateIsLoggedIn, (req, res) => {
     res.render('weekly-tasks/new');
@@ -236,6 +242,9 @@ app.delete('/weekly-tasks/:id', catchAsync(async (req, res) => {
     await WeeklyTask.findByIdAndDelete(id);
     res.redirect('/timetable');
 }))
+
+
+//HILL CLIMBING:
 
 
 
@@ -280,6 +289,8 @@ app.get('/logout', (req, res) => {
         res.redirect('/login');
     });
 }); 
+
+
 
 
 //No matching path

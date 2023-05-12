@@ -15,12 +15,9 @@
 }
 
 .todoItem:hover {
-  opacity: 0.8;
-  border: 1px solid black;
-  transform: scale(1.02);
+  opacity: 0.6;
 }
 
 .newButtons:hover {
-  border: 1px solid black;
-  transform: scale(1.10);
+  opacity: 0.6;
 }
