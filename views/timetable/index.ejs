@@ -9,8 +9,10 @@
             <thead>
             <tr>
                 <th></th>
-                <% const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; %>
-                <% for (let i = 0; i < 5; i++) { %>
+                <% const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; %>
+                <% var today = new Date(); %>
+                <% var dayOfWeekString = days[today.getDay()]; %>
+                <% for (let i = 1; i < 6; i++) { %>
                     <% if (days[i] == dayOfWeekString) { %> 
                         <th style="text-align: center; font-weight: 900;"><%= days[i] %></th>
                     <% } else { %> 
@@ -22,15 +24,15 @@
             <tbody>
             <% for (let r=8; r < 18; r++) { %>
                 <tr style="height: 50px;">
-                <% for (let c=0; c < 6; c++) { %>
-                    <% let lessonFound = lessons.find(l => l.day == days[c - 1] && parseInt(l.timingStart.substring(0, 2)) <= r && parseInt(l.timingEnd.substring(0, 2)) > r); %>
-                    <% if (c == 0) { %>
+                <% for (let c = 1; c < 7; c++) { %>
+                    <% let unitFound = units.find(l => l.day == days[c - 1] && parseInt(l.timingStart.substring(0, 2)) <= r && parseInt(l.timingEnd.substring(0, 2)) > r); %>
+                    <% if (c == 1) { %>
                         <td style="vertical-align: top; padding-right: 2rem;"><%= r + ":00 "%></td>
-                    <% } else if (lessonFound) { %>
-                        <% if (parseInt(lessonFound.timingStart.substring(0, 2)) == r) {%>
-                            <td class="<%= lessonFound._id %> lesson-cell" style="color: white;background-color: <%= lessonFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(lessonFound.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"><%= lessonFound.title %></td>
+                    <% } else if (unitFound) { %>
+                        <% if (parseInt(unitFound.timingStart.substring(0, 2)) == r) {%>
+                            <td class="<%= unitFound._id %> lesson-cell" style="color: white;background-color: <%= unitFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(unitFound.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= unitFound._id %>'"><%= unitFound.title %></td>
                         <% } else { %>
-                            <td class="<%= lessonFound._id %> lesson-cell" style="background-color: <%= lessonFound.colour %>; cursor: pointer; border: solid black 2px; position: relative; z-index: 1;<% if (parseInt(lessonFound.timingStart.substring(0, 2)) != r) { %> border-top: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= lessonFound._id %>'"></td>
+                            <td class="<%= unitFound._id %> lesson-cell" style="background-color: <%= unitFound.colour %>; cursor: pointer; border: solid black 2px; position: relative; z-index: 1;<% if (parseInt(unitFound.timingStart.substring(0, 2)) != r) { %> border-top: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= unitFound._id %>'"></td>
                         <% } %>
                     <% } else { %>
                         <td href="/edit" style="height: 50px; border: solid #C0C0C0 1px; position: relative;"></td>

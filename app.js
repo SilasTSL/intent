@@ -5,13 +5,11 @@ const methodOverride = require('method-override');
 const ejs_mate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
-const Lesson = require('./models/lesson');
-const WeeklyTask = require('./models/weekly-task');
-const { lessonSchema, weeklyTaskSchema } = require('./schemas.js');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
+const Unit = require('./models/unit');
 
 const app = express();
 
@@ -60,36 +58,12 @@ passport.deserializeUser(User.deserializeUser());
 
 
 //Locals:
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
     res.locals.user = req.user;
     next();
 })
 
-//Middleware for validating Lesson (second layer after Client side) (NOT USED)
-const validateLesson = (req, res, next) => {
-    for (let lesson of req.body.lessons) {
-        const { error } = lessonSchema.validate(lesson);
-        if (error) {
-            const msg = error.details.map(el => el.message).join(",");
-            console.log("Lesson Invalidated! Lesson: " + JSON.stringify(lesson));
-            throw new ExpressError(msg, 400);
-        }
-    }
-    next();
-}
-
-//Middleware for validating weeklyTask (second layer after Client side)
-const validateWeeklyTask = (req, res, next) => {
-    const { error } = weeklyTaskSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(",")
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    }
-}
-
-//Middleware for checking login
+//Middleware for checking login:
 const validateIsLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
         return res.redirect('/login');
@@ -98,7 +72,7 @@ const validateIsLoggedIn = (req, res, next) => {
 }
 
 
-
+//Home Index page:
 app.get('/', (req, res) => {
     res.render('home');
 })
@@ -106,12 +80,8 @@ app.get('/', (req, res) => {
 
 //GET Index page
 app.get('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const lessons = await Lesson.find({userId: req.user.id});
-    const weeklyTasks = await WeeklyTask.find({userId: req.user.id});
-    var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    var today = new Date();
-    var dayOfWeekString = daysOfWeek[today.getDay()];
-    res.render('timetable/index', { lessons, weeklyTasks, dayOfWeekString });
+    const units = await Unit.find({_id: req.user.id, isAssigned: true});
+    res.render('timetable/index', { units });
 }))
 
 //GET make new lesson page
@@ -149,7 +119,7 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     console.log("Adding new lesson(s)!");
     const newLessons = req.body.lessons;
     console.log("New Lessons: " + newLessons);
-    const lessons = await Lesson.find({day: newLessons[0].day});
+    const lessons = await Unit.find({day: newLessons[0].day});
 
     for (let newLesson of newLessons) {
         for (let lesson of lessons) {
@@ -162,7 +132,9 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 
     for (let newLessonBody of newLessons) {
         newLessonBody.userId = req.user.id;
-        const newLesson = new Lesson(newLessonBody);
+        newLessonBody.type = "Lesson";
+        newLessonBody.isAssigned = true;
+        const newLesson = new Unit(newLessonBody);
         await newLesson.save();
     }
     res.redirect(`/timetable`);
@@ -170,28 +142,28 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 
 //GET lesson show page
 app.get('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const lesson = await Lesson.findById(req.params.id);
-    const sameLessons = await Lesson.find({title: lesson.title});
+    const lesson = await Unit.findById(req.params.id);
+    const sameLessons = await Unit.find({title: lesson.title});
     res.render('timetable/show', { sameLessons });
 }))
 
 //GET edit lesson page
 app.get('/timetable/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const lesson = await Lesson.findById(req.params.id);
+    const lesson = await Unit.findById(req.params.id);
     res.render('timetable/edit', { lesson });
 }))
 
 //PUT edit lesson
-app.put('/timetable/:id', validateIsLoggedIn, validateLesson, catchAsync(async (req, res) => {
+app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
-    const lesson = await Lesson.findByIdAndUpdate(id, { ...req.body.lesson });
+    const lesson = await Unit.findByIdAndUpdate(id, { ...req.body.lesson });
     res.redirect(`/timetable/${lesson._id}`);
 }))
 
 //DELETE lesson
 app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
-    await Lesson.findByIdAndDelete(id);
+    await Unit.findByIdAndDelete(id);
     res.redirect('/timetable');
 }))
 
@@ -199,7 +171,7 @@ app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
 //WEEKLY TASKS:
 //GET weekly task page:
 app.get('/weekly-tasks', catchAsync(async (req, res) => {
-    const weeklyTasks = await WeeklyTask.find({userId: req.user.id});
+    const weeklyTasks = await Unit.find({userId: req.user.id, type: "WeeklyTask"});
     res.render('weekly-tasks', { weeklyTasks });
 }))
 
@@ -209,44 +181,132 @@ app.get('/weekly-tasks/new', validateIsLoggedIn, (req, res) => {
 })
 
 //POST make new weekly task
-app.post('/weekly-tasks', validateIsLoggedIn, validateWeeklyTask, catchAsync(async (req, res) => {
-    const newWeeklyTaskBody = req.body.weeklyTask;
+app.post('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
+    var newWeeklyTaskBody = req.body.weeklyTask;
     newWeeklyTaskBody.userId = req.user.id;
-    const newWeeklyTask = new WeeklyTask(newWeeklyTaskBody);
+    newWeeklyTaskBody.type = "WeeklyTask";
+    newWeeklyTaskBody.colour = "#696969";
+    newWeeklyTaskBody.isAssigned = false;
+    const newWeeklyTask = new Unit(newWeeklyTaskBody);
     await newWeeklyTask.save();
     res.redirect('/timetable');
 }))
 
 //GET weekly task show page
 app.get('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const weeklyTask = await WeeklyTask.findById(req.params.id);
+    const weeklyTask = await Unit.findById(req.params.id);
     res.render('weekly-tasks/show', { weeklyTask });
 }))
 
 //GET edit weekly task page
 app.get('/weekly-tasks/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const weeklyTask = await WeeklyTask.findById(req.params.id);
+    const weeklyTask = await Unit.findById(req.params.id);
     res.render('weekly-tasks/edit', { weeklyTask });
 }))
 
 //PUT edit weekly task
-app.put('/weekly-tasks/:id', validateIsLoggedIn, validateWeeklyTask, catchAsync(async (req, res) => {
+app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
-    const weeklyTask = await WeeklyTask.findByIdAndUpdate(id, { ...req.body.weeklyTask });
+    const weeklyTask = await Unit.findByIdAndUpdate(id, { ...req.body.weeklyTask });
     res.redirect(`/weekly-tasks/${weeklyTask._id}`);
 }))
 
 //DELETE weekly task
 app.delete('/weekly-tasks/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
-    await WeeklyTask.findByIdAndDelete(id);
+    await Unit.findByIdAndDelete(id);
     res.redirect('/timetable');
 }))
 
 
 //HILL CLIMBING:
+//Hill climbing function:
+function hillclimb(lessons, weeklyTasks) {
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
+    //GREEDY:
+    let schedule = []
+    let weeklyTaskIndex = 0;
 
+    for (let c = 0; c < 5; c++) {
+        for (let r = 8; r < 18; r++) {
+            if (weeklyTaskIndex >= weeklyTasks.length) {
+                break;
+            }
+
+            // Remove top task if finished:
+            if (weeklyTasks[weeklyTaskIndex].hasOwnProperty("timeLeft") && weeklyTasks[weeklyTaskIndex].timeLeft == 0) {
+                console.log("Incrementing index");
+                weeklyTaskIndex++;
+            }
+
+            if (weeklyTaskIndex >= weeklyTasks.length) {
+                break;
+            }
+
+            //Allocate tasks:
+            const currentTask = weeklyTasks[weeklyTaskIndex];
+            if (lessons.find(l => l.day == days[c] && parseInt(l.timingStart.substring(0, 2)) <= r && parseInt(l.timingEnd.substring(0, 2)) > r)) {
+                continue;
+            } else {
+                if (!currentTask.timeLeft) {
+                    currentTask.timeLeft = currentTask.duration - 1;
+                } else {
+                    currentTask.timeLeft -= 1
+                }
+                const newTask = { ...currentTask };
+                newTask.day = days[c];
+                newTask.timingStart = (r.toString() + "00").padStart(4, "0");
+                newTask.timingEnd = ((r + 1).toString() + "00").padStart(4, "0");
+                newTask.colour = "#696969";
+                schedule.push(newTask);
+            }
+        }
+    }
+    schedule = schedule.concat(lessons);
+    console.log(schedule);
+    return schedule.concat(lessons);
+}
+
+/* TEST CODE FOR HILLCLIMBING:
+let lessons = [
+    {
+      userId: '645baf35b36bd9ffbc67696f',
+      title: 'CS2109S - Introduction to ML and AI',
+      day: 'Monday',
+      timingStart: '0900',
+      timingEnd: '1000',
+      colour: '#C62828',
+    },
+    {
+      userId: '645baf35b36bd9ffbc67696f',
+      title: 'CS2109S - Introduction to ML and AI',
+      day: 'Monday',
+      timingStart: '1100',
+      timingEnd: '1200',
+      colour: '#C62828',
+    }
+  ];
+
+let tasks = [
+    {
+      userId: '645baf35b36bd9ffbc67696f',
+      title: 'ACC1701X Tutorial',
+      releasedOn: 'Tuesday',
+      deadline: 'Wednesday',
+      duration: 2,
+    }
+  ]
+console.log(hillclimb(lessons, tasks))
+*/
+
+//GET calculate timetable:
+app.get('/calculate', async (req, res) => {
+    const lessons = await Unit.find({userId: req.user.id, type: "Lesson"});
+    const weeklyTasks = await Unit.find({userId: req.user.id, type: "WeeklyTask"});
+    const units = hillclimb(lessons, weeklyTasks);
+    res.render('timetable/index', { units });
+})
 
 //LOGIN LOGOUT:
 
