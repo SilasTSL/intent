@@ -13,6 +13,11 @@
                 <h6><span style="opacity: 0.7; font-size: 0.85rem;">Released on:</span> <%= weeklyTask.releasedOn %></h6>
                 <h6><span style="opacity: 0.7; font-size: 0.85rem;">Deadline:</span> <%= weeklyTask.deadline %></h6>
                 <h6><span style="opacity: 0.7; font-size: 0.85rem;">Duration:</span> <%= weeklyTask.duration %> Hrs</h6>
+                <% if (weeklyTask.isAssigned) { %>
+                    <h6><span style="opacity: 0.7; font-size: 0.85rem; colour: white">Assigned</h6>
+                <% } else { %>
+                    <h6><span style="opacity: 0.7; font-size: 0.85rem; color: red">Unassigned</h6>
+                <% } %>
             </div>
         <% } %>
         </div>

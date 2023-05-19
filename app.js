@@ -80,7 +80,7 @@ app.get('/', (req, res) => {
 
 //GET Index page
 app.get('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const units = await Unit.find({_id: req.user.id, isAssigned: true});
+    const units = await Unit.find({userId: req.user.id, isAssigned: true});
     res.render('timetable/index', { units });
 }))
 
@@ -117,27 +117,24 @@ function doLessonsOverlap(lesson1StartString, lesson1EndString, lesson2StartStri
 //POST make new lessons
 app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     console.log("Adding new lesson(s)!");
-    const newLessons = req.body.lessons;
-    console.log("New Lessons: " + newLessons);
-    const lessons = await Unit.find({day: newLessons[0].day});
+    const newLessonBody = req.body;
+    // Check for overlap with existing lessons:
+    const lessons = await Unit.find({day: newLessonBody.timings.day});
 
-    for (let newLesson of newLessons) {
-        for (let lesson of lessons) {
-            if (doLessonsOverlap(lesson.timingStart, lesson.timingEnd, newLesson.timingStart, newLesson.timingEnd)) {
-                console.log("Timings overlap!");
-                throw new ExpressError("Timings overlap!", 400);
-            }
+    for (let lesson of lessons) {
+        if (doLessonsOverlap(lesson.timingStart, lesson.timingEnd, newLessonBody.timingStart, newLessonBody.timingEnd)) {
+            console.log("Timings overlap!");
+            throw new ExpressError("Timings overlap!", 400);
         }
     }
 
-    for (let newLessonBody of newLessons) {
-        newLessonBody.userId = req.user.id;
-        newLessonBody.type = "Lesson";
-        newLessonBody.isAssigned = true;
-        const newLesson = new Unit(newLessonBody);
-        await newLesson.save();
-    }
-    res.redirect(`/timetable`);
+    newLessonBody.userId = req.user.id;
+    newLessonBody.type = "Lesson";
+    newLessonBody.isAssigned = true;
+
+    const newLesson = new Unit(newLessonBody);
+    await newLesson.save();
+    res.redirect(`/timetable/new`);
 }))
 
 //GET lesson show page
@@ -189,7 +186,7 @@ app.post('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
     newWeeklyTaskBody.isAssigned = false;
     const newWeeklyTask = new Unit(newWeeklyTaskBody);
     await newWeeklyTask.save();
-    res.redirect('/timetable');
+    res.redirect('/weekly-tasks');
 }))
 
 //GET weekly task show page
@@ -221,13 +218,14 @@ app.delete('/weekly-tasks/:id', catchAsync(async (req, res) => {
 
 //HILL CLIMBING:
 //Hill climbing function:
-function hillclimb(lessons, weeklyTasks) {
+async function hillclimb(lessons, weeklyTasks) {
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
     //GREEDY:
     let schedule = []
     let weeklyTaskIndex = 0;
 
+    let current_timings = [];
     for (let c = 0; c < 5; c++) {
         for (let r = 8; r < 18; r++) {
             if (weeklyTaskIndex >= weeklyTasks.length) {
@@ -237,6 +235,22 @@ function hillclimb(lessons, weeklyTasks) {
             // Remove top task if finished:
             if (weeklyTasks[weeklyTaskIndex].hasOwnProperty("timeLeft") && weeklyTasks[weeklyTaskIndex].timeLeft == 0) {
                 console.log("Incrementing index");
+                
+                // Combine timings:
+                const mergedTimings = [];
+                let currentTiming = current_timings[0];
+                for (let i = 1; i < current_timings.length; i++) {
+                    const nextTiming = current_timings[i];
+                    if (currentTiming.day == nextTiming.day && currentTiming.timingEnd == nextTiming.timingStart) {
+                        currentTiming.timingEnd = nextTiming.timingEnd;
+                    } else {
+                        mergedTimings.push(currentTiming);
+                        currentTiming = nextTiming;
+                    }
+                }
+                mergedTimings.push(currentTiming)
+                await Unit.findByIdAndUpdate(weeklyTasks[weeklyTaskIndex]._id, { timings: mergedTimings, isAssigned: true });
+                current_timings = [];
                 weeklyTaskIndex++;
             }
 
@@ -245,27 +259,23 @@ function hillclimb(lessons, weeklyTasks) {
             }
 
             //Allocate tasks:
-            const currentTask = weeklyTasks[weeklyTaskIndex];
+            var currentTask = weeklyTasks[weeklyTaskIndex];
             if (lessons.find(l => l.day == days[c] && parseInt(l.timingStart.substring(0, 2)) <= r && parseInt(l.timingEnd.substring(0, 2)) > r)) {
                 continue;
             } else {
-                if (!currentTask.timeLeft) {
+                if (!currentTask.hasOwnProperty("timeLeft")) {
                     currentTask.timeLeft = currentTask.duration - 1;
                 } else {
                     currentTask.timeLeft -= 1
                 }
-                const newTask = { ...currentTask };
-                newTask.day = days[c];
-                newTask.timingStart = (r.toString() + "00").padStart(4, "0");
-                newTask.timingEnd = ((r + 1).toString() + "00").padStart(4, "0");
-                newTask.colour = "#696969";
-                schedule.push(newTask);
+                current_timings.push({
+                    day: days[c],
+                    timingStart: (r.toString() + "00").padStart(4, "0"),
+                    timingEnd: ((r + 1).toString() + "00").padStart(4, "0")
+                })        
             }
         }
     }
-    schedule = schedule.concat(lessons);
-    console.log(schedule);
-    return schedule.concat(lessons);
 }
 
 /* TEST CODE FOR HILLCLIMBING:
@@ -305,7 +315,7 @@ app.get('/calculate', async (req, res) => {
     const lessons = await Unit.find({userId: req.user.id, type: "Lesson"});
     const weeklyTasks = await Unit.find({userId: req.user.id, type: "WeeklyTask"});
     const units = hillclimb(lessons, weeklyTasks);
-    res.render('timetable/index', { units });
+    res.redirect('/timetable');
 })
 
 //LOGIN LOGOUT:
@@ -328,7 +338,7 @@ app.post('/register', catchAsync(async (req, res) => {
         })
     } catch(e) {
         console.log(e);
-        res.redirect('register');
+        res.redirect('/register');
     }
 }))
 

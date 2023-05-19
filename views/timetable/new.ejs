@@ -7,18 +7,6 @@
             <input class="form-control" type="text" id="title" name="lesson[title]" required>
             <div class="valid-feedback">Looks good!</div>
         </div>
-        <div class="mb-3">
-            <label class="form-label" for="day">Day</label>
-            <select class="form-select" id="day" name="lesson[day]" required>
-                <option value="" selected disabled>Select a day</option>
-                <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-            </select>
-            <div class="valid-feedback">Looks good!</div>
-        </div>
         <div class="mb-4">
             <label class="form-label" for="colour">Colour</label>
             <select class="form-select" id="colour" name="lesson[colour]" required>
@@ -33,6 +21,18 @@
             <div class="valid-feedback">Looks good!</div>
         </div>
         <div id="timingContainer" class="mb-3" style="display: flex; flex-direction: column; align-items: center; border: 0.5px solid black; border-radius: 10px; padding: 2rem; width: 100%;">
+            <div class="mb-3">
+                <label class="form-label" for="day">Day</label>
+                <select class="form-select" id="day" name="lesson[day]" required>
+                    <option value="" selected disabled>Select a day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
             <div id="newTimingRow" style="display: flex; flex-direction: row; width: 100%;">
                 <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing Start</label>
                 <select class="form-select" id="timingStart" name="lesson[timingStart]" required>
@@ -74,7 +74,7 @@
     </div>
 </div>
 <script>
-    var addedLessons = [];
+    var addedTimings = [];
     // Get the timingContainer element
     const timingContainer = document.getElementById('timingContainer');
     // Get the timingStart and timingEnd input elements
@@ -93,13 +93,21 @@
             return;
         }
 
+        // Check that there's a day inputted
+        let dayInput = document.getElementById('day').value;
+        if (!dayInput) {
+            alert("Input a day!");
+            return;
+        }
+
+
         // Check for time overlap with existing lessons
-        const overlap = addedLessons.some(lesson => {
-            const existingStart = lesson.timingStart;
-            const existingEnd = lesson.timingEnd;
-            return ((timingStart >= existingStart && timingStart < existingEnd) ||
+        const overlap = addedTimings.some(timing => {
+            const existingStart = timing.timingStart;
+            const existingEnd = timing.timingEnd;
+            return (((timingStart >= existingStart && timingStart < existingEnd) ||
                     (timingEnd > existingStart && timingEnd <= existingEnd) ||
-                    (timingStart <= existingStart && timingEnd >= existingEnd));
+                    (timingStart <= existingStart && timingEnd >= existingEnd)) && timing.day == dayInput);
         });
 
         if (overlap) {
@@ -110,65 +118,85 @@
         // Create a new div element for the timing and append it to the timingContainer
         const newTimingDiv = document.createElement('div');
         newTimingDiv.style = "display: flex; flex-direction: row; justify-content: space-between; width: 95%; align-items: center; margin-top: 1.5rem;";
-        newTimingDiv.innerHTML = `<div>${timingStartInput.value} - ${timingEndInput.value}</div><button class="btn btn-danger">Delete</button></div>`;
+        newTimingDiv.innerHTML = `<div>${timingStartInput.value} - ${timingEndInput.value} on ${dayInput}</div><button class="btn btn-danger">Delete</button></div>`;
         timingContainer.appendChild(newTimingDiv);
 
-        // Create a new Lesson object and push it to the addedLessons array
-        const newLesson = {
-            title: document.getElementById('title').value,
+        // Create new timing for current lesson:
+        const newTiming = {
             day: document.getElementById('day').value,
-            colour: document.getElementById('colour').value,
             timingStart: timingStartInput.value,
             timingEnd: timingEndInput.value
-        };
-        addedLessons.push(newLesson);
-        console.log(addedLessons);
+        }
+        addedTimings.push(newTiming);
 
-          // Add onclick event listener to the delete button
+        // Add onclick event listener to the delete button
         const deleteButton = newTimingDiv.querySelector(".btn-danger");
         deleteButton.onclick = function () {
             // Remove the newTimingDiv element from the DOM
             newTimingDiv.remove();
 
-            // Remove the corresponding newLesson object from the addedLessons array
-            const index = addedLessons.findIndex(
-            (lesson) =>
-                lesson.timingStart === newLesson.timingStart &&
-                lesson.timingEnd === newLesson.timingEnd
+            // Remove the corresponding newTiming object from the addedTimings array
+            const index = addedTimings.findIndex(
+            (timing) =>
+                timing.timingStart === newTiming.timingStart &&
+                timing.timingEnd === newTiming.timingEnd &&
+                timing.day === newTiming.day
             );
-            addedLessons.splice(index, 1);
-            console.log("After deletion: " + addedLessons);
+            addedTimings.splice(index, 1);
         };
     }
 
     // Function to add lessons
     function addLessons() {
-        if (addedLessons.length === 0) {
+
+        if (addedTimings.length === 0) {
             alert('Please add at least one timing');
             return;
         }
 
-        // Convert the addedLessons array to URL-encoded form data
-        const formData = new URLSearchParams();
-        addedLessons.forEach((lesson, index) => {
-            Object.entries(lesson).forEach(([key, value]) => {
-            formData.append(`lessons[${index}][${key}]`, value);
-            });
-        });
+        // Create a new Lesson object with current timings
+        const newLesson = {
+            title: document.getElementById('title').value,
+            type: document.getElementById('day').value,
+            colour: document.getElementById('colour').value,
+            timings: addedTimings
+        };
 
-        // Make a POST request to /timetable with the addedLessons array as the body of the request
+        // Function to serialize nested objects and arrays
+        function serializeData(obj, prefix = '') {
+            const formData = [];
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                const fullKey = prefix ? `${prefix}[${key}]` : key;
+                const value = obj[key];
+                if (typeof value === 'object' && !Array.isArray(value)) {
+                    formData.push(...serializeData(value, fullKey));
+                } else if (Array.isArray(value)) {
+                    value.forEach((item, index) => {
+                    formData.push(...serializeData(item, `${fullKey}[${index}]`));
+                    });
+                } else {
+                    formData.push(`${encodeURIComponent(fullKey)}=${encodeURIComponent(value)}`);
+                }
+                }
+            }
+            return formData;
+        }
+        const formData = serializeData(newLesson).join("&");
+
         fetch('/timetable', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: formData.toString()
+            body: formData
         })
         .then(response => {
             if (response.ok) {
                 // Redirect to the timetable page if the request is successful
                 window.location.href = "/timetable";
             } else {
+                console.log(response);
                 throw new Error('Failed to add lessons');
             }
         })

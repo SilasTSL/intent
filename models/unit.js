@@ -23,12 +23,18 @@ const UnitSchema = new Schema({
         type: String,
         required: true
     },
-    day: String,
-    timingStart: String,
-    timingEnd: String,
+    timings: {
+        type: [{
+            day: String,
+            timingStart: String,
+            timingEnd: String
+        }],
+        default: []
+    },
     releasedOn: String, // Specific to weekly task only
     deadline: String, // Specific to weekly task only
-    duration: Number // Specific to weekly task only
+    duration: Number, // Specific to weekly task only
+
 });
 
 module.exports = mongoose.model('Unit', UnitSchema);
