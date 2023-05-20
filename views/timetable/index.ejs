@@ -8,7 +8,6 @@
         <table style="width: 90%; height: 100%; border-collapse: collapse;">
             <thead>
             <tr>
-                <th></th>
                 <% const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; %>
                 <% var today = new Date(); %>
                 <% var dayOfWeekString = days[today.getDay()]; %>
@@ -31,7 +30,7 @@
                     <% } else if (unitFound) { %>
                         <% const unitTiming = unitFound.timings.find(timing => parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                         <% if (parseInt(unitTiming.timingStart.substring(0, 2)) == r) { // First cell in unit: %>
-                            <td class="<%= unitFound._id %> lesson-cell" style="color: white;background-color: <%= unitFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= unitFound._id %>'"><%= unitFound.title %></td>
+                            <td class="<%= unitFound._id %> lesson-cell" style="color: white; background-color: <%= unitFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= unitFound._id %>'"><%= unitFound.title %></td>
                         <% } else { // Not first cell in unit: %>
                             <td class="<%= unitFound._id %> lesson-cell" style="background-color: <%= unitFound.colour %>; cursor: pointer; border: solid black 2px; position: relative; z-index: 1; border-top: 0px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= unitFound._id %>'"></td>
                         <% } %>
@@ -49,17 +48,17 @@
     const cells = document.querySelectorAll(".lesson-cell");
     cells.forEach(cell => {
         cell.addEventListener('mouseover', () => {
-            const sameLessonCells = document.getElementsByClassName(cell.classList[0])
-            for (const sameLessonCell of sameLessonCells) {
-                sameLessonCell.style.opacity = 0.8;
-                sameLessonCell.style.borderColor = "#505050";
+            const sameUnitCells = document.getElementsByClassName(cell.classList[0]);
+            for (const sameUnitCell of sameUnitCells) {
+                sameUnitCell.style.opacity = 0.8;
+                sameUnitCell.style.borderColor = "#505050";
             }
         })
         cell.addEventListener('mouseout', function() {
-            const sameLessonCells = document.getElementsByClassName(cell.classList[0])
-            for (const sameLessonCell of sameLessonCells) {
-                sameLessonCell.style.opacity = 1;
-                sameLessonCell.style.borderColor = "black";
+            const sameUnitCells = document.getElementsByClassName(cell.classList[0]);
+            for (const sameUnitCell of sameUnitCells) {
+                sameUnitCell.style.opacity = 1;
+                sameUnitCell.style.borderColor = "black";
             }
         });
     });

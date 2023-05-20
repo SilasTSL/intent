@@ -137,11 +137,10 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     res.redirect(`/timetable/new`);
 }))
 
-//GET lesson show page
+//GET show page
 app.get('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const lesson = await Unit.findById(req.params.id);
-    const sameLessons = await Unit.find({title: lesson.title});
-    res.render('timetable/show', { sameLessons });
+    const unit = await Unit.findById(req.params.id);
+    res.render('timetable/show', { unit });
 }))
 
 //GET edit lesson page
@@ -187,12 +186,6 @@ app.post('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
     const newWeeklyTask = new Unit(newWeeklyTaskBody);
     await newWeeklyTask.save();
     res.redirect('/weekly-tasks');
-}))
-
-//GET weekly task show page
-app.get('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const weeklyTask = await Unit.findById(req.params.id);
-    res.render('weekly-tasks/show', { weeklyTask });
 }))
 
 //GET edit weekly task page
