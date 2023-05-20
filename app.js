@@ -218,24 +218,21 @@ app.delete('/weekly-tasks/:id', catchAsync(async (req, res) => {
 
 //HILL CLIMBING:
 //Hill climbing function:
-async function hillclimb(lessons, weeklyTasks) {
+async function hillclimb(assignedUnits, unassignedUnits) {
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
     //GREEDY:
-    let schedule = []
-    let weeklyTaskIndex = 0;
+    let unassignedUnitsIndex = 0;
 
     let current_timings = [];
     for (let c = 0; c < 5; c++) {
         for (let r = 8; r < 18; r++) {
-            if (weeklyTaskIndex >= weeklyTasks.length) {
+            if (unassignedUnitsIndex >= unassignedUnits.length) {
                 break;
             }
 
             // Remove top task if finished:
-            if (weeklyTasks[weeklyTaskIndex].hasOwnProperty("timeLeft") && weeklyTasks[weeklyTaskIndex].timeLeft == 0) {
-                console.log("Incrementing index");
-                
+            if (unassignedUnits[unassignedUnitsIndex].hasOwnProperty("timeLeft") && unassignedUnits[unassignedUnitsIndex].timeLeft == 0) {
                 // Combine timings:
                 const mergedTimings = [];
                 let currentTiming = current_timings[0];
@@ -249,18 +246,19 @@ async function hillclimb(lessons, weeklyTasks) {
                     }
                 }
                 mergedTimings.push(currentTiming)
-                await Unit.findByIdAndUpdate(weeklyTasks[weeklyTaskIndex]._id, { timings: mergedTimings, isAssigned: true });
+                await Unit.findByIdAndUpdate(unassignedUnits[unassignedUnitsIndex]._id, { timings: mergedTimings, isAssigned: true });
                 current_timings = [];
-                weeklyTaskIndex++;
+                unassignedUnitsIndex++;
             }
 
-            if (weeklyTaskIndex >= weeklyTasks.length) {
+            // Finished assigning all unassigned units:
+            if (unassignedUnitsIndex >= unassignedUnits.length) {
                 break;
             }
 
             //Allocate tasks:
-            var currentTask = weeklyTasks[weeklyTaskIndex];
-            if (lessons.find(l => l.day == days[c] && parseInt(l.timingStart.substring(0, 2)) <= r && parseInt(l.timingEnd.substring(0, 2)) > r)) {
+            var currentTask = unassignedUnits[unassignedUnitsIndex];
+            if (assignedUnits.some(assignedUnit => assignedUnit.timings.some( timing => timing.day == days[c] && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r))) {
                 continue;
             } else {
                 if (!currentTask.hasOwnProperty("timeLeft")) {
@@ -312,9 +310,9 @@ console.log(hillclimb(lessons, tasks))
 
 //GET calculate timetable:
 app.get('/calculate', async (req, res) => {
-    const lessons = await Unit.find({userId: req.user.id, type: "Lesson"});
-    const weeklyTasks = await Unit.find({userId: req.user.id, type: "WeeklyTask"});
-    const units = hillclimb(lessons, weeklyTasks);
+    const assignedUnits = await Unit.find({userId: req.user.id, isAssigned: true});
+    const unassignedUnits = await Unit.find({userId: req.user.id, isAssigned: false});
+    hillclimb(assignedUnits, unassignedUnits);
     res.redirect('/timetable');
 })
 
