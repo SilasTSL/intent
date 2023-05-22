@@ -1,35 +1,158 @@
-<% layout('layouts/boilerplate')%>
+<% layout('layouts/boilerplate') %>
 <div class="rows">
-    <h1 class="text-center">Edit Lesson</h1>
-    <div class="col-8 offset-2">
-        <form action="/timetable/<%= lesson._id %>?_method=PUT" method="POST" novalidate class="validated-form">
+    <h1 class="text-center mt-5">Edit Lesson</h1>
+    <div class="col-6 offset-3">
+        <form id="editLessonForm" method="POST" action="/timetable/<%= lesson._id %>?_method=PUT">
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
                 <input class="form-control" type="text" id="title" name="lesson[title]" value="<%= lesson.title %>" required>
                 <div class="valid-feedback">Looks good!</div>
             </div>
-            <div class="mb-3">
-                <label class="form-label" for="day">Day</label>
-                <input class="form-control" type="text" id="day" name="lesson[day]" value="<%= lesson.day %>" required>
-                <div class="valid-feedback">Looks good!</div>
-            </div>
-            <div class="mb-3" style="display: flex; flex-direction: row; justify-content: space-between;">
-                <label class="form-label px-4" for="timing">Timing Start</label>
-                <input class="form-control" type="text" id="timingStart" name="lesson[timingStart]" value="<%= lesson.timingStart %>" required>
-                <div class="valid-feedback">Looks good!</div>
-                <label class="form-label px-4" for="timing">Timing End</label>
-                <input class="form-control" type="text" id="timingEnd" name="lesson[timingEnd]" value="<%= lesson.timingEnd %>" required>
-                <div class="valid-feedback">Looks good!</div>
-            </div>
             <div class="mb-4">
                 <label class="form-label" for="colour">Colour</label>
-                <input class="form-control" type="text" id="colour" name="lesson[colour]" value="<%= lesson.colour %>" required>
+                <select class="form-select" id="colour" name="lesson[colour]" required>
+                    <option value="" selected disabled>Select a colour</option>
+                    <option value="#C62828" <% if (lesson.colour === "#C62828") { %> selected <% } %>>Red</option>
+                    <option value="#1565C0" <% if (lesson.colour === "#1565C0") { %> selected <% } %>>Blue</option>
+                    <option value="#2E7D32" <% if (lesson.colour === "#2E7D32") { %> selected <% } %>>Green</option>
+                    <option value="#FFA000" <% if (lesson.colour === "#FFA000") { %> selected <% } %>>Yellow</option>
+                    <option value="#6A1B9A" <% if (lesson.colour === "#6A1B9A") { %> selected <% } %>>Purple</option>
+                    <option value="#F08731" <% if (lesson.colour === "#F08731") { %> selected <% } %>>Orange</option>
+                </select>
                 <div class="valid-feedback">Looks good!</div>
             </div>
-            <div class="d-flex flex-row justify-content-between">
-                <button class="btn btn-success">Edit Lesson</button>
-                <a class="btn btn-danger" href="/timetable/<%= lesson._id %>">Back</a>
+            <div id="timingContainer" class="mb-3" style="display: flex; flex-direction: column; align-items: start;">
+                <% for (let i = 0; i < lesson.timings.length; i++) { %>
+                    <div class="timing-row mb-3">
+                        <div class="mb-2">
+                            <label class="form-label" for="day<%= i %>">Day</label>
+                            <select class="form-select" id="day<%= i %>" name="lesson[timings][<%= i %>][day]" required>
+                                <option value="" selected disabled>Select a day</option>
+                                <option value="Monday" <% if (lesson.timings[i].day === "Monday") { %> selected <% } %>>Monday</option>
+                                <option value="Tuesday" <% if (lesson.timings[i].day === "Tuesday") { %> selected <% } %>>Tuesday</option>
+                                <option value="Wednesday" <% if (lesson.timings[i].day === "Wednesday") { %> selected <% } %>>Wednesday</option>
+                                <option value="Thursday" <% if (lesson.timings[i].day === "Thursday") { %> selected <% } %>>Thursday</option>
+                                <option value="Friday" <% if (lesson.timings[i].day === "Friday") { %> selected <% } %>>Friday</option>
+                            </select>
+                            <div class="valid-feedback">Looks good!</div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label" for="timingStart<%= i %>">Timing Start</label>
+                            <input class="form-control" type="text" id="timingStart<%= i %>" name="lesson[timings][<%= i %>][timingStart]" value="<%= lesson.timings[i].timingStart %>" required>
+                            <div class="valid-feedback">Looks good!</div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label" for="timingEnd<%= i %>">Timing End</label>
+                            <input class="form-control" type="text" id="timingEnd<%= i %>" name="lesson[timings][<%= i %>][timingEnd]" value="<%= lesson.timings[i].timingEnd %>" required>
+                            <div class="valid-feedback">Looks good!</div>
+                        </div>
+                        <button type="button" class="btn btn-danger deleteTimingButton" data-index="<%= i %>">Delete Timing</button>
+                    </div>
+                <% } %>
+            </div>
+            <div class="mb-3">
+                <button type="button" class="btn btn-success addTimingButton">Add Timing</button>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <a href="/timetable" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button class="btn btn-danger" style="height: 100%;" id="deleteLessonButton">Delete Lesson</button>
             </div>
         </form>
+
     </div>
 </div>
+
+<script>
+    // Function to create a new timing row
+    function createTimingRow(index) {
+        const timingRow = document.createElement('div');
+        timingRow.classList.add('timing-row', 'mb-3');
+        timingRow.innerHTML = `
+            <div class="mb-2">
+                <label class="form-label" for="day${index}">Day</label>
+                <select class="form-select" id="day${index}" name="lesson[timings][${index}][day]" required>
+                    <option value="" selected disabled>Select a day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="mb-2">
+                <label class="form-label" for="timingStart${index}">Timing Start</label>
+                <input class="form-control" type="text" id="timingStart${index}" name="lesson[timings][${index}][timingStart]" required>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="mb-2">
+                <label class="form-label" for="timingEnd${index}">Timing End</label>
+                <input class="form-control" type="text" id="timingEnd${index}" name="lesson[timings][${index}][timingEnd]" required>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <button type="button" class="btn btn-danger deleteTimingButton" data-index="${index}">Delete Timing</button>
+        `;
+        return timingRow;
+    }
+
+    // Function to handle the click event of the Add Timing button
+    function addTiming() {
+        const timingContainer = document.getElementById('timingContainer');
+        const timingRows = timingContainer.getElementsByClassName('timing-row');
+        const index = timingRows.length;
+        const newTimingRow = createTimingRow(index);
+        timingContainer.appendChild(newTimingRow);
+    }
+
+    // Function to handle the click event of the Delete Timing button
+    function deleteTiming(event) {
+        const timingContainer = document.getElementById('timingContainer');
+        const timingRows = timingContainer.getElementsByClassName('timing-row');
+        const index = event.target.getAttribute('data-index');
+        if (index >= 0 && index < timingRows.length) {
+            timingContainer.removeChild(timingRows[index]);
+        }
+
+        // Check if the last timing row is deleted
+        if (timingRows.length === 0) {
+            const lessonId = '<%= lesson._id %>';
+            deleteLesson(lessonId);
+        }
+    }
+
+    const deleteLessonButton = document.getElementById('deleteLessonButton');
+    deleteLessonButton.addEventListener('click', deleteLesson('<%= lesson._id %>'));
+
+    // Function to delete the lesson from the database
+    function deleteLesson(lessonId) {
+        fetch(`/timetable/${encodeURIComponent(lessonId)}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Redirect to the timetable or perform any other necessary action
+                window.location.href = '/timetable';
+            } else {
+                console.log(response);
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            alert('Failed to delete the lesson');
+        });
+    }
+
+    // Add event listener for the Add Timing button
+    const addTimingButton = document.querySelector('.addTimingButton');
+    addTimingButton.addEventListener('click', addTiming);
+
+    // Add event listener for the Delete Timing buttons
+    const deleteTimingButtons = document.getElementsByClassName('deleteTimingButton');
+    Array.from(deleteTimingButtons).forEach((button) => {
+        button.addEventListener('click', deleteTiming);
+    });
+</script>

@@ -137,15 +137,9 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     res.redirect(`/timetable/new`);
 }))
 
-//GET show page
-app.get('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const unit = await Unit.findById(req.params.id);
-    res.render('timetable/show', { unit });
-}))
-
 //GET edit lesson page
 app.get('/timetable/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const lesson = await Unit.findById(req.params.id);
+    const lesson = await Unit.findById(req.params.id).lean().exec();
     res.render('timetable/edit', { lesson });
 }))
 
@@ -153,7 +147,7 @@ app.get('/timetable/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) =
 app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const lesson = await Unit.findByIdAndUpdate(id, { ...req.body.lesson });
-    res.redirect(`/timetable/${lesson._id}`);
+    res.redirect(`/timetable`);
 }))
 
 //DELETE lesson
@@ -198,14 +192,7 @@ app.get('/weekly-tasks/:id/edit', validateIsLoggedIn, catchAsync(async (req, res
 app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const weeklyTask = await Unit.findByIdAndUpdate(id, { ...req.body.weeklyTask });
-    res.redirect(`/weekly-tasks/${weeklyTask._id}`);
-}))
-
-//DELETE weekly task
-app.delete('/weekly-tasks/:id', catchAsync(async (req, res) => {
-    const { id } = req.params;
-    await Unit.findByIdAndDelete(id);
-    res.redirect('/timetable');
+    res.redirect(`/weekly-tasks`);
 }))
 
 
