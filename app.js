@@ -147,7 +147,7 @@ app.get('/timetable/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) =
 app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const lesson = await Unit.findByIdAndUpdate(id, { ...req.body.lesson });
-    res.redirect(`/timetable`);
+    res.redirect(`/timetable/${id}}`);
 }))
 
 //DELETE lesson
@@ -191,7 +191,7 @@ app.get('/weekly-tasks/:id/edit', validateIsLoggedIn, catchAsync(async (req, res
 //PUT edit weekly task
 app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
-    const weeklyTask = await Unit.findByIdAndUpdate(id, { ...req.body.weeklyTask });
+    const weeklyTask = await Unit.findByIdAndUpdate(id, { ...req.body.weeklyTask, timings: [], isAssigned: false });
     res.redirect(`/weekly-tasks`);
 }))
 

@@ -116,35 +116,20 @@
 
         // Check if the last timing row is deleted
         if (timingRows.length === 0) {
-            const lessonId = '<%= lesson._id %>';
-            deleteLesson(lessonId);
+            if (confirm("Are you sure you want to delete this weekly task?")) {
+                document.getElementById('editLessonForm').action = "/timetable/<%= lesson._id %>?_method=DELETE";
+                document.getElementById('editLessonForm').submit();
+            }
         }
     }
 
     const deleteLessonButton = document.getElementById('deleteLessonButton');
-    deleteLessonButton.addEventListener('click', deleteLesson('<%= lesson._id %>'));
-
-    // Function to delete the lesson from the database
-    function deleteLesson(lessonId) {
-        fetch(`/timetable/${encodeURIComponent(lessonId)}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                // Redirect to the timetable or perform any other necessary action
-                window.location.href = '/timetable';
-            } else {
-                console.log(response);
-            }
-        })
-        .catch(error => {
-            console.error(error);
-            alert('Failed to delete the lesson');
-        });
-    }
+    deleteLessonButton.addEventListener('click', () => {
+        if (confirm("Are you sure you want to delete this weekly task?")) {
+            document.getElementById('editLessonForm').action = "/timetable/<%= lesson._id %>?_method=DELETE";
+            document.getElementById('editLessonForm').submit();
+        }
+    });
 
     // Add event listener for the Add Timing button
     const addTimingButton = document.querySelector('.addTimingButton');

@@ -12,6 +12,9 @@
                 <% var today = new Date(); %>
                 <% var dayOfWeekString = days[today.getDay()]; %>
                 <% for (let i = 1; i < 6; i++) { %>
+                    <% if (i == 1) { %>
+                        <th></th>
+                    <% } %>
                     <% if (days[i] == dayOfWeekString) { %> 
                         <th style="text-align: center; font-weight: 900;"><%= days[i] %></th>
                     <% } else { %> 
@@ -26,13 +29,24 @@
                 <% for (let c = 1; c < 7; c++) { %>
                     <% let unitFound = units.find(unit => unit.timings.some(timing => timing.day == days[c - 1] && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
                     <% if (c == 1) { %>
-                        <td style="vertical-align: top; padding-right: 2rem;"><%= r + ":00 "%></td>
+                        <td style="vertical-align: top;"><%= r + ":00 "%></td>
                     <% } else if (unitFound) { %>
                         <% const unitTiming = unitFound.timings.find(timing => parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                         <% if (parseInt(unitTiming.timingStart.substring(0, 2)) == r) { // First cell in unit: %>
-                            <td class="<%= unitFound._id %> lesson-cell" style="color: white; background-color: <%= unitFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= unitFound._id %>/edit'"><%= unitFound.title %></td>
+                            <td class="<%= unitFound._id %> lesson-cell" style="color: white; background-color: <%= unitFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;"                                <% if (unitFound.type === "Lesson") { console.log("LESSON!"); console.log(unitFound);%>
+                                onclick="window.location.href = '/timetable/<%= unitFound._id %>/edit'"
+                            <% } else if (unitFound.type === "WeeklyTask") { console.log("WT!"); console.log(unitFound);%>
+                                onclick="window.location.href = '/weekly-tasks/<%= unitFound._id %>/edit'"
+                            <% } %>
+                        ><%= unitFound.title %></td>
                         <% } else { // Not first cell in unit: %>
-                            <td class="<%= unitFound._id %> lesson-cell" style="background-color: <%= unitFound.colour %>; cursor: pointer; border: solid black 2px; position: relative; z-index: 1; border-top: 0px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" onclick="window.location.href = '/timetable/<%= unitFound._id %>/edit'"></td>
+                            <td class="<%= unitFound._id %> lesson-cell" style="background-color: <%= unitFound.colour %>; cursor: pointer; border: solid black 2px; position: relative; z-index: 1; border-top: 0px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" 
+                                <% if (unitFound.type === "Lesson") { console.log("LESSON!"); console.log(unitFound);%>
+                                    onclick="window.location.href = '/timetable/<%= unitFound._id %>/edit'"
+                                <% } else if (unitFound.type === "WeeklyTask") { console.log("WT!"); console.log(unitFound);%>
+                                    onclick="window.location.href = '/weekly-tasks/<%= unitFound._id %>/edit'"
+                                <% } %>
+                            ></td>                        
                         <% } %>
                     <% } else { %>
                         <td href="/edit" style="height: 50px; border: solid #C0C0C0 1px; position: relative;"></td>
