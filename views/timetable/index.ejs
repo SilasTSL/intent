@@ -33,7 +33,7 @@
                     <% } else if (unitFound) { %>
                         <% const unitTiming = unitFound.timings.find(timing => parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                         <% if (parseInt(unitTiming.timingStart.substring(0, 2)) == r) { // First cell in unit: %>
-                            <td class="<%= unitFound._id %> lesson-cell" style="color: white; background-color: <%= unitFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;"                                <% if (unitFound.type === "Lesson") { console.log("LESSON!"); console.log(unitFound);%>
+                            <td class="<%= unitFound._id %> lesson-cell" style="color: white; background-color: <%= unitFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" <% if (unitFound.type === "Lesson") { %>
                                 onclick="window.location.href = '/timetable/<%= unitFound._id %>/edit'"
                             <% } else if (unitFound.type === "WeeklyTask") { console.log("WT!"); console.log(unitFound);%>
                                 onclick="window.location.href = '/weekly-tasks/<%= unitFound._id %>/edit'"
@@ -41,9 +41,9 @@
                         ><%= unitFound.title %></td>
                         <% } else { // Not first cell in unit: %>
                             <td class="<%= unitFound._id %> lesson-cell" style="background-color: <%= unitFound.colour %>; cursor: pointer; border: solid black 2px; position: relative; z-index: 1; border-top: 0px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" 
-                                <% if (unitFound.type === "Lesson") { console.log("LESSON!"); console.log(unitFound);%>
+                                <% if (unitFound.type === "Lesson") { %>
                                     onclick="window.location.href = '/timetable/<%= unitFound._id %>/edit'"
-                                <% } else if (unitFound.type === "WeeklyTask") { console.log("WT!"); console.log(unitFound);%>
+                                <% } else if (unitFound.type === "WeeklyTask") { %>
                                     onclick="window.location.href = '/weekly-tasks/<%= unitFound._id %>/edit'"
                                 <% } %>
                             ></td>                        

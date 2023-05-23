@@ -147,7 +147,7 @@ app.get('/timetable/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) =
 app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const lesson = await Unit.findByIdAndUpdate(id, { ...req.body.lesson });
-    res.redirect(`/timetable/${id}}`);
+    res.redirect(`/timetable`);
 }))
 
 //DELETE lesson

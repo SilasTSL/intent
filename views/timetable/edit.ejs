@@ -103,6 +103,7 @@
         const index = timingRows.length;
         const newTimingRow = createTimingRow(index);
         timingContainer.appendChild(newTimingRow);
+        newTimingRow.getElementsByClassName("deleteTimingButton")[0].addEventListener('click', deleteTiming);
     }
 
     // Function to handle the click event of the Delete Timing button
@@ -110,12 +111,13 @@
         const timingContainer = document.getElementById('timingContainer');
         const timingRows = timingContainer.getElementsByClassName('timing-row');
         const index = event.target.getAttribute('data-index');
-        if (index >= 0 && index < timingRows.length) {
+        if (index <= timingRows.length && timingRows.length > 1) {
             timingContainer.removeChild(timingRows[index]);
+            return;
         }
 
         // Check if the last timing row is deleted
-        if (timingRows.length === 0) {
+        if (timingRows.length === 1) {
             if (confirm("Are you sure you want to delete this weekly task?")) {
                 document.getElementById('editLessonForm').action = "/timetable/<%= lesson._id %>?_method=DELETE";
                 document.getElementById('editLessonForm').submit();
