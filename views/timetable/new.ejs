@@ -100,9 +100,23 @@
             return;
         }
 
+        // Check for time overlap with existing timings from OTHER units
+        const existingUnitTimings = JSON.parse('<%- JSON.stringify(existingTimingsList) %>');
+        const hasOverlapWithOthers = existingUnitTimings.some(timing => {
+            const existingStart = timing.timingStart;
+            const existingEnd = timing.timingEnd;
+            return (((timingStart >= existingStart && timingStart < existingEnd) ||
+                    (timingEnd > existingStart && timingEnd <= existingEnd) ||
+                    (timingStart <= existingStart && timingEnd >= existingEnd)) && timing.day == dayInput);        
+        });
 
-        // Check for time overlap with existing lessons
-        const overlap = addedTimings.some(timing => {
+        if (hasOverlapWithOthers) {
+            alert('The selected time overlaps with an existing lesson!');
+            return;
+        }
+
+        // Check for time overlap with existing timings from CURRENT lesson
+        const hasOverlapWithCurrent = addedTimings.some(timing => {
             const existingStart = timing.timingStart;
             const existingEnd = timing.timingEnd;
             return (((timingStart >= existingStart && timingStart < existingEnd) ||
@@ -110,8 +124,8 @@
                     (timingStart <= existingStart && timingEnd >= existingEnd)) && timing.day == dayInput);
         });
 
-        if (overlap) {
-            alert('The selected time overlaps with an existing lesson');
+        if (hasOverlapWithCurrent) {
+            alert('The selected time overlaps with another timing!');
             return;
         }
 

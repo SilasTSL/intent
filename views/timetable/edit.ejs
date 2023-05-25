@@ -142,4 +142,103 @@
     Array.from(deleteTimingButtons).forEach((button) => {
         button.addEventListener('click', deleteTiming);
     });
+
+    // Function to check for timing conflicts with existing timings
+    function checkTimingConflicts() {
+        // Get the form element
+        const form = document.getElementById('editLessonForm');
+
+        // Get the timing rows
+        const timingRows = Array.from(document.getElementsByClassName('timing-row'));
+
+        // Get the values of the submitted timings
+        const submittedTimings = timingRows.map((row) => ({
+            day: row.querySelector('select[name^="lesson[timings]"][name$="[day]"]').value,
+            timingStart: row.querySelector('input[name^="lesson[timings]"][name$="[timingStart]"]').value,
+            timingEnd: row.querySelector('input[name^="lesson[timings]"][name$="[timingEnd]"]').value
+        }));
+
+        function doTimingsConflict(timingA, timingB) {
+            // Compare the properties of timingA and timingB to check for conflicts
+            // Implement your conflict checking logic here
+            
+            // Example conflict checking logic:
+            return (
+                timingA.day === timingB.day &&
+                timingA.timingStart < timingB.timingEnd &&
+                timingA.timingEnd > timingB.timingStart
+            );
+        }
+
+        internalConflict = false;
+        // Nested loops to compare each timing with all other timings
+        for (let i = 0; i < submittedTimings.length; i++) {
+            for (let j = i + 1; j < submittedTimings.length; j++) {
+                const timingA = submittedTimings[i];
+                const timingB = submittedTimings[j];
+                
+                // Check for conflicts between timingA and timingB
+                if (doTimingsConflict(timingA, timingB)) {
+                    internalConflict = true;
+                }
+            }
+        }
+
+        if (internalConflict) {
+            alert('The submitted timings conflict with other timings of the current lesson.');
+            return false;
+        }
+
+
+
+        // Get the existing timings from the server-side parameter
+        const existingUnitTimings = JSON.parse('<%- JSON.stringify(existingTimingsList) %>');
+        console.log("DSAD")
+        console.log(existingUnitTimings)
+        // Function to check for conflicts
+        function hasConflict(submittedTiming) {
+            return existingUnitTimings.some((existingTiming) => {
+                const existingStart = existingTiming.timingStart;
+                const existingEnd = existingTiming.timingEnd;
+                return (
+                    (submittedTiming.timingStart >= existingStart && submittedTiming.timingStart < existingEnd) ||
+                    (submittedTiming.timingEnd > existingStart && submittedTiming.timingEnd <= existingEnd) ||
+                    (submittedTiming.timingStart <= existingStart && submittedTiming.timingEnd >= existingEnd)
+                ) && submittedTiming.day === existingTiming.day;
+            });
+        }
+
+        // Filter out the existing timings from the submitted timings
+        const filteredSubmittedTimings = submittedTimings.filter((submittedTiming) => {
+            return !existingUnitTimings.some((existingTiming) => {
+                return (
+                    submittedTiming.day === existingTiming.day &&
+                    submittedTiming.timingStart === existingTiming.timingStart &&
+                    submittedTiming.timingEnd === existingTiming.timingEnd
+                );
+            });
+        });
+
+        // Check for conflicts only among the filtered submitted timings
+        const hasConflicts = filteredSubmittedTimings.some(hasConflict);
+
+        // If conflicts are found, display an alert and prevent form submission
+        if (hasConflicts) {
+            alert('The submitted timings conflict with existing timings.');
+            return false; // Prevent form submission
+        }
+
+        // If no conflicts are found, allow form submission
+        return true;
+    }
+
+    // Add event listener to the form submit event
+    const editLessonForm = document.getElementById('editLessonForm');
+    editLessonForm.addEventListener('submit', (event) => {
+        const isFormValid = checkTimingConflicts();
+
+        if (!isFormValid) {
+            event.preventDefault(); // Prevent form submission if there are conflicts
+        }
+    });
 </script>

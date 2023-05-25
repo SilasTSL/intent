@@ -85,8 +85,11 @@ app.get('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 }))
 
 //GET make new lesson page
-app.get('/timetable/new', validateIsLoggedIn, (req, res) => {
-    res.render('timetable/new');
+app.get('/timetable/new', validateIsLoggedIn, async (req, res) => {
+    const units = await Unit.find({userId: req.user.id});
+    const existingTimings = units.map(unit => unit.timings);
+    const existingTimingsList = [].concat(...existingTimings);
+    res.render('timetable/new', { existingTimingsList });
 })
 
 function doLessonsOverlap(lesson1StartString, lesson1EndString, lesson2StartString, lesson2EndString) {
@@ -118,7 +121,8 @@ function doLessonsOverlap(lesson1StartString, lesson1EndString, lesson2StartStri
 app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     console.log("Adding new lesson(s)!");
     const newLessonBody = req.body;
-    // Check for overlap with existing lessons:
+    
+    // Level 2 Check for overlap with existing lessons:
     const lessons = await Unit.find({day: newLessonBody.timings.day});
 
     for (let lesson of lessons) {
@@ -140,7 +144,10 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 //GET edit lesson page
 app.get('/timetable/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) => {
     const lesson = await Unit.findById(req.params.id).lean().exec();
-    res.render('timetable/edit', { lesson });
+    const units = await Unit.find({userId: req.user.id});
+    const existingTimings = units.filter(unit => unit._id != req.params.id).map(unit => unit.timings);
+    const existingTimingsList = [].concat(...existingTimings);
+    res.render('timetable/edit', { lesson, existingTimingsList });
 }))
 
 //PUT edit lesson
