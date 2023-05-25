@@ -1,27 +1,14 @@
-<nav class="navbar sticky-top navbar-expand-lg bg-light navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/timetable">Intent</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-5">
-                <li class="nav-item">
-                    <a class="nav-link" href="/weekly-tasks">Tasks</a>
-                </li>
-                <% if (!user) { %>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">Log in</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/register">Register</a>
-                    </li>
-                <% } else { %>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout">Log out</a>
-                    </li>
-                <% } %>
-            </ul>
-        </div>
+<nav id="navbar">
+    <div class="navbarGroupLeft">
+        <a class="navItem" href="/weekly-tasks">Tasks</a>
+    </div>
+    <a id="navbarHome" class="navItem" href="/timetable">INTENT</a>
+    <div class="navbarGroupRight">
+        <% if (!user) { %>
+            <a class="navItem" href="/login">Log in</a>
+            <a class="navItem" href="/register">Register</a>
+        <% } else { %>
+            <a class="navItem" href="/logout">Log out</a>
+        <% } %>
     </div>
 </nav>
