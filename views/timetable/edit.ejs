@@ -68,10 +68,9 @@
             <div class="d-flex justify-content-between mt-4">
                 <a href="/timetable" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">Save Changes</button>
-                <button class="btn btn-danger" style="height: 100%;" id="deleteLessonButton">Delete Lesson</button>
             </div>
         </form>
-
+        <button class="btn btn-danger" style="height: 100%;" id="deleteLessonButton">Delete Lesson</button>
     </div>
 </div>
 
@@ -149,14 +148,6 @@
         }
     }
 
-    const deleteLessonButton = document.getElementById('deleteLessonButton');
-    deleteLessonButton.addEventListener('click', () => {
-        if (confirm("Are you sure you want to delete this weekly task?")) {
-            document.getElementById('editLessonForm').action = "/timetable/<%= lesson._id %>?_method=DELETE";
-            document.getElementById('editLessonForm').submit();
-        }
-    });
-
     // Add event listener for the Add Timing button
     const addTimingButton = document.querySelector('.addTimingButton');
     addTimingButton.addEventListener('click', addTiming);
@@ -169,25 +160,33 @@
 
     // Function to check for timing conflicts with existing timings
     function checkTimingConflicts() {
-        // Get the form element
+        // Get the form element:
         const form = document.getElementById('editLessonForm');
         
         // Get the timing rows
         const timingRows = Array.from(document.getElementsByClassName('timing-row'));
 
-        // Get the values of the submitted timings
+        // Get the values of the submitted timings:
         const submittedTimings = timingRows.map((row) => ({
             day: row.querySelector('select[name^="lesson[timings]"][name$="[day]"]').value,
             timingStart: row.querySelector('select[name^="lesson[timings]"][name$="[timingStart]"]').value + '00',
             timingEnd: row.querySelector('select[name^="lesson[timings]"][name$="[timingEnd]"]').value + '00'
         }));
-        
 
+        // Check if all timings are valid:
+        let hasInvalidTiming = false;
+        for (let timing of submittedTimings) {
+            if (timing.timingStart >= timing.timingEnd) {
+                hasInvalidTiming = true;
+            }
+        }
+        if (hasInvalidTiming) {
+            alert("Starting time must be earlier than Ending time.")
+            return false;
+        }
+        
+        // Helper function to check if timings conflict:
         function doTimingsConflict(timingA, timingB) {
-            // Compare the properties of timingA and timingB to check for conflicts
-            // Implement your conflict checking logic here
-            
-            // Example conflict checking logic:
             return (
                 timingA.day === timingB.day &&
                 timingA.timingStart < timingB.timingEnd &&
@@ -195,61 +194,37 @@
             );
         }
 
-        internalConflict = false;
-        // Nested loops to compare each timing with all other timings
+        // Check if timings within this lesson conflict:
+        let internalConflict = false;
         for (let i = 0; i < submittedTimings.length; i++) {
             for (let j = i + 1; j < submittedTimings.length; j++) {
                 const timingA = submittedTimings[i];
                 const timingB = submittedTimings[j];
-                
-                // Check for conflicts between timingA and timingB
                 if (doTimingsConflict(timingA, timingB)) {
                     internalConflict = true;
                 }
             }
         }
-
         if (internalConflict) {
             alert('The submitted timings conflict with other timings of the current lesson.');
             return false;
         }
 
-
-
-        // Get the existing timings from the server-side parameter
+        // Check if timings conflict with timings of existing units:
         const existingUnitTimings = JSON.parse('<%- JSON.stringify(existingTimingsList) %>');
-
-        // Function to check for conflicts
-        function hasConflict(submittedTiming) {
-            return existingUnitTimings.some((existingTiming) => {
-                const existingStart = existingTiming.timingStart;
-                const existingEnd = existingTiming.timingEnd;
-                return (
-                    (submittedTiming.timingStart >= existingStart && submittedTiming.timingStart < existingEnd) ||
-                    (submittedTiming.timingEnd > existingStart && submittedTiming.timingEnd <= existingEnd) ||
-                    (submittedTiming.timingStart <= existingStart && submittedTiming.timingEnd >= existingEnd)
-                ) && submittedTiming.day === existingTiming.day;
-            });
+        let externalConflict = false;
+        for (let i = 0; i < submittedTimings.length; i++) {
+            for (let j = 0; j < existingUnitTimings.length; j++) {
+                const timingA = submittedTimings[i];
+                const timingB = existingUnitTimings[j];
+                if (doTimingsConflict(timingA, timingB)) {
+                    externalConflict = true;
+                }
+            }
         }
-
-        // Filter out the existing timings from the submitted timings
-        const filteredSubmittedTimings = submittedTimings.filter((submittedTiming) => {
-            return !existingUnitTimings.some((existingTiming) => {
-                return (
-                    submittedTiming.day === existingTiming.day &&
-                    submittedTiming.timingStart === existingTiming.timingStart &&
-                    submittedTiming.timingEnd === existingTiming.timingEnd
-                );
-            });
-        });
-
-        // Check for conflicts only among the filtered submitted timings
-        const hasConflicts = filteredSubmittedTimings.some(hasConflict);
-
-        // If conflicts are found, display an alert and prevent form submission
-        if (hasConflicts) {
-            alert('The submitted timings conflict with existing timings.');
-            return false; // Prevent form submission
+        if (externalConflict) {
+            alert('The submitted timings conflict with other timings of an existing lesson.');
+            return false;
         }
 
         // If no conflicts are found, allow form submission
@@ -263,6 +238,15 @@
 
         if (!isFormValid) {
             event.preventDefault(); // Prevent form submission if there are conflicts
+        }
+    });
+
+
+    const deleteLessonButton = document.getElementById('deleteLessonButton');
+    deleteLessonButton.addEventListener('click', () => {
+        if (confirm("Are you sure you want to delete this weekly task?")) {
+            document.getElementById('editLessonForm').action = "/timetable/<%= lesson._id %>?_method=DELETE";
+            document.getElementById('editLessonForm').submit();
         }
     });
 </script>
