@@ -38,12 +38,24 @@
                         </div>
                         <div class="mb-2">
                             <label class="form-label" for="timingStart<%= i %>">Timing Start</label>
-                            <input class="form-control" type="text" id="timingStart<%= i %>" name="lesson[timings][<%= i %>][timingStart]" value="<%= lesson.timings[i].timingStart %>" required>
+                            <select class="form-select" id="timingStart<%= i %>" name="lesson[timings][<%= i %>][timingStart]" required>
+                                <option value="" selected disabled>Select a timing start</option>
+                                <% for (let j = 8; j <= 17; j++) { %>
+                                    <% let time = j < 10 ? '0' + j : j; %>
+                                    <option value="<%= time %>00" <% if (lesson.timings[i].timingStart === time + '00') { %> selected <% } %>><%= time %>:00</option>
+                                <% } %>
+                            </select>
                             <div class="valid-feedback">Looks good!</div>
                         </div>
                         <div class="mb-2">
                             <label class="form-label" for="timingEnd<%= i %>">Timing End</label>
-                            <input class="form-control" type="text" id="timingEnd<%= i %>" name="lesson[timings][<%= i %>][timingEnd]" value="<%= lesson.timings[i].timingEnd %>" required>
+                            <select class="form-select" id="timingEnd<%= i %>" name="lesson[timings][<%= i %>][timingEnd]" required>
+                                <option value="" selected disabled>Select a timing end</option>
+                                <% for (let j = 9; j <= 17; j++) { %>
+                                    <% let time = j < 10 ? '0' + j : j; %>
+                                    <option value="<%= time %>00" <% if (lesson.timings[i].timingEnd === time + '00') { %> selected <% } %>><%= time %>:00</option>
+                                <% } %>
+                            </select>
                             <div class="valid-feedback">Looks good!</div>
                         </div>
                         <button type="button" class="btn btn-danger deleteTimingButton" data-index="<%= i %>">Delete Timing</button>
@@ -83,12 +95,24 @@
             </div>
             <div class="mb-2">
                 <label class="form-label" for="timingStart${index}">Timing Start</label>
-                <input class="form-control" type="text" id="timingStart${index}" name="lesson[timings][${index}][timingStart]" required>
+                <select class="form-select" id="timingStart${index}" name="lesson[timings][${index}][timingStart]" required>
+                    <option value="" selected disabled>Select a timing start</option>
+                    <% for (let j = 8; j <= 17; j++) { %>
+                        <% let time = j < 10 ? '0' + j : j; %>
+                        <option value="<%= time %>00"><%= time %>:00</option>
+                    <% } %>
+                </select>
                 <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="mb-2">
                 <label class="form-label" for="timingEnd${index}">Timing End</label>
-                <input class="form-control" type="text" id="timingEnd${index}" name="lesson[timings][${index}][timingEnd]" required>
+                <select class="form-select" id="timingEnd${index}" name="lesson[timings][${index}][timingEnd]" required>
+                    <option value="" selected disabled>Select a timing end</option>
+                    <% for (let j = 9; j <= 17; j++) { %>
+                        <% let time = j < 10 ? '0' + j : j; %>
+                        <option value="<%= time %>00"><%= time %>:00</option>
+                    <% } %>
+                </select>
                 <div class="valid-feedback">Looks good!</div>
             </div>
             <button type="button" class="btn btn-danger deleteTimingButton" data-index="${index}">Delete Timing</button>
@@ -147,16 +171,17 @@
     function checkTimingConflicts() {
         // Get the form element
         const form = document.getElementById('editLessonForm');
-
+        
         // Get the timing rows
         const timingRows = Array.from(document.getElementsByClassName('timing-row'));
 
         // Get the values of the submitted timings
         const submittedTimings = timingRows.map((row) => ({
             day: row.querySelector('select[name^="lesson[timings]"][name$="[day]"]').value,
-            timingStart: row.querySelector('input[name^="lesson[timings]"][name$="[timingStart]"]').value,
-            timingEnd: row.querySelector('input[name^="lesson[timings]"][name$="[timingEnd]"]').value
+            timingStart: row.querySelector('select[name^="lesson[timings]"][name$="[timingStart]"]').value + '00',
+            timingEnd: row.querySelector('select[name^="lesson[timings]"][name$="[timingEnd]"]').value + '00'
         }));
+        
 
         function doTimingsConflict(timingA, timingB) {
             // Compare the properties of timingA and timingB to check for conflicts
@@ -193,8 +218,7 @@
 
         // Get the existing timings from the server-side parameter
         const existingUnitTimings = JSON.parse('<%- JSON.stringify(existingTimingsList) %>');
-        console.log("DSAD")
-        console.log(existingUnitTimings)
+
         // Function to check for conflicts
         function hasConflict(submittedTiming) {
             return existingUnitTimings.some((existingTiming) => {
