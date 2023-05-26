@@ -153,7 +153,8 @@ app.get('/timetable/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) =
 //PUT edit lesson
 app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
-    const lesson = await Unit.findByIdAndUpdate(id, { ...req.body.lesson });
+    const edittedBody = { ...req.body.lesson };
+    const lesson = await Unit.findByIdAndUpdate(id, edittedBody);
     res.redirect(`/timetable`);
 }))
 
@@ -191,14 +192,39 @@ app.post('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
 
 //GET edit weekly task page
 app.get('/weekly-tasks/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const weeklyTask = await Unit.findById(req.params.id);
-    res.render('weekly-tasks/edit', { weeklyTask });
+    const task = await Unit.findById(req.params.id);
+    const units = await Unit.find({userId: req.user.id});
+    const existingTimings = units.filter(unit => unit._id != req.params.id).map(unit => unit.timings);
+    const existingTimingsList = [].concat(...existingTimings);
+    res.render('weekly-tasks/edit', { task, existingTimingsList });
 }))
+
+//Helper function to calculate time between:
+function calculateTimeDifference(timingStart, timingEnd) {
+    const startTime = parseInt(timingStart);
+    const endTime = parseInt(timingEnd);
+    
+    const diffHours = Math.abs(endTime - startTime) / 100;
+    
+    return diffHours;
+}
 
 //PUT edit weekly task
 app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
-    const weeklyTask = await Unit.findByIdAndUpdate(id, { ...req.body.weeklyTask, timings: [], isAssigned: false });
+    const edittedBody = { ...req.body.task };
+    edittedBody.isAssigned = req.body.task.isAssigned === 'true';
+    if (!edittedBody.isAssigned) {
+        edittedBody.timings = [];
+    } else {
+        let totalTime = 0;
+        for (let timing of edittedBody.timings) {
+            const timeDiff = calculateTimeDifference(timing.timingStart, timing.timingEnd);
+            totalTime += timeDiff;
+        }
+        edittedBody.duration = totalTime;
+    }
+    const weeklyTask = await Unit.findByIdAndUpdate(id, edittedBody);
     res.redirect(`/weekly-tasks`);
 }))
 
@@ -262,38 +288,6 @@ async function hillclimb(assignedUnits, unassignedUnits) {
         }
     }
 }
-
-/* TEST CODE FOR HILLCLIMBING:
-let lessons = [
-    {
-      userId: '645baf35b36bd9ffbc67696f',
-      title: 'CS2109S - Introduction to ML and AI',
-      day: 'Monday',
-      timingStart: '0900',
-      timingEnd: '1000',
-      colour: '#C62828',
-    },
-    {
-      userId: '645baf35b36bd9ffbc67696f',
-      title: 'CS2109S - Introduction to ML and AI',
-      day: 'Monday',
-      timingStart: '1100',
-      timingEnd: '1200',
-      colour: '#C62828',
-    }
-  ];
-
-let tasks = [
-    {
-      userId: '645baf35b36bd9ffbc67696f',
-      title: 'ACC1701X Tutorial',
-      releasedOn: 'Tuesday',
-      deadline: 'Wednesday',
-      duration: 2,
-    }
-  ]
-console.log(hillclimb(lessons, tasks))
-*/
 
 //GET calculate timetable:
 app.get('/calculate', async (req, res) => {

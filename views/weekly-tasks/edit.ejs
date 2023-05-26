@@ -1,54 +1,253 @@
 <% layout('layouts/boilerplate') %>
 <div class="rows">
-    <h1 class="text-center mt-5">Edit Weekly Task</h1>
+    <h1 class="text-center mt-5">Edit Task</h1>
     <div class="col-6 offset-3">
-        <form id="editWeeklyTaskForm" method="POST" action="/weekly-tasks/<%= weeklyTask._id %>?_method=PUT">
+        <form id="editTaskForm" method="POST" action="/weekly-tasks/<%= task._id %>?_method=PUT">
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="isAssignedToggle" name="task[isAssigned]" <% if (task.isAssigned) { %> checked <% } %> value="true">
+                    <label class="form-check-label" for="isAssignedToggle">Assigned</label>
+                </div>
+            </div>
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
-                <input class="form-control" type="text" id="title" name="weeklyTask[title]" value="<%= weeklyTask.title %>" required>
+                <input class="form-control" type="text" id="title" name="task[title]" value="<%= task.title %>" required>
                 <div class="valid-feedback">Looks good!</div>
             </div>
+            <% if (task.isAssigned) { %>
+            <div id="timingContainer" class="mb-3" style="display: flex; flex-direction: column; align-items: start;">
+                <% for (let i = 0; i < task.timings.length; i++) { %>
+                    <div class="timing-row mb-3">
+                        <div class="mb-2">
+                            <label class="form-label" for="day<%= i %>">Day</label>
+                            <select class="form-select" id="day<%= i %>" name="task[timings][<%= i %>][day]" required>
+                                <option value="" selected disabled>Select a day</option>
+                                <option value="Monday" <% if (task.timings[i].day === "Monday") { %> selected <% } %>>Monday</option>
+                                <option value="Tuesday" <% if (task.timings[i].day === "Tuesday") { %> selected <% } %>>Tuesday</option>
+                                <option value="Wednesday" <% if (task.timings[i].day === "Wednesday") { %> selected <% } %>>Wednesday</option>
+                                <option value="Thursday" <% if (task.timings[i].day === "Thursday") { %> selected <% } %>>Thursday</option>
+                                <option value="Friday" <% if (task.timings[i].day === "Friday") { %> selected <% } %>>Friday</option>
+                            </select>
+                            <div class="valid-feedback">Looks good!</div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label" for="timingStart<%= i %>">Timing Start</label>
+                            <select class="form-select" id="timingStart<%= i %>" name="task[timings][<%= i %>][timingStart]" required>
+                                <option value="" selected disabled>Select a timing start</option>
+                                <% for (let j = 8; j <= 17; j++) { %>
+                                    <% let time = j < 10 ? '0' + j : j; %>
+                                    <option value="<%= time %>00" <% if (task.timings[i].timingStart === time + '00') { %> selected <% } %>><%= time %>:00</option>
+                                <% } %>
+                            </select>
+                            <div class="valid-feedback">Looks good!</div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label" for="timingEnd<%= i %>">Timing End</label>
+                            <select class="form-select" id="timingEnd<%= i %>" name="task[timings][<%= i %>][timingEnd]" required>
+                                <option value="" selected disabled>Select a timing end</option>
+                                <% for (let j = 9; j <= 17; j++) { %>
+                                    <% let time = j < 10 ? '0' + j : j; %>
+                                    <option value="<%= time %>00" <% if (task.timings[i].timingEnd === time + '00') { %> selected <% } %>><%= time %>:00</option>
+                                <% } %>
+                            </select>
+                            <div class="valid-feedback">Looks good!</div>
+                        </div>
+                        <button type="button" class="btn btn-danger deleteTimingButton" data-index="<%= i %>">Delete Timing</button>
+                    </div>
+                <% } %>
+            </div>
+            <% } else { %>
             <div class="mb-3">
-                <label class="form-label" for="releasedOn">Released On</label>
-                <select class="form-select" id="releasedOn" name="weeklyTask[releasedOn]" required>
-                    <option value="" selected disabled>Select a day</option>
-                    <% const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; %>
-                    <% for (let i = 0; i < days.length; i++) { %>
-                        <option value="<%= days[i] %>" <% if (weeklyTask.releasedOn === days[i]) { %> selected <% } %>><%= days[i] %></option>
-                    <% } %>
-                </select>
+                <label class="form-label" for="duration">Duration (in hours)</label>
+                <input class="form-control" type="number" id="duration" name="task[duration]" value="<%= task.duration %>" required>
                 <div class="valid-feedback">Looks good!</div>
             </div>
+            <% } %>
             <div class="mb-3">
-                <label class="form-label" for="deadline">Deadline</label>
-                <select class="form-select" id="deadline" name="weeklyTask[deadline]" required>
-                    <option value="" selected disabled>Select a day</option>
-                    <% for (let i = 0; i < days.length; i++) { %>
-                        <option value="<%= days[i] %>" <% if (weeklyTask.deadline === days[i]) { %> selected <% } %>><%= days[i] %></option>
-                    <% } %>
-                </select>
-                <div class="valid-feedback">Looks good!</div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="duration">Duration</label>
-                <input class="form-control" type="number" id="duration" name="weeklyTask[duration]" value="<%= weeklyTask.duration %>" required>
-                <div class="valid-feedback">Looks good!</div>
+                <button type="button" class="btn btn-success addTimingButton">Add Timing</button>
             </div>
             <div class="d-flex justify-content-between mt-4">
+                <a href="/timetable" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">Save Changes</button>
-                <button type="button" class="btn btn-danger" id="deleteButton">Delete</button>
-                <a href="/weekly-tasks" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
+        <button class="btn btn-danger" style="height: 100%;" id="deleteTaskButton">Delete Task</button>
     </div>
 </div>
 
 <script>
-    const deleteButton = document.getElementById('deleteButton');
-    deleteButton.addEventListener('click', () => {
+    // Function to create a new timing row
+    function createTimingRow(index) {
+        const timingRow = document.createElement('div');
+        timingRow.classList.add('timing-row', 'mb-3');
+        timingRow.innerHTML = `
+            <div class="mb-2">
+                <label class="form-label" for="day${index}">Day</label>
+                <select class="form-select" id="day${index}" name="task[timings][${index}][day]" required>
+                    <option value="" selected disabled>Select a day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="mb-2">
+                <label class="form-label" for="timingStart${index}">Timing Start</label>
+                <select class="form-select" id="timingStart${index}" name="task[timings][${index}][timingStart]" required>
+                    <option value="" selected disabled>Select a timing start</option>
+                    <% for (let j = 8; j <= 17; j++) { %>
+                        <% let time = j < 10 ? '0' + j : j; %>
+                        <option value="<%= time %>00"><%= time %>:00</option>
+                    <% } %>
+                </select>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="mb-2">
+                <label class="form-label" for="timingEnd${index}">Timing End</label>
+                <select class="form-select" id="timingEnd${index}" name="task[timings][${index}][timingEnd]" required>
+                    <option value="" selected disabled>Select a timing end</option>
+                    <% for (let j = 9; j <= 17; j++) { %>
+                        <% let time = j < 10 ? '0' + j : j; %>
+                        <option value="<%= time %>00"><%= time %>:00</option>
+                    <% } %>
+                </select>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <button type="button" class="btn btn-danger deleteTimingButton" data-index="${index}">Delete Timing</button>
+        `;
+        return timingRow;
+    }
+
+    // Function to handle the click event of the Add Timing button
+    function addTiming() {
+        const timingContainer = document.getElementById('timingContainer');
+        const timingRows = timingContainer.getElementsByClassName('timing-row');
+        const index = timingRows.length;
+        const newTimingRow = createTimingRow(index);
+        timingContainer.appendChild(newTimingRow);
+        newTimingRow.getElementsByClassName("deleteTimingButton")[0].addEventListener('click', deleteTiming);
+    }
+
+    // Function to handle the click event of the Delete Timing button
+    function deleteTiming(event) {
+        const timingContainer = document.getElementById('timingContainer');
+        const timingRows = timingContainer.getElementsByClassName('timing-row');
+        const index = event.target.getAttribute('data-index');
+        if (index <= timingRows.length && timingRows.length > 1) {
+            timingContainer.removeChild(timingRows[index]);
+            return;
+        }
+
+        // Check if the last timing row is deleted
+        if (timingRows.length === 1) {
+            if (confirm("Are you sure you want to delete this weekly task?")) {
+                document.getElementById('editTaskForm').action = "/timetable/<%= task._id %>?_method=DELETE";
+                document.getElementById('editTaskForm').submit();
+            }
+        }
+    }
+
+    // Add event listener for the Add Timing button
+    const addTimingButton = document.querySelector('.addTimingButton');
+    addTimingButton.addEventListener('click', addTiming);
+
+    // Add event listener for the Delete Timing buttons
+    const deleteTimingButtons = document.getElementsByClassName('deleteTimingButton');
+    Array.from(deleteTimingButtons).forEach((button) => {
+        button.addEventListener('click', deleteTiming);
+    });
+
+    // Function to check for timing conflicts with existing timings
+    function checkTimingConflicts() {
+        // Get the form element:
+        const form = document.getElementById('editTaskForm');
+        
+        // Get the timing rows
+        const timingRows = Array.from(document.getElementsByClassName('timing-row'));
+
+        // Get the values of the submitted timings:
+        const submittedTimings = timingRows.map((row) => ({
+            day: row.querySelector('select[name^="task[timings]"][name$="[day]"]').value,
+            timingStart: row.querySelector('select[name^="task[timings]"][name$="[timingStart]"]').value + '00',
+            timingEnd: row.querySelector('select[name^="task[timings]"][name$="[timingEnd]"]').value + '00'
+        }));
+
+        // Check if all timings are valid:
+        let hasInvalidTiming = false;
+        for (let timing of submittedTimings) {
+            if (timing.timingStart >= timing.timingEnd) {
+                hasInvalidTiming = true;
+            }
+        }
+        if (hasInvalidTiming) {
+            alert("Starting time must be earlier than Ending time.")
+            return false;
+        }
+        
+        // Helper function to check if timings conflict:
+        function doTimingsConflict(timingA, timingB) {
+            return (
+                timingA.day === timingB.day &&
+                timingA.timingStart < timingB.timingEnd &&
+                timingA.timingEnd > timingB.timingStart
+            );
+        }
+
+        // Check if timings within this task conflict:
+        let internalConflict = false;
+        for (let i = 0; i < submittedTimings.length; i++) {
+            for (let j = i + 1; j < submittedTimings.length; j++) {
+                const timingA = submittedTimings[i];
+                const timingB = submittedTimings[j];
+                if (doTimingsConflict(timingA, timingB)) {
+                    internalConflict = true;
+                }
+            }
+        }
+        if (internalConflict) {
+            alert('The submitted timings conflict with other timings of the current task.');
+            return false;
+        }
+
+        // Check if timings conflict with timings of existing units:
+        const existingUnitTimings = JSON.parse('<%- JSON.stringify(existingTimingsList) %>');
+        let externalConflict = false;
+        for (let i = 0; i < submittedTimings.length; i++) {
+            for (let j = 0; j < existingUnitTimings.length; j++) {
+                const timingA = submittedTimings[i];
+                const timingB = existingUnitTimings[j];
+                if (doTimingsConflict(timingA, timingB)) {
+                    externalConflict = true;
+                }
+            }
+        }
+        if (externalConflict) {
+            alert('The submitted timings conflict with other timings of an existing unit.');
+            return false;
+        }
+
+        // If no conflicts are found, allow form submission
+        return true;
+    }
+
+    // Add event listener to the form submit event
+    const editTaskForm = document.getElementById('editTaskForm');
+    editTaskForm.addEventListener('submit', (event) => {
+        const isFormValid = checkTimingConflicts();
+
+        if (!isFormValid) {
+            event.preventDefault(); // Prevent form submission if there are conflicts
+        }
+    });
+
+
+    const deleteTaskButton = document.getElementById('deleteTaskButton');
+    deleteTaskButton.addEventListener('click', () => {
         if (confirm("Are you sure you want to delete this weekly task?")) {
-            document.getElementById('editWeeklyTaskForm').action = "/timetable/<%= weeklyTask._id %>?_method=DELETE";
-            document.getElementById('editWeeklyTaskForm').submit();
+            document.getElementById('editTaskForm').action = "/timetable/<%= task._id %>?_method=DELETE";
+            document.getElementById('editTaskForm').submit();
         }
     });
 </script>
