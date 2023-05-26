@@ -73,6 +73,117 @@
   transform: scale(1.1);
 }
 
+/* Edit Pages */
+.editFormMainBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.editFormTitle {
+  text-align: center;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.editFormContainer {
+  width: 60%;
+  border: 1px solid rgb(126, 123, 123);
+  padding: 2rem;
+  border-radius: 20px;
+}
+
+#editLessonForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+#editTaskForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.editInputRow {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.timingContainerHeader {
+  align-self: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+#timingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: lightgray;
+  padding: 2rem;
+  width: 75%;
+  align-self: center;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.timingRow {
+  width: 80%;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.timingRow:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.timingInputRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 0.8rem;
+  margin: 0px;
+}
+
+.timingInputRow:not(:last-child) {
+  margin-bottom: 0.3rem;
+}
+
+.timingInputRow .form-label {
+  margin-right: 0.9rem;
+}
+
+.timingInputRow select {
+  font-size: 0.8rem;
+}
+
+.button {
+  color: white;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+.deleteTimingButton {
+  background-color: #ED2939;
+  font-size: 0.8rem;
+}
+
+.addTimingButton {
+  background-color: green;
+  width: fit-content;
+  align-self: center;
+  margin-bottom: 4rem;
+}
+
+.editFormBottomButtonRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
 /* Todo List */
 /* Index: */
 .todoItem:hover {

@@ -1,24 +1,23 @@
 <% layout('layouts/boilerplate') %>
-<div class="rows">
-    <h1 class="text-center mt-5">Edit Task</h1>
-    <div class="col-6 offset-3">
+<div class="editFormMainBody">
+    <h1 class="editFormTitle">Edit Task</h1>
+    <div class="editFormContainer">
         <form id="editTaskForm" method="POST" action="/weekly-tasks/<%= task._id %>?_method=PUT">
-            <div class="mb-3">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="isAssignedToggle" name="task[isAssigned]" <% if (task.isAssigned) { %> checked <% } %> value="true">
-                    <label class="form-check-label" for="isAssignedToggle">Assigned</label>
-                </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="isAssignedToggle" name="task[isAssigned]" <% if (task.isAssigned) { %> checked <% } %> value="true">
+                <label class="form-check-label" for="isAssignedToggle">Assigned</label>
             </div>
-            <div class="mb-3">
+            <div class="editInputRow">
                 <label class="form-label" for="title">Title</label>
                 <input class="form-control" type="text" id="title" name="task[title]" value="<%= task.title %>" required>
                 <div class="valid-feedback">Looks good!</div>
             </div>
             <% if (task.isAssigned) { %>
-            <div id="timingContainer" class="mb-3" style="display: flex; flex-direction: column; align-items: start;">
+            <h3 class="timingContainerHeader">Timings</h3>
+            <div id="timingContainer">
                 <% for (let i = 0; i < task.timings.length; i++) { %>
-                    <div class="timing-row mb-3">
-                        <div class="mb-2">
+                    <div class="timingRow">
+                        <div class="timingInputRow editInputRow">
                             <label class="form-label" for="day<%= i %>">Day</label>
                             <select class="form-select" id="day<%= i %>" name="task[timings][<%= i %>][day]" required>
                                 <option value="" selected disabled>Select a day</option>
@@ -30,10 +29,10 @@
                             </select>
                             <div class="valid-feedback">Looks good!</div>
                         </div>
-                        <div class="mb-2">
-                            <label class="form-label" for="timingStart<%= i %>">Timing Start</label>
+                        <div class="timingInputRow editInputRow">
+                            <label class="form-label" for="timingStart<%= i %>">Start</label>
                             <select class="form-select" id="timingStart<%= i %>" name="task[timings][<%= i %>][timingStart]" required>
-                                <option value="" selected disabled>Select a timing start</option>
+                                <option value="" selected disabled>Select a starting time</option>
                                 <% for (let j = 8; j <= 17; j++) { %>
                                     <% let time = j < 10 ? '0' + j : j; %>
                                     <option value="<%= time %>00" <% if (task.timings[i].timingStart === time + '00') { %> selected <% } %>><%= time %>:00</option>
@@ -41,10 +40,10 @@
                             </select>
                             <div class="valid-feedback">Looks good!</div>
                         </div>
-                        <div class="mb-2">
-                            <label class="form-label" for="timingEnd<%= i %>">Timing End</label>
+                        <div class="timingInputRow editInputRow">
+                            <label class="form-label" for="timingEnd<%= i %>">End</label>
                             <select class="form-select" id="timingEnd<%= i %>" name="task[timings][<%= i %>][timingEnd]" required>
-                                <option value="" selected disabled>Select a timing end</option>
+                                <option value="" selected disabled>Select an ending time</option>
                                 <% for (let j = 9; j <= 17; j++) { %>
                                     <% let time = j < 10 ? '0' + j : j; %>
                                     <option value="<%= time %>00" <% if (task.timings[i].timingEnd === time + '00') { %> selected <% } %>><%= time %>:00</option>
@@ -52,10 +51,12 @@
                             </select>
                             <div class="valid-feedback">Looks good!</div>
                         </div>
-                        <button type="button" class="btn btn-danger deleteTimingButton" data-index="<%= i %>">Delete Timing</button>
+                        <button type="button" class="deleteTimingButton button" data-index="<%= i %>">Delete Timing</button>
                     </div>
                 <% } %>
             </div>
+            <button type="button" class="addTimingButton button">New Timing</button>
+
             <% } else { %>
             <div class="mb-3">
                 <label class="form-label" for="duration">Duration (in hours)</label>
@@ -63,10 +64,7 @@
                 <div class="valid-feedback">Looks good!</div>
             </div>
             <% } %>
-            <div class="mb-3">
-                <button type="button" class="btn btn-success addTimingButton">Add Timing</button>
-            </div>
-            <div class="d-flex justify-content-between mt-4">
+            <div class="editFormBottomButtonRow">
                 <a href="/timetable" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">Save Changes</button>
             </div>
@@ -79,9 +77,9 @@
     // Function to create a new timing row
     function createTimingRow(index) {
         const timingRow = document.createElement('div');
-        timingRow.classList.add('timing-row', 'mb-3');
+        timingRow.classList.add('timingRow');
         timingRow.innerHTML = `
-            <div class="mb-2">
+            <div class="timingInputRow editInputRow">
                 <label class="form-label" for="day${index}">Day</label>
                 <select class="form-select" id="day${index}" name="task[timings][${index}][day]" required>
                     <option value="" selected disabled>Select a day</option>
@@ -93,10 +91,10 @@
                 </select>
                 <div class="valid-feedback">Looks good!</div>
             </div>
-            <div class="mb-2">
-                <label class="form-label" for="timingStart${index}">Timing Start</label>
+            <div class="timingInputRow editInputRow">
+                <label class="form-label" for="timingStart${index}">Start</label>
                 <select class="form-select" id="timingStart${index}" name="task[timings][${index}][timingStart]" required>
-                    <option value="" selected disabled>Select a timing start</option>
+                    <option value="" selected disabled>Select a starting time</option>
                     <% for (let j = 8; j <= 17; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
                         <option value="<%= time %>00"><%= time %>:00</option>
@@ -104,10 +102,10 @@
                 </select>
                 <div class="valid-feedback">Looks good!</div>
             </div>
-            <div class="mb-2">
-                <label class="form-label" for="timingEnd${index}">Timing End</label>
+            <div class="timingInputRow editInputRow">
+                <label class="form-label" for="timingEnd${index}">End</label>
                 <select class="form-select" id="timingEnd${index}" name="task[timings][${index}][timingEnd]" required>
-                    <option value="" selected disabled>Select a timing end</option>
+                    <option value="" selected disabled>Select an ending time</option>
                     <% for (let j = 9; j <= 17; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
                         <option value="<%= time %>00"><%= time %>:00</option>
@@ -115,7 +113,7 @@
                 </select>
                 <div class="valid-feedback">Looks good!</div>
             </div>
-            <button type="button" class="btn btn-danger deleteTimingButton" data-index="${index}">Delete Timing</button>
+            <button type="button" class="deleteTimingButton button" data-index="${index}">Delete Timing</button>
         `;
         return timingRow;
     }
@@ -126,14 +124,25 @@
         const timingRows = timingContainer.getElementsByClassName('timing-row');
         const index = timingRows.length;
         const newTimingRow = createTimingRow(index);
-        timingContainer.appendChild(newTimingRow);
+        
+        if (timingRows.length === 0) {
+            // If no timing rows are present, append the newTimingRow as the first child of timingContainer
+            timingContainer.appendChild(newTimingRow);
+        } else {
+            // Get the last timing row
+            const lastTimingRow = timingRows[timingRows.length - 1];
+            
+            // Insert the newTimingRow after the lastTimingRow
+            lastTimingRow.insertAdjacentElement('afterend', newTimingRow);
+        }
+        
         newTimingRow.getElementsByClassName("deleteTimingButton")[0].addEventListener('click', deleteTiming);
     }
 
     // Function to handle the click event of the Delete Timing button
     function deleteTiming(event) {
         const timingContainer = document.getElementById('timingContainer');
-        const timingRows = timingContainer.getElementsByClassName('timing-row');
+        const timingRows = timingContainer.getElementsByClassName('timingRow');
         const index = event.target.getAttribute('data-index');
         if (index <= timingRows.length && timingRows.length > 1) {
             timingContainer.removeChild(timingRows[index]);
@@ -245,7 +254,7 @@
 
     const deleteTaskButton = document.getElementById('deleteTaskButton');
     deleteTaskButton.addEventListener('click', () => {
-        if (confirm("Are you sure you want to delete this weekly task?")) {
+        if (confirm("Are you sure you want to delete this Task?")) {
             document.getElementById('editTaskForm').action = "/timetable/<%= task._id %>?_method=DELETE";
             document.getElementById('editTaskForm').submit();
         }
