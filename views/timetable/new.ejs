@@ -1,29 +1,84 @@
-<% layout('layouts/boilerplate')%>
-<div class="rows">
-    <h1 class="text-center mt-5">New Lesson</h1>
-    <div class="col-6 offset-3">
-        <div class="mb-3">
-            <label class="form-label" for="title">Title</label>
-            <input class="form-control" type="text" id="title" name="lesson[title]" required>
-            <div class="valid-feedback">Looks good!</div>
-        </div>
-        <div class="mb-4">
-            <label class="form-label" for="colour">Colour</label>
-            <select class="form-select" id="colour" name="lesson[colour]" required>
-                <option value="" selected disabled>Select a colour</option>
-                <option value="#C62828">Red</option>
-                <option value="#1565C0">Blue</option>
-                <option value="#2E7D32">Green</option>
-                <option value="#FFA000">Yellow</option>
-                <option value="#6A1B9A">Purple</option>
-                <option value="#f08731">Orange</option>
-            </select>
-            <div class="valid-feedback">Looks good!</div>
-        </div>
-        <div id="timingContainer" class="mb-3" style="display: flex; flex-direction: column; align-items: center; border: 0.5px solid black; border-radius: 10px; padding: 2rem; width: 100%;">
-            <div class="mb-3">
-                <label class="form-label" for="day">Day</label>
-                <select class="form-select" id="day" name="lesson[day]" required>
+<% layout('layouts/boilerplate') %>
+<div class="editFormMainBody">
+    <h1 class="editFormTitle">New Lesson</h1>
+    <div class="editFormContainer">
+        <form id="addLessonForm" method="POST" action="/timetable">
+            <div class="editInputRow">
+                <label class="form-label" for="title">Title</label>
+                <input class="form-control" type="text" id="title" name="lesson[title]"required>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <div class="editInputRow">
+                <label class="form-label" for="colour">Colour</label>
+                <select class="form-select" id="colour" name="lesson[colour]" required>
+                    <option value="" selected disabled>Select a colour</option>
+                    <option value="#C62828">Red</option>
+                    <option value="#1565C0">Blue</option>
+                    <option value="#2E7D32">Green</option>
+                    <option value="#FFA000">Yellow</option>
+                    <option value="#6A1B9A">Purple</option>
+                    <option value="#F08731">Orange</option>
+                </select>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <h3 class="timingContainerHeader">Timings</h3>
+            <div id="timingContainer">
+                <div class="timingRow">
+                    <div class="timingInputRow editInputRow">
+                        <label class="form-label" for="day0">Day</label>
+                        <select class="form-select" id="day0" name="lesson[timings][0][day]" required>
+                            <option value="" selected disabled>Select a day</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                        </select>
+                        <div class="valid-feedback">Looks good!</div>
+                    </div>
+                    <div class="timingInputRow editInputRow">
+                        <label class="form-label" for="timingStart0">Start</label>
+                        <select class="form-select" id="timingStart0" name="lesson[timings][0][timingStart]" required>
+                            <option value="" selected disabled>Select a starting time</option>
+                            <% for (let j = 8; j <= 17; j++) { %>
+                                <% let time = j < 10 ? '0' + j : j; %>
+                                <option value="<%= time %>00"><%= time %>:00</option>
+                            <% } %>
+                        </select>
+                        <div class="valid-feedback">Looks good!</div>
+                    </div>
+                    <div class="timingInputRow editInputRow">
+                        <label class="form-label" for="timingEnd0">End</label>
+                        <select class="form-select" id="timingEnd0" name="lesson[timings][0][timingEnd]" required>
+                            <option value="" selected disabled>Select an ending time</option>
+                            <% for (let j = 9; j <= 17; j++) { %>
+                                <% let time = j < 10 ? '0' + j : j; %>
+                                <option value="<%= time %>00"><%= time %>:00</option>
+                            <% } %>
+                        </select>
+                        <div class="valid-feedback">Looks good!</div>
+                    </div>
+                    <button type="button" class="deleteTimingButton button" data-index="0">Delete Timing</button>
+                </div>
+            </div>
+            <button type="button" class="addTimingButton button">New Timing</button>
+            <div class="editFormBottomButtonRow">
+                <a href="/timetable" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Function to create a new timing row
+    function createTimingRow(index) {
+        const timingRow = document.createElement('div');
+        timingRow.classList.add('timingRow');
+        timingRow.innerHTML = `
+            <div class="timingInputRow editInputRow">
+                <label class="form-label" for="day${index}">Day</label>
+                <select class="form-select" id="day${index}" name="lesson[timings][${index}][day]" required>
                     <option value="" selected disabled>Select a day</option>
                     <option value="Monday">Monday</option>
                     <option value="Tuesday">Tuesday</option>
@@ -33,198 +88,155 @@
                 </select>
                 <div class="valid-feedback">Looks good!</div>
             </div>
-            <div id="newTimingRow" style="display: flex; flex-direction: row; width: 100%;">
-                <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing Start</label>
-                <select class="form-select" id="timingStart" name="lesson[timingStart]" required>
-                    <option value="" selected disabled>Select a start time</option>
-                    <option value="0800">08:00</option>
-                    <option value="0900">09:00</option>
-                    <option value="1000">10:00</option>
-                    <option value="1100">11:00</option>
-                    <option value="1200">12:00</option>
-                    <option value="1300">13:00</option>
-                    <option value="1400">14:00</option>
-                    <option value="1500">15:00</option>
-                    <option value="1600">16:00</option>
-                    <option value="1700">17:00</option>
+            <div class="timingInputRow editInputRow">
+                <label class="form-label" for="timingStart${index}">Start</label>
+                <select class="form-select" id="timingStart${index}" name="lesson[timings][${index}][timingStart]" required>
+                    <option value="" selected disabled>Select a starting time</option>
+                    <% for (let j = 8; j <= 17; j++) { %>
+                        <% let time = j < 10 ? '0' + j : j; %>
+                        <option value="<%= time %>00"><%= time %>:00</option>
+                    <% } %>
                 </select>
                 <div class="valid-feedback">Looks good!</div>
-                <label class="form-label px-4" for="timing" style="font-size: 0.9rem;">Timing End</label>
-                <select class="form-select" id="timingEnd" name="lesson[timingEnd]" required>
-                    <option value="" selected disabled>Select an end time</option>
-                    <option value="0900">09:00</option>
-                    <option value="1000">10:00</option>
-                    <option value="1100">11:00</option>
-                    <option value="1200">12:00</option>
-                    <option value="1300">13:00</option>
-                    <option value="1400">14:00</option>
-                    <option value="1500">15:00</option>
-                    <option value="1600">16:00</option>
-                    <option value="1700">17:00</option>
-                </select>
-                <div class="valid-feedback">Looks good!</div>
-                <button id="addTimingButton" class="btn btn-success" style="margin-left: 2rem; font-size: 0.8rem;">Add Timing</button>
             </div>
-        </div>
-
-        <div class="d-flex flex-row justify-content-between mt-5">
-            <button id="addLessonsButton" class="btn btn-success">Add Lesson</button>
-            <a class="btn btn-danger" href="/timetable">Back</a>
-        </div>
-    </div>
-</div>
-<script>
-    var addedTimings = [];
-    // Get the timingContainer element
-    const timingContainer = document.getElementById('timingContainer');
-    // Get the timingStart and timingEnd input elements
-    const timingStartInput = document.getElementById('timingStart');
-    const timingEndInput = document.getElementById('timingEnd');
-
-    // Function to add timing and lesson
-    function addTiming() {
-        // Get the selected start and end times
-        const timingStart = timingStartInput.value;
-        const timingEnd = timingEndInput.value;
-
-        // Check that the end time is greater than the start time
-        if (timingEnd <= timingStart) {
-            alert('End time must be greater than start time');
-            return;
-        }
-
-        // Check that there's a day inputted
-        let dayInput = document.getElementById('day').value;
-        if (!dayInput) {
-            alert("Input a day!");
-            return;
-        }
-
-        // Check for time overlap with existing timings from OTHER units
-        const existingUnitTimings = JSON.parse('<%- JSON.stringify(existingTimingsList) %>');
-        const hasOverlapWithOthers = existingUnitTimings.some(timing => {
-            const existingStart = timing.timingStart;
-            const existingEnd = timing.timingEnd;
-            return (((timingStart >= existingStart && timingStart < existingEnd) ||
-                    (timingEnd > existingStart && timingEnd <= existingEnd) ||
-                    (timingStart <= existingStart && timingEnd >= existingEnd)) && timing.day == dayInput);        
-        });
-
-        if (hasOverlapWithOthers) {
-            alert('The selected time overlaps with an existing lesson!');
-            return;
-        }
-
-        // Check for time overlap with existing timings from CURRENT lesson
-        const hasOverlapWithCurrent = addedTimings.some(timing => {
-            const existingStart = timing.timingStart;
-            const existingEnd = timing.timingEnd;
-            return (((timingStart >= existingStart && timingStart < existingEnd) ||
-                    (timingEnd > existingStart && timingEnd <= existingEnd) ||
-                    (timingStart <= existingStart && timingEnd >= existingEnd)) && timing.day == dayInput);
-        });
-
-        if (hasOverlapWithCurrent) {
-            alert('The selected time overlaps with another timing!');
-            return;
-        }
-
-        // Create a new div element for the timing and append it to the timingContainer
-        const newTimingDiv = document.createElement('div');
-        newTimingDiv.style = "display: flex; flex-direction: row; justify-content: space-between; width: 95%; align-items: center; margin-top: 1.5rem;";
-        newTimingDiv.innerHTML = `<div>${timingStartInput.value} - ${timingEndInput.value} on ${dayInput}</div><button class="btn btn-danger">Delete</button></div>`;
-        timingContainer.appendChild(newTimingDiv);
-
-        // Create new timing for current lesson:
-        const newTiming = {
-            day: document.getElementById('day').value,
-            timingStart: timingStartInput.value,
-            timingEnd: timingEndInput.value
-        }
-        addedTimings.push(newTiming);
-
-        // Add onclick event listener to the delete button
-        const deleteButton = newTimingDiv.querySelector(".btn-danger");
-        deleteButton.onclick = function () {
-            // Remove the newTimingDiv element from the DOM
-            newTimingDiv.remove();
-
-            // Remove the corresponding newTiming object from the addedTimings array
-            const index = addedTimings.findIndex(
-            (timing) =>
-                timing.timingStart === newTiming.timingStart &&
-                timing.timingEnd === newTiming.timingEnd &&
-                timing.day === newTiming.day
-            );
-            addedTimings.splice(index, 1);
-        };
+            <div class="timingInputRow editInputRow">
+                <label class="form-label" for="timingEnd${index}">End</label>
+                <select class="form-select" id="timingEnd${index}" name="lesson[timings][${index}][timingEnd]" required>
+                    <option value="" selected disabled>Select an ending time</option>
+                    <% for (let j = 9; j <= 17; j++) { %>
+                        <% let time = j < 10 ? '0' + j : j; %>
+                        <option value="<%= time %>00"><%= time %>:00</option>
+                    <% } %>
+                </select>
+                <div class="valid-feedback">Looks good!</div>
+            </div>
+            <button type="button" class="deleteTimingButton button" data-index="${index}">Delete Timing</button>
+        `;
+        return timingRow;
     }
 
-    // Function to add lessons
-    function addLessons() {
+    // Function to handle the click event of the Add Timing button
+    function addTiming() {
+        const timingContainer = document.getElementById('timingContainer');
+        const timingRows = timingContainer.getElementsByClassName('timingRow');
+        const index = timingRows.length;
+        const newTimingRow = createTimingRow(index);
+        
+        if (timingRows.length === 0) {
+            // If no timing rows are present, append the newTimingRow as the first child of timingContainer
+            timingContainer.appendChild(newTimingRow);
+        } else {
+            // Get the last timing row
+            const lastTimingRow = timingRows[timingRows.length - 1];
+            
+            // Insert the newTimingRow after the lastTimingRow
+            lastTimingRow.insertAdjacentElement('afterend', newTimingRow);
+        }
+        
+        newTimingRow.getElementsByClassName("deleteTimingButton")[0].addEventListener('click', deleteTiming);
+    }
 
-        if (addedTimings.length === 0) {
-            alert('Please add at least one timing');
+    // Function to handle the click event of the Delete Timing button
+    function deleteTiming(event) {
+        const timingContainer = document.getElementById('timingContainer');
+        const timingRows = timingContainer.getElementsByClassName('timingRow');
+        const index = event.target.getAttribute('data-index');
+        if (index <= timingRows.length && timingRows.length > 1) {
+            timingContainer.removeChild(timingRows[index]);
             return;
         }
-
-        // Create a new Lesson object with current timings
-        const newLesson = {
-            title: document.getElementById('title').value,
-            type: document.getElementById('day').value,
-            colour: document.getElementById('colour').value,
-            timings: addedTimings
-        };
-
-        // Function to serialize nested objects and arrays
-        function serializeData(obj, prefix = '') {
-            const formData = [];
-            for (const key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                const fullKey = prefix ? `${prefix}[${key}]` : key;
-                const value = obj[key];
-                if (typeof value === 'object' && !Array.isArray(value)) {
-                    formData.push(...serializeData(value, fullKey));
-                } else if (Array.isArray(value)) {
-                    value.forEach((item, index) => {
-                    formData.push(...serializeData(item, `${fullKey}[${index}]`));
-                    });
-                } else {
-                    formData.push(`${encodeURIComponent(fullKey)}=${encodeURIComponent(value)}`);
-                }
-                }
-            }
-            return formData;
-        }
-        const formData = serializeData(newLesson).join("&");
-
-        fetch('/timetable', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: formData
-        })
-        .then(response => {
-            if (response.ok) {
-                // Redirect to the timetable page if the request is successful
-                window.location.href = "/timetable";
-            } else {
-                console.log(response);
-                throw new Error('Failed to add lessons');
-            }
-        })
-        .catch(error => {
-            console.error(error);
-            alert('Failed to add lessons');
-        });
     }
 
     // Add event listener for the Add Timing button
-    const addTimingButton = document.getElementById('addTimingButton');
+    const addTimingButton = document.querySelector('.addTimingButton');
     addTimingButton.addEventListener('click', addTiming);
 
-    // Add event listener for the Add Timing button
-    const addLessonsButton = document.getElementById('addLessonsButton');
-    addLessonsButton.addEventListener('click', addLessons);
+    // Add event listener for the Delete Timing buttons
+    const deleteTimingButtons = document.getElementsByClassName('deleteTimingButton');
+    Array.from(deleteTimingButtons).forEach((button) => {
+        button.addEventListener('click', deleteTiming);
+    });
+
+    // Function to check for timing conflicts with existing timings
+    function checkTimingConflicts() {
+        // Get the form element:
+        const form = document.getElementById('addLessonForm');
+        
+        // Get the timing rows
+        const timingRows = Array.from(document.getElementsByClassName('timingRow'));
+
+        // Get the values of the submitted timings:
+        const submittedTimings = timingRows.map((row) => ({
+            day: row.querySelector('select[name^="lesson[timings]"][name$="[day]"]').value,
+            timingStart: row.querySelector('select[name^="lesson[timings]"][name$="[timingStart]"]').value + '00',
+            timingEnd: row.querySelector('select[name^="lesson[timings]"][name$="[timingEnd]"]').value + '00'
+        }));
+
+        // Check if all timings are valid:
+        let hasInvalidTiming = false;
+        for (let timing of submittedTimings) {
+            if (timing.timingStart >= timing.timingEnd) {
+                hasInvalidTiming = true;
+            }
+        }
+        if (hasInvalidTiming) {
+            alert("Starting time must be earlier than Ending time.")
+            return false;
+        }
+        
+        // Helper function to check if timings conflict:
+        function doTimingsConflict(timingA, timingB) {
+            return (
+                timingA.day === timingB.day &&
+                timingA.timingStart < timingB.timingEnd &&
+                timingA.timingEnd > timingB.timingStart
+            );
+        }
+
+        // Check if timings within this lesson conflict:
+        let internalConflict = false;
+        for (let i = 0; i < submittedTimings.length; i++) {
+            for (let j = i + 1; j < submittedTimings.length; j++) {
+                const timingA = submittedTimings[i];
+                const timingB = submittedTimings[j];
+                if (doTimingsConflict(timingA, timingB)) {
+                    internalConflict = true;
+                }
+            }
+        }
+        if (internalConflict) {
+            alert('The submitted timings conflict with other timings of the current lesson.');
+            return false;
+        }
+
+        // Check if timings conflict with timings of existing units:
+        const existingUnitTimings = JSON.parse('<%- JSON.stringify(existingTimingsList) %>');
+        let externalConflict = false;
+        for (let i = 0; i < submittedTimings.length; i++) {
+            for (let j = 0; j < existingUnitTimings.length; j++) {
+                const timingA = submittedTimings[i];
+                const timingB = existingUnitTimings[j];
+                if (doTimingsConflict(timingA, timingB)) {
+                    externalConflict = true;
+                }
+            }
+        }
+        if (externalConflict) {
+            alert('The submitted timings conflict with other timings of an existing unit.');
+            return false;
+        }
+
+        // If no conflicts are found, allow form submission
+        return true;
+    }
+
+    // Add event listener to the form submit event
+    const addLessonForm = document.getElementById('addLessonForm');
+    addLessonForm.addEventListener('submit', (event) => {
+        const isFormValid = checkTimingConflicts();
+
+        if (!isFormValid) {
+            event.preventDefault(); // Prevent form submission if there are conflicts
+        }
+    });
 </script>

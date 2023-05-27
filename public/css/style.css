@@ -19,6 +19,24 @@
   opacity: 0.6;
 }
 
+.button {
+  color: white;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+.deleteTimingButton {
+  background-color: #ED2939;
+  font-size: 0.8rem;
+}
+
+.addTimingButton {
+  background-color: green;
+  width: fit-content;
+  align-self: center;
+  margin-bottom: 4rem;
+}
+
 /* NavBar */
 #navbar {
   position: sticky;
@@ -159,23 +177,14 @@
   font-size: 0.8rem;
 }
 
-.button {
-  color: white;
-  border-radius: 5px;
-  border: 1px solid black;
+/* New Lesson Page */
+
+#addLessonForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-.deleteTimingButton {
-  background-color: #ED2939;
-  font-size: 0.8rem;
-}
-
-.addTimingButton {
-  background-color: green;
-  width: fit-content;
-  align-self: center;
-  margin-bottom: 4rem;
-}
 
 .editFormBottomButtonRow {
   display: flex;

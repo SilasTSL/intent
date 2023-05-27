@@ -92,45 +92,10 @@ app.get('/timetable/new', validateIsLoggedIn, async (req, res) => {
     res.render('timetable/new', { existingTimingsList });
 })
 
-function doLessonsOverlap(lesson1StartString, lesson1EndString, lesson2StartString, lesson2EndString) {
-    const lesson1Start = parseInt(lesson1StartString);
-    const lesson1End = parseInt(lesson1EndString);
-    const lesson2Start = parseInt(lesson2StartString);
-    const lesson2End = parseInt(lesson2EndString);
-
-    // Check if the start time of lesson1 falls within the duration of lesson2
-    if (lesson1Start >= lesson2Start && lesson1Start < lesson2End) {
-      return true;
-    }
-  
-    // Check if the end time of lesson1 falls within the duration of lesson2
-    if (lesson1End > lesson2Start && lesson1End <= lesson2End) {
-      return true;
-    }
-  
-    // Check if the duration of lesson1 completely overlaps with the duration of lesson2
-    if (lesson1Start <= lesson2Start && lesson1End >= lesson2End) {
-      return true;
-    }
-  
-    // If none of the above conditions are true, the lessons do not overlap
-    return false;
-}
-
 //POST make new lessons
 app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     console.log("Adding new lesson(s)!");
-    const newLessonBody = req.body;
-    
-    // Level 2 Check for overlap with existing lessons:
-    const lessons = await Unit.find({day: newLessonBody.timings.day});
-
-    for (let lesson of lessons) {
-        if (doLessonsOverlap(lesson.timingStart, lesson.timingEnd, newLessonBody.timingStart, newLessonBody.timingEnd)) {
-            console.log("Timings overlap!");
-            throw new ExpressError("Timings overlap!", 400);
-        }
-    }
+    const newLessonBody = req.body.lesson;
 
     newLessonBody.userId = req.user.id;
     newLessonBody.type = "Lesson";
@@ -138,7 +103,7 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 
     const newLesson = new Unit(newLessonBody);
     await newLesson.save();
-    res.redirect(`/timetable/new`);
+    res.redirect(`/timetable`);
 }))
 
 //GET edit lesson page
