@@ -1,26 +1,23 @@
 <% layout('layouts/boilerplate')%>
-<div style="display: flex; flex-direction: row; justify-content: center;">
-    <div id="todoList" style="width: 70%; margin-top: 3rem;">
-        <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; width: 75%; margin-bottom: 1.5rem;">
-            <h3 style="text-align: center; width: 100%;">TODO LIST</h3>
-            <a href="/weekly-tasks/new" class="newButtons" style="transition-duration: 0.4s; padding: 1rem; white-space: nowrap; width: fit-content; text-align: center; text-decoration: none; color: white; background-color: #4caf50; border-radius: 20px;">New Task</a>
-            <a href="/calculate" class="newButtons" style="transition-duration: 0.4s; padding: 1rem; white-space: nowrap; width: fit-content; text-align: center; text-decoration: none; color: white; background-color: #0072bb; border-radius: 20px; margin-left: 1rem;">Confirm</a>
+<div id="tasksBodyContainer">
+    <div class="taskIndexTitleRow">
+        <h1 class="pageTitle">Tasks</h1>
+        <a href="/calculate" class="confirmButton" style="transition-duration: 0.4s; padding: 1rem; white-space: nowrap; width: fit-content; text-align: center; text-decoration: none; color: white; background-color: #0072bb; border-radius: 20px; margin-left: 1rem;">Confirm</a>
+    </div>
+    <div class="tasksBody">
+    <% for (let weeklyTask of weeklyTasks) { %>
+        <div class="task" style="<% if (!weeklyTask.isAssigned) { %> border: 1px solid red; <% } %>" onclick="window.location.href = '/weekly-tasks/<%= weeklyTask._id %>/edit'" >
+            <h5><%= weeklyTask.title %></h5>
+            <h6><span style="opacity: 0.7; font-size: 0.85rem;">Released on:</span> <%= weeklyTask.releasedOn %></h6>
+            <h6><span style="opacity: 0.7; font-size: 0.85rem;">Deadline:</span> <%= weeklyTask.deadline %></h6>
+            <h6><span style="opacity: 0.7; font-size: 0.85rem;">Duration:</span> <%= weeklyTask.duration %> Hrs</h6>
+            <% if (weeklyTask.isAssigned) { %>
+                <h6><span style="opacity: 0.7; font-size: 0.85rem; colour: white">Assigned</h6>
+            <% } else { %>
+                <h6><span style="opacity: 0.7; font-size: 0.85rem; color: red">Unassigned</h6>
+            <% } %>
         </div>
-        <div class="todoListBody" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-        <% for (let weeklyTask of weeklyTasks) { %>
-            <div class="todoItem" style="background-color: lightblue; <% if (!weeklyTask.isAssigned) { %> border: 1px solid red; <% } %>  width: 75%; margin-bottom: 20px; padding: 15px; border-radius: 15px; cursor: pointer; transition-duration: 0.4s;" onclick="window.location.href = '/weekly-tasks/<%= weeklyTask._id %>/edit'" >
-                <h5><%= weeklyTask.title %></h5>
-                <h6><span style="opacity: 0.7; font-size: 0.85rem;">Released on:</span> <%= weeklyTask.releasedOn %></h6>
-                <h6><span style="opacity: 0.7; font-size: 0.85rem;">Deadline:</span> <%= weeklyTask.deadline %></h6>
-                <h6><span style="opacity: 0.7; font-size: 0.85rem;">Duration:</span> <%= weeklyTask.duration %> Hrs</h6>
-                <% if (weeklyTask.isAssigned) { %>
-                    <h6><span style="opacity: 0.7; font-size: 0.85rem; colour: white">Assigned</h6>
-                <% } else { %>
-                    <h6><span style="opacity: 0.7; font-size: 0.85rem; color: red">Unassigned</h6>
-                <% } %>
-            </div>
-        <% } %>
-        </div>
+    <% } %>
     </div>
 </div>
 

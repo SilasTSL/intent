@@ -1,12 +1,11 @@
 <% layout('layouts/boilerplate') %>
-<div class="editFormMainBody">
-    <h1 class="editFormTitle">New Lesson</h1>
-    <div class="editFormContainer">
+<div id="newLessonBodyContainer">
+    <h1 class="pageTitle">New Lesson</h1>
+    <div class="formContainer">
         <form id="addLessonForm" method="POST" action="/timetable">
             <div class="editInputRow">
                 <label class="form-label" for="title">Title</label>
                 <input class="form-control" type="text" id="title" name="lesson[title]"required>
-                <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="editInputRow">
                 <label class="form-label" for="colour">Colour</label>
@@ -19,7 +18,6 @@
                     <option value="#6A1B9A">Purple</option>
                     <option value="#F08731">Orange</option>
                 </select>
-                <div class="valid-feedback">Looks good!</div>
             </div>
             <h3 class="timingContainerHeader">Timings</h3>
             <div id="timingContainer">
@@ -34,7 +32,6 @@
                             <option value="Thursday">Thursday</option>
                             <option value="Friday">Friday</option>
                         </select>
-                        <div class="valid-feedback">Looks good!</div>
                     </div>
                     <div class="timingInputRow editInputRow">
                         <label class="form-label" for="timingStart0">Start</label>
@@ -45,7 +42,6 @@
                                 <option value="<%= time %>00"><%= time %>:00</option>
                             <% } %>
                         </select>
-                        <div class="valid-feedback">Looks good!</div>
                     </div>
                     <div class="timingInputRow editInputRow">
                         <label class="form-label" for="timingEnd0">End</label>
@@ -56,7 +52,6 @@
                                 <option value="<%= time %>00"><%= time %>:00</option>
                             <% } %>
                         </select>
-                        <div class="valid-feedback">Looks good!</div>
                     </div>
                     <button type="button" class="deleteTimingButton button" data-index="0">Delete Timing</button>
                 </div>
@@ -86,7 +81,6 @@
                     <option value="Thursday">Thursday</option>
                     <option value="Friday">Friday</option>
                 </select>
-                <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="timingInputRow editInputRow">
                 <label class="form-label" for="timingStart${index}">Start</label>
@@ -97,7 +91,6 @@
                         <option value="<%= time %>00"><%= time %>:00</option>
                     <% } %>
                 </select>
-                <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="timingInputRow editInputRow">
                 <label class="form-label" for="timingEnd${index}">End</label>
@@ -108,7 +101,6 @@
                         <option value="<%= time %>00"><%= time %>:00</option>
                     <% } %>
                 </select>
-                <div class="valid-feedback">Looks good!</div>
             </div>
             <button type="button" class="deleteTimingButton button" data-index="${index}">Delete Timing</button>
         `;

@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate') %>
 <div class="editFormMainBody">
-    <h1 class="editFormTitle">Edit Lesson</h1>
-    <div class="editFormContainer">
+    <h1 class="pageTitle">Edit Lesson</h1>
+    <div class="formContainer">
         <form id="editLessonForm" method="POST" action="/timetable/<%= lesson._id %>?_method=PUT">
             <div class="editInputRow">
                 <label class="form-label" for="title">Title</label>
@@ -69,7 +69,7 @@
                 <button type="submit" class="btn btn-primary">Save Changes</button>
             </div>
         </form>
-        <button class="btn btn-danger" style="height: 100%;" id="deleteLessonButton">Delete Lesson</button>
+        <button class="button" id="deleteLessonButton">Delete Lesson</button>
     </div>
 </div>
 

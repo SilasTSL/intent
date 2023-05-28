@@ -1,11 +1,8 @@
 <% layout('layouts/boilerplate')%>
-<div id="main-body" class="container mt-5 mb-5" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
-    <div id="timetable" class="mb-5" style="display: flex; flex-direction: column; align-items: center; width: 80%;">
-        <div style="display: flex; flex-direction: row; align-items: center;" class="mb-4">
-            <h1 style="text-align: center;">TIMETABLE</h1>
-            <a href="/timetable/new" class="newButtons" style="margin-left: 3rem; transition-duration: 0.4s; padding: 1rem; text-decoration: none; color: white; background-color: #4caf50; border-radius: 20px;">New Lesson</a>
-        </div>
-        <table style="width: 90%; height: 100%; border-collapse: collapse;">
+<div id="timetableBodyContainer">
+    <h1 class="pageTitle">Timetable</h1>
+    <div class="timetableContainer">
+        <table class="timetable">
             <thead>
             <tr>
                 <% const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; %>
@@ -16,31 +13,31 @@
                         <th></th>
                     <% } %>
                     <% if (days[i] == dayOfWeekString) { %> 
-                        <th style="text-align: center; font-weight: 900;"><%= days[i] %></th>
+                        <th class="timetableDayHeader" style="font-weight: 900;"><%= days[i] %></th>
                     <% } else { %> 
-                        <th style="text-align: center; font-weight: 500;"><%= days[i] %></th>
+                        <th class="timetableDayHeader" style="font-weight: 500;"><%= days[i] %></th>
                     <% } %>
                 <% } %>
             </tr>
             </thead>
             <tbody>
             <% for (let r=8; r < 18; r++) { %>
-                <tr style="height: 50px;">
+                <tr>
                 <% for (let c = 1; c < 7; c++) { %>
                     <% let unitFound = units.find(unit => unit.timings.some(timing => timing.day == days[c - 1] && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
                     <% if (c == 1) { %>
-                        <td style="vertical-align: top;"><%= r + ":00 "%></td>
+                        <td class="timetableTimingLabels"><%= r + ":00 "%></td>
                     <% } else if (unitFound) { %>
                         <% const unitTiming = unitFound.timings.find(timing => timing.day == days[c - 1] && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                         <% if (parseInt(unitTiming.timingStart.substring(0, 2)) == r) { // First cell in unit: %>
-                            <td class="<%= unitFound._id %> lesson-cell" style="color: white; background-color: <%= unitFound.colour %>; height: 50px; font-size: 0.8rem; padding: 10px; text-align: center; cursor: pointer; border: solid black 2px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" <% if (unitFound.type === "Lesson") { %>
+                            <td class="<%= unitFound._id %> lesson-cell" style="background-color: <%= unitFound.colour %>; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %>" <% if (unitFound.type === "Lesson") { %>
                                 onclick="window.location.href = '/timetable/<%= unitFound._id %>/edit'"
                             <% } else if (unitFound.type === "WeeklyTask") { %>
                                 onclick="window.location.href = '/weekly-tasks/<%= unitFound._id %>/edit'"
                             <% } %>
                         ><%= unitFound.title %></td>
                         <% } else { // Not first cell in unit: %>
-                            <td class="<%= unitFound._id %> lesson-cell" style="background-color: <%= unitFound.colour %>; cursor: pointer; border: solid black 2px; position: relative; z-index: 1; border-top: 0px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %> transition-duration: 0.4s;" 
+                            <td class="<%= unitFound._id %> lesson-cell" style="background-color: <%= unitFound.colour %>; border-top: 0px; <% if (parseInt(unitTiming.timingEnd.substring(0, 2)) != r + 1) { %> border-bottom: 0px; <% } %>" 
                                 <% if (unitFound.type === "Lesson") { %>
                                     onclick="window.location.href = '/timetable/<%= unitFound._id %>/edit'"
                                 <% } else if (unitFound.type === "WeeklyTask") { %>
@@ -49,7 +46,7 @@
                             ></td>                        
                         <% } %>
                     <% } else { %>
-                        <td href="/edit" style="height: 50px; border: solid #C0C0C0 1px; position: relative;"></td>
+                        <td class="empty-cell"></td>
                     <% } %>
                 <% } %>
                 </tr>

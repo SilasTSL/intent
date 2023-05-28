@@ -1,7 +1,11 @@
 <% layout('layouts/boilerplate')%>
-<div class="rows">
-    <h1 class="text-center">Register</h1>
-    <div class="col-8 offset-2">
+<div id="accountBodyContainer">
+    <div class="accountLeftContainer">
+        <h1 class="accountIntentWord">Intent</h1>
+        <p class="accountSubtitle">Seize The Moment, Own Your Time.</p>
+    </div>
+    <div class="accountRightContainer">
+        <h1 class="accountTitle">Register</h1>
         <form action="/register" method="POST" novalidate class="validated-form">
             <div class="mb-3">
                 <label class="form-label" for="username">Username</label>
@@ -19,6 +23,7 @@
                 <div class="valid-feedback">Looks good!</div>
             </div>
             <button class="btn btn-success">Register</button>
+            <p class="loginSentence">Already have an account? <a href="/login">Log in</a></p>
         </form>
     </div>
 </div>

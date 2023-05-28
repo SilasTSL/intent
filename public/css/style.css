@@ -1,20 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Raleway:wght@700&display=swap');
-#main-body {
-    display: flex;
-    flex-direction: row;
-}
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Quicksand&display=swap');
 
-@media screen and (max-width: 1200px) {
-    #main-body {
-      flex-direction: column;
-      align-items: center;
-    }
-
-    #todoList {
-      width: 80% !important;
-    }
-}
 /* General */
+#mainBody {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin-top: 10vh;
+  padding: 0;
+  font-family: 'Quicksand', sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
 .newButtons:hover {
   opacity: 0.6;
 }
@@ -37,9 +36,19 @@
   margin-bottom: 4rem;
 }
 
+.pageTitle {
+  text-align: center;
+  font-weight: 400;
+  margin-top: 1.3rem;
+  margin-bottom: 1rem;
+  margin-left: 2rem;
+  font-family: 'Figtree', sans-serif;
+}
+
 /* NavBar */
 #navbar {
-  position: sticky;
+  position: fixed;
+  width: 100vw;
   top: 0;
   background-color: #303030;
   display: flex;
@@ -47,43 +56,21 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.1rem;
-  font-family: 'Poppins', sans-serif;
-}
-
-.navItem {
-  text-decoration: none;
-  color: #DCDCDC;
-  margin-left: 1rem;
-  margin-right: 1rem;
-  transition-duration: 0.2s;
-}
-
-.navItem:hover {
-  color: white;
-}
-
-.navbarGroupLeft {
-  display: flex;
-  flex-direction: row;
-  justify-content: start;
-  font-weight: 400;
-  width: 30%;
-}
-
-.navbarGroupRight {
-  display: flex;
-  flex-direction: row;
-  justify-content: end;
-  font-weight: 400;
-  width: 30%;
+  font-family: 'Figtree', sans-serif;
+  font-weight: 600;
+  z-index: 1;
+  height: 10vh;
 }
 
 #navbarHome {
-  font-size: 1.4rem;
+  text-decoration: none;
+  color: #DCDCDC;
+  font-size: 1.8rem;
   margin-left: auto;
   padding: 0px;
   margin-right: auto;
   font-weight: 800;
+  transition-duration: 0.4s;
 }
 
 #navbarHome:hover {
@@ -91,33 +78,186 @@
   transform: scale(1.1);
 }
 
-/* Edit Pages */
-.editFormMainBody {
+
+/* Sidebar */
+#sidebar {
+  position: fixed;
+  background-color: #404040;
+  top: 0;
+  left: 0;
+  width: 13%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+  padding-top: calc(10vh + 1rem);
+  font-weight: 600;
+}
+
+.sidebarGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarItem {
+  text-decoration: none;
+  color: #A9A9A9;
+  transition-duration: 0.3s;
+  display: flex;
+}
+
+.sidebarItem:hover {
+  color: white;
+  transform: scale(1.1);
+}
+
+.sideHr {
+  width: 100%;
+  border: none;
+  height: 1px;
+  background-color: #202020;
+  margin-top: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.sidebarIcon {
+  height: 1rem;
+  align-self: center;
+  margin-right: 1.2rem;
+}
+
+/* Index Page */
+#timetableBodyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 2rem;
+  padding-top: 1rem;
+  margin-left: 13%;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.timetableContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 80%;
+  margin-left: 3rem;
+}
+
+.timetable {
+  width: 90%;
+  height: 100%;
+  border-collapse: collapse;
+}
+
+.timetableDayHeader {
+  text-align: center;
+}
+
+tr {
+  height: 50px;
+}
+
+td {
+  vertical-align: top;
+}
+
+.timetableTimingLabels {
+  vertical-align: top;
+}
+
+.lesson-cell {
+  color: white;
+  font-size: 0.8rem;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  border: solid black 2px;
+  transition-duration: 0.3s;
+}
+
+.empty-cell {
+  height: 50px;
+  border: solid #C0C0C0 1px;
+  position: relative;
+}
+
+/* Task Index Page */
+#tasksBodyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 2rem;
+  padding-top: 1rem;
+  margin-left: 13%;
+  font-family: 'Quicksand', sans-serif;
+  width: 70%;
+}
+
+.taskIndexTitleRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.confirmButton {
+  margin-top: 1rem;
+}
+
+.tasksBody {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 100%;
+  margin-left: 2rem;
+  margin-top: 0;
+}
+
+.task {
+  background-color: lightblue;
+  width: 75%;
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 15px;
+  cursor: pointer;
+  transition-duration: 0.3s;
+}
+
+.task:hover {
+  opacity: 0.65;
+}
+
+/* Form Pages */
+.formMainBody {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.editFormTitle {
-  text-align: center;
-  font-weight: 600;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-}
 
-.editFormContainer {
-  width: 60%;
+.formContainer {
+  width: 70%;
   border: 1px solid rgb(126, 123, 123);
   padding: 2rem;
   border-radius: 20px;
+  margin-left: 2rem;
+  margin-top: 1rem;
 }
 
-#editLessonForm {
+.editFormMainBody {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  align-items: start;
+  padding: 2rem;
+  padding-top: 1rem;
+  margin-left: 13%;
+  font-family: 'Quicksand', sans-serif;
 }
 
-#editTaskForm {
+form {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -177,15 +317,6 @@
   font-size: 0.8rem;
 }
 
-/* New Lesson Page */
-
-#addLessonForm {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-
 .editFormBottomButtonRow {
   display: flex;
   flex-direction: row;
@@ -193,9 +324,88 @@
   margin-bottom: 1rem;
 }
 
-/* Todo List */
-/* Index: */
-.todoItem:hover {
-  opacity: 0.6;
+#deleteLessonButton {
+  background-color: #ED2939;
 }
 
+#deleteTaskButton {
+  background-color: #ED2939;
+}
+
+/* New Task Page */
+#newTaskBodyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 2rem;
+  padding-top: 1rem;
+  margin-left: 13%;
+  font-family: 'Quicksand', sans-serif;
+}
+
+/* New Lesson Page */
+#newLessonBodyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 2rem;
+  padding-top: 1rem;
+  margin-left: 13%;
+  font-family: 'Quicksand', sans-serif;
+}
+
+#addLessonForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Login Register Pages */
+#accountBodyContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.accountLeftContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  width: 50%;
+  background-color: #303030;
+  height: 110vh;
+  margin-top: -10vh;
+  padding: 10%;
+}
+
+.accountIntentWord {
+  margin-top: 30%;
+  font-size: 5rem;
+  font-family: 'Figtree', sans-serif;
+  color: white;
+}
+
+.accountSubtitle {
+  font-size: 1.3rem;
+  color: #BEBEBE;
+}
+
+.accountRightContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+  height: 110vh;
+  margin-top: -10vh;
+  margin-left: 3rem;
+  padding-bottom: 5vh;
+}
+
+.accountTitle {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.accountInputRow {
+  margin-bottom: 1.4rem;
+}

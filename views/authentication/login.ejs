@@ -1,19 +1,24 @@
 <% layout('layouts/boilerplate')%>
-<div class="rows">
-    <h1 class="text-center">Login</h1>
-    <div class="col-8 offset-2">
+<div id="accountBodyContainer">
+    <div class="accountLeftContainer">
+        <h1 class="accountIntentWord">Intent</h1>
+        <p class="accountSubtitle">Seize The Moment, Own Your Time.</p>
+    </div>
+    <div class="accountRightContainer">
+        <h1 class="accountTitle">Login</h1>
         <form action="/login" method="POST" novalidate class="validated-form">
-            <div class="mb-3">
+            <div class="accountInputRow">
                 <label class="form-label" for="username">Username</label>
                 <input class="form-control" type="text" id="username" name="username" required>
                 <div class="valid-feedback">Looks good!</div>
             </div>
-            <div class="mb-3">
+            <div class="accountInputRow">
                 <label class="form-label" for="password">Password</label>
                 <input class="form-control" type="password" id="password" name="password" required>
                 <div class="valid-feedback">Looks good!</div>
             </div>
             <button class="btn btn-success">Log in</button>
+            <p class="registerSentence">Don't have an account yet? <a href="/register">Sign up</a></p>
         </form>
     </div>
 </div>
