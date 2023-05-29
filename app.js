@@ -288,11 +288,12 @@ app.post('/register', catchAsync(async (req, res) => {
 
 //GET login page
 app.get('/login', (req, res) => {
-    res.render('authentication/login');
+    const loginFailure = req.query.failure;
+    res.render('authentication/login', { loginFailure });
 })
 
 //POST login
-app.post('/login', passport.authenticate('local', {failureRedirect: '/login'}), (req, res) => {
+app.post('/login', passport.authenticate('local', { failureRedirect: '/login?failure=true' }), (req, res) => {
     res.redirect('/timetable');
 })
 

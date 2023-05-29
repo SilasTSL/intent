@@ -6,6 +6,11 @@
     </div>
     <div class="accountRightContainer">
         <h1 class="accountTitle">Login</h1>
+        <% if (loginFailure) { %>
+            <p class="alert alert-danger" role="alert">
+              Incorrect username or password. Please try again.
+            </p>
+          <% } %>
         <form action="/login" method="POST" novalidate class="validated-form">
             <div class="accountInputRow">
                 <label class="form-label" for="username">Username</label>
