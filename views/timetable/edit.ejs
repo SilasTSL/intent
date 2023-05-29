@@ -52,7 +52,7 @@
                             <label class="form-label" for="timingEnd<%= i %>">End</label>
                             <select class="form-select" id="timingEnd<%= i %>" name="lesson[timings][<%= i %>][timingEnd]" required>
                                 <option value="" selected disabled>Select an ending time</option>
-                                <% for (let j = 9; j <= 17; j++) { %>
+                                <% for (let j = 9; j <= 18; j++) { %>
                                     <% let time = j < 10 ? '0' + j : j; %>
                                     <option value="<%= time %>00" <% if (lesson.timings[i].timingEnd === time + '00') { %> selected <% } %>><%= time %>:00</option>
                                 <% } %>
@@ -106,7 +106,7 @@
                 <label class="form-label" for="timingEnd${index}">End</label>
                 <select class="form-select" id="timingEnd${index}" name="lesson[timings][${index}][timingEnd]" required>
                     <option value="" selected disabled>Select an ending time</option>
-                    <% for (let j = 9; j <= 17; j++) { %>
+                    <% for (let j = 9; j <= 18; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
                         <option value="<%= time %>00"><%= time %>:00</option>
                     <% } %>
@@ -121,7 +121,7 @@
     // Function to handle the click event of the Add Timing button
     function addTiming() {
         const timingContainer = document.getElementById('timingContainer');
-        const timingRows = timingContainer.getElementsByClassName('timing-row');
+        const timingRows = timingContainer.getElementsByClassName('timingRow');
         const index = timingRows.length;
         const newTimingRow = createTimingRow(index);
         
@@ -174,13 +174,13 @@
         const form = document.getElementById('editLessonForm');
         
         // Get the timing rows
-        const timingRows = Array.from(document.getElementsByClassName('timing-row'));
+        const timingRows = Array.from(document.getElementsByClassName('timingRow'));
 
         // Get the values of the submitted timings:
         const submittedTimings = timingRows.map((row) => ({
             day: row.querySelector('select[name^="lesson[timings]"][name$="[day]"]').value,
-            timingStart: row.querySelector('select[name^="lesson[timings]"][name$="[timingStart]"]').value + '00',
-            timingEnd: row.querySelector('select[name^="lesson[timings]"][name$="[timingEnd]"]').value + '00'
+            timingStart: row.querySelector('select[name^="lesson[timings]"][name$="[timingStart]"]').value,
+            timingEnd: row.querySelector('select[name^="lesson[timings]"][name$="[timingEnd]"]').value
         }));
 
         // Check if all timings are valid:
@@ -222,6 +222,7 @@
 
         // Check if timings conflict with timings of existing units:
         const existingUnitTimings = JSON.parse('<%- JSON.stringify(existingTimingsList) %>');
+        
         let externalConflict = false;
         for (let i = 0; i < submittedTimings.length; i++) {
             for (let j = 0; j < existingUnitTimings.length; j++) {

@@ -108,7 +108,7 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 
 //GET edit lesson page
 app.get('/timetable/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const lesson = await Unit.findById(req.params.id).lean().exec();
+    const lesson = await Unit.findById(req.params.id);
     const units = await Unit.find({userId: req.user.id});
     const existingTimings = units.filter(unit => unit._id != req.params.id).map(unit => unit.timings);
     const existingTimingsList = [].concat(...existingTimings);
@@ -190,7 +190,7 @@ app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
         edittedBody.duration = totalTime;
     }
     const weeklyTask = await Unit.findByIdAndUpdate(id, edittedBody);
-    res.redirect(`/weekly-tasks`);
+    res.redirect(`/timetable`);
 }))
 
 

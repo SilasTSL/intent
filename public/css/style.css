@@ -21,7 +21,7 @@ a {
 .button {
   color: white;
   border-radius: 5px;
-  border: 1px solid black;
+  border: none;
 }
 
 .deleteTimingButton {
