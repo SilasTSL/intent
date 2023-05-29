@@ -14,7 +14,10 @@
         <%- include('../partials/sidebar.ejs') %>
     <% } %>
     <%- body %>
-    <%- include('../partials/footer') %>
+    <% if (user) { %>
+        <%- include('../partials/footer') %>
+    <% } %>
+    
     <script>
         // Example starter JavaScript for disabling form submissions if there are invalid fields
         (function () {
