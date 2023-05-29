@@ -78,6 +78,27 @@ a {
   transform: scale(1.1);
 }
 
+/* Footer */
+#footerContainer {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+  background-color: #303030;
+  height: 5vh;
+  margin-bottom: 0;
+  z-index: 1;
+}
+
+.footerText {
+  color: #808080;
+  margin-right: 3rem;
+  font-size: 0.6rem;
+}
+
 
 /* Sidebar */
 #sidebar {
@@ -92,6 +113,7 @@ a {
   justify-content: space-between;
   padding: 1.5rem;
   padding-top: calc(10vh + 1rem);
+  padding-bottom: calc(5vh + 1rem);
   font-weight: 600;
 }
 
@@ -144,6 +166,7 @@ a {
   align-items: start;
   width: 80%;
   margin-left: 3rem;
+  margin-bottom: 4rem;
 }
 
 .timetable {
@@ -371,9 +394,9 @@ form {
   display: flex;
   flex-direction: column;
   justify-content: start;
-  width: 50%;
-  background-color: #303030;
+  width: 55%;
   height: 110vh;
+  background-color: #303030;
   margin-top: -10vh;
   padding: 10%;
 }
@@ -394,7 +417,7 @@ form {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 50%;
+  width: 45%;
   height: 110vh;
   margin-top: -10vh;
   margin-left: 3rem;
