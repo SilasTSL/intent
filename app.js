@@ -72,12 +72,12 @@ const validateIsLoggedIn = (req, res, next) => {
 }
 
 
-//Home Index page:
+//LANDING PAGE:
 app.get('/', (req, res) => {
     res.render('home');
 })
 
-
+//TIMETABLE PAGES:
 //GET Index page
 app.get('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     const units = await Unit.find({userId: req.user.id, isAssigned: true});
@@ -131,7 +131,7 @@ app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
 }))
 
 
-//WEEKLY TASKS:
+//WEEKLY TASK PAGES:
 //GET weekly task page:
 app.get('/weekly-tasks', catchAsync(async (req, res) => {
     const weeklyTasks = await Unit.find({userId: req.user.id, type: "WeeklyTask"});
@@ -196,6 +196,7 @@ app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
 
 //HILL CLIMBING:
 //Hill climbing function:
+/*
 async function hillclimb(assignedUnits, unassignedUnits) {
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -253,6 +254,134 @@ async function hillclimb(assignedUnits, unassignedUnits) {
         }
     }
 }
+*/
+
+async function hillclimb(assignedUnits, unassignedUnits) {
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const lunchStartTime = 1200;
+    const lunchEndTime = 1400;
+  
+    // Helper function to check if a task overlaps with a given timing
+    const isTimingOverlap = (task, timing) => {
+      const taskStart = parseInt(task.timingStart);
+      const taskEnd = parseInt(task.timingEnd);
+      const timingStart = parseInt(timing.timingStart);
+      const timingEnd = parseInt(timing.timingEnd);
+  
+      return (
+        (timingStart >= taskStart && timingStart < taskEnd) || // Start time overlaps
+        (timingEnd > taskStart && timingEnd <= taskEnd) || // End time overlaps
+        (timingStart <= taskStart && timingEnd >= taskEnd) // Timing fully contains the task
+      );
+    };
+  
+    // Helper function to calculate the score for a given schedule
+    const calculateScore = (currentSchedule) => {
+      let score = 0;
+  
+      // Check for task overlaps and lunch time conflicts
+      for (const task of unassignedUnits) {
+        const taskDay = task.releasedOn;
+        const taskDuration = task.duration;
+  
+        // Check if task overlaps with any existing tasks in the schedule
+        const overlappingTask = currentSchedule.find(
+          (existingTask) =>
+            existingTask.timings.some(
+              (timing) =>
+                timing.day === taskDay && isTimingOverlap(existingTask, task)
+            )
+        );
+        if (overlappingTask) {
+          score -= 100; // Penalize for overlapping tasks
+        }
+  
+        // Check if task overlaps with lunch time
+        const taskStartTime = parseInt(task.timingStart);
+        const taskEndTime = parseInt(task.timingEnd);
+        if (taskStartTime <= lunchEndTime && taskEndTime >= lunchStartTime) {
+          score -= 50; // Penalize for lunch time conflicts
+        }
+  
+        // Check if task duration is greater than the allotted timings
+        const taskTimings = currentSchedule.find((t) => t.title === task.title);
+        if (taskTimings) {
+          const totalDuration = taskTimings.timings.reduce(
+            (acc, t) => acc + (parseInt(t.timingEnd) - parseInt(t.timingStart)),
+            0
+          );
+          if (totalDuration < taskDuration) {
+            score -= 25; // Penalize for insufficient task duration
+          }
+        }
+      }
+  
+      return score;
+    };
+  
+    // Hill-climbing algorithm
+    let bestSchedule = assignedUnits;
+  
+    for (const task of unassignedUnits) {
+      if (!task.isAssigned) {
+        let bestScore = Number.NEGATIVE_INFINITY;
+        let bestTimings = null;
+  
+        const possibleTimings = [];
+  
+        const releasedDayIndex = days.indexOf(task.releasedOn);
+        const deadlineDayIndex = days.indexOf(task.deadline);
+  
+        for (let i = releasedDayIndex; i <= deadlineDayIndex; i++) {
+          const currentDay = days[i];
+  
+          // Loop through each hour from 8 AM to 6 PM
+          for (let j = 8; j <= 17; j++) {
+            const timingStart = (j * 100).toString().padStart(4, '0');
+            const timingEnd = ((j + task.duration) * 100).toString().padStart(4, '0');
+  
+            // Check if the timing overlaps with lunch time
+            if (timingStart < lunchEndTime.toString().padStart(4, '0') && timingEnd > lunchStartTime.toString().padStart(4, '0')) {
+              continue;
+            }
+  
+            // Check if the timing overlaps with existing tasks in the schedule
+            const conflictingTask = bestSchedule.find((existingTask) =>
+              existingTask.timings.some((timing) =>
+                timing.day === currentDay && isTimingOverlap(existingTask, { timingStart, timingEnd })
+              )
+            );
+  
+            if (!conflictingTask) {
+              possibleTimings.push({
+                day: currentDay,
+                timingStart,
+                timingEnd
+              });
+            }
+          }
+        }
+  
+        for (const timing of possibleTimings) {
+          const updatedTask = { ...task, isAssigned: true, timings: [timing] };
+          const updatedSchedule = [...bestSchedule, updatedTask];
+          const score = calculateScore(updatedSchedule);
+  
+          if (score > bestScore) {
+            bestScore = score;
+            bestSchedule = updatedSchedule;
+          }
+        }
+      }
+    }
+  
+    // Update the database with the optimized schedule
+    for (const task of bestSchedule) {
+      if (task.isAssigned) {
+        await Unit.findByIdAndUpdate(task._id, { timings: task.timings, isAssigned: true });
+      }
+    }
+  }
 
 //GET calculate timetable:
 app.get('/calculate', async (req, res) => {
@@ -262,8 +391,7 @@ app.get('/calculate', async (req, res) => {
     res.redirect('/timetable');
 })
 
-//LOGIN LOGOUT:
-
+//ACCOUNT PAGES:
 //GET register page
 app.get('/register', (req, res) => {
     res.render('authentication/register');
@@ -304,7 +432,6 @@ app.get('/logout', (req, res) => {
         res.redirect('/login');
     });
 }); 
-
 
 
 
