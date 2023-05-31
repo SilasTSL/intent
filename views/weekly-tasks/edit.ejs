@@ -14,6 +14,32 @@
                 <input class="form-control" type="text" id="title" name="task[title]" value="<%= task.title %>" required>
                 <div class="valid-feedback">Looks good!</div>
             </div>
+            <div class="editInputRow">
+                <label class="form-label" for="releasedOn">Released On</label>
+                <select class="form-select" id="releasedOn" name="task[releasedOn]" required>
+                    <option value="" selected disabled>Select a day</option>
+                    <option value="Monday" <% if (task.releasedOn === "Monday") { %> selected <% } %>>Monday</option>
+                    <option value="Tuesday" <% if (task.releasedOn === "Tuesday") { %> selected <% } %>>Tuesday</option>
+                    <option value="Wednesday" <% if (task.releasedOn === "Wednesday") { %> selected <% } %>>Wednesday</option>
+                    <option value="Thursday" <% if (task.releasedOn === "Thursday") { %> selected <% } %>>Thursday</option>
+                    <option value="Friday" <% if (task.releasedOn === "Friday") { %> selected <% } %>>Friday</option>
+                    <option value="Saturday" <% if (task.releasedOn === "Saturday") { %> selected <% } %>>Saturday</option>
+                    <option value="Sunday" <% if (task.releasedOn === "Sunday") { %> selected <% } %>>Sunday</option>
+                </select>
+            </div>
+            <div class="editInputRow">
+                <label class="form-label" for="deadline">Deadline</label>
+                <select class="form-select" id="deadline" name="task[deadline]" required>
+                    <option value="" selected disabled>Select a day</option>
+                    <option value="Monday" <% if (task.deadline === "Monday") { %> selected <% } %>>Monday</option>
+                    <option value="Tuesday" <% if (task.deadline === "Tuesday") { %> selected <% } %>>Tuesday</option>
+                    <option value="Wednesday" <% if (task.deadline === "Wednesday") { %> selected <% } %>>Wednesday</option>
+                    <option value="Thursday" <% if (task.deadline === "Thursday") { %> selected <% } %>>Thursday</option>
+                    <option value="Friday" <% if (task.deadline === "Friday") { %> selected <% } %>>Friday</option>
+                    <option value="Saturday" <% if (task.deadline === "Saturday") { %> selected <% } %>>Saturday</option>
+                    <option value="Sunday" <% if (task.deadline === "Sunday") { %> selected <% } %>>Sunday</option>
+                </select>
+            </div>
             <% if (task.isAssigned) { %>
             <h3 class="timingContainerHeader">Timings</h3>
             <div id="timingContainer">
@@ -253,8 +279,14 @@
     const editTaskForm = document.getElementById('editTaskForm');
     editTaskForm.addEventListener('submit', (event) => {
         const isFormValid = checkTimingConflicts();
-
-        if (!isFormValid) {
+        // Check if releasedOn is before deadline:
+        let releasedIsBeforeDeadline = true;
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        if (days.indexOf(document.querySelector('#releasedOn').value) > days.indexOf(document.querySelector('#deadline').value)) {
+            alert('The task cannot have a Deadline before it is Released!');
+            releasedIsBeforeDeadline = false;
+        }
+        if (!isFormValid || !releasedIsBeforeDeadline) {
             event.preventDefault(); // Prevent form submission if there are conflicts
         }
     });
@@ -263,7 +295,6 @@
     const deleteTaskButton = document.getElementById('deleteTaskButton');
     deleteTaskButton.addEventListener('click', () => {
         if (confirm("Are you sure you want to delete this Task?")) {
-            console.log("TEST")
             document.getElementById('editTaskForm').action = "/timetable/<%= task._id %>?_method=DELETE";
             document.getElementById('editTaskForm').submit();
         }
