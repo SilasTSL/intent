@@ -256,14 +256,25 @@ async function hillclimb(assignedUnits, unassignedUnits) {
 }
 */
 
-  
+const hillclimb = require('./hillclimbing.js');
   
 
 //GET calculate timetable:
 app.get('/calculate', async (req, res) => {
     const assignedUnits = await Unit.find({userId: req.user.id, isAssigned: true});
     const unassignedUnits = await Unit.find({userId: req.user.id, isAssigned: false});
-    hillclimb(assignedUnits, unassignedUnits);
+    if (unassignedUnits.length > 0) {
+        const optimalSchedule = hillclimb(assignedUnits, unassignedUnits);
+        for (let unit of optimalSchedule) {
+            if (!unit.isAssigned) {
+                unit.isAssigned = true;
+                await Unit.findByIdAndUpdate(unit._id, unit);
+            }
+        }
+    } else {
+        res.status(400).send('You have no unassigned tasks!');
+    }
+
     res.redirect('/timetable');
 })
 
