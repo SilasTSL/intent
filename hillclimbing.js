@@ -1,5 +1,7 @@
 const { array } = require("joi");
 
+const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
 const testSchedule = [
     {
         _id: "6475ed32bac98a75e624a880",
@@ -139,7 +141,7 @@ function generateNeighbors(schedule) {
     for (let unassignedTask of unassignedTasks) {
         const oldTiming = [ ...unassignedTask.timings ];
         unassignedTask.timings = [];
-        const availableSlots = generateAvailableSlots(schedule);
+        const availableSlots = generateAvailableSlots(schedule).filter(slot => days.indexOf(slot.day) >= days.indexOf(unassignedTask.releasedOn) && days.indexOf(slot.day) < days.indexOf(unassignedTask.deadline));;
         const newTimingsSet = new Set();
 
         // Generate new possible timings:
@@ -186,7 +188,6 @@ function generateNeighbors(schedule) {
 function generateAvailableSlots(schedule) {
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     const availableSlots = [];
-  
     for (const day of days) {
         for (let i = 8; i <= 17; i++) {
             const timingStart = (i * 100).toString().padStart(4, "0");
@@ -195,7 +196,6 @@ function generateAvailableSlots(schedule) {
             // Check if the slot conflicts with any existing tasks in the schedule
             const conflictingTask = schedule.some(
             (task) =>
-                task.isAssigned &&
                 task.timings.some(
                 (timing) =>
                     timing.day === day &&
@@ -215,67 +215,34 @@ function generateAvailableSlots(schedule) {
 }
 
 function hillclimb(assignedUnits, unassignedUnits) {
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
     // Initial schedule (Greedy):
-    let unassignedUnitsIndex = 0;
-
-    let current_timings = [];
     let currentBestSchedule = JSON.parse(JSON.stringify(assignedUnits));
-    for (let c = 0; c < 5; c++) {
-        for (let r = 8; r <= 18; r++) {
-            if (unassignedUnitsIndex >= unassignedUnits.length) {
-                break;
+    
+    let availableSlots = generateAvailableSlots(currentBestSchedule);
+    for (let unassignedUnit of unassignedUnits) {
+        const unitReleasedOn = unassignedUnit.releasedOn;
+        const unitDeadline = unassignedUnit.deadline;
+        const availableSlotsForUnit = availableSlots.filter(slot => days.indexOf(slot.day) >= days.indexOf(unitReleasedOn) && days.indexOf(slot.day) < days.indexOf(unitDeadline));
+        let unitTimingLeft = unassignedUnit.duration;
+        let unitTimings = [];
+        while (unitTimingLeft > 0) {
+            // Not enough slots to assign task:
+            if (availableSlotsForUnit.length < 0) {
+                return 0;
             }
-
-            // Remove top task if finished:
-            if (unassignedUnits[unassignedUnitsIndex].hasOwnProperty("timeLeft") && unassignedUnits[unassignedUnitsIndex].timeLeft == 0) {
-                // Combine timings:
-                const mergedTimings = [];
-                let currentTiming = current_timings[0];
-                for (let i = 1; i < current_timings.length; i++) {
-                    const nextTiming = current_timings[i];
-                    if (currentTiming.day == nextTiming.day && currentTiming.timingEnd == nextTiming.timingStart) {
-                        currentTiming.timingEnd = nextTiming.timingEnd;
-                    } else {
-                        mergedTimings.push(currentTiming);
-                        currentTiming = nextTiming;
-                    }
-                }
-                mergedTimings.push(currentTiming);
-                unassignedUnits[unassignedUnitsIndex].timings = mergedTimings;
-                currentBestSchedule.push(unassignedUnits[unassignedUnitsIndex]);
-                current_timings = [];
-                unassignedUnitsIndex++;
-            }
-
-            // Finished assigning all unassigned units:
-            if (unassignedUnitsIndex >= unassignedUnits.length) {
-                break;
-            }
-
-            //Allocate tasks:
-            var currentTask = unassignedUnits[unassignedUnitsIndex];
-            if (assignedUnits.some(assignedUnit => assignedUnit.timings.some( timing => timing.day == days[c] && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r))) {
-                continue;
-            } else {
-                if (!currentTask.hasOwnProperty("timeLeft")) {
-                    currentTask.timeLeft = currentTask.duration - 1;
-                } else {
-                    currentTask.timeLeft -= 1
-                }
-                current_timings.push({
-                    day: days[c],
-                    timingStart: (r.toString() + "00").padStart(4, "0"),
-                    timingEnd: ((r + 1).toString() + "00").padStart(4, "0")
-                })        
-            }
+            unitTimings.push(availableSlotsForUnit[0]);
+            availableSlotsForUnit.shift();
+            unitTimingLeft -= 1;
         }
+        unassignedUnit.timings = mergeTimings(unitTimings);
+        currentBestSchedule.push(unassignedUnit)
+        availableSlots = generateAvailableSlots(currentBestSchedule);
     }
+    
 
     // Calculate score:
     let currentScore = calculateScore(currentBestSchedule);
-    
+    let currentSolution = currentBestSchedule;
 
     // Iterate until no better solution can be found
     while (true) {
@@ -304,13 +271,11 @@ function hillclimb(assignedUnits, unassignedUnits) {
         currentSolution = bestNeighbor;
         currentScore = bestNeighborScore;
     }
-
+    
     // Return the final solution
     return currentSolution;
 }
 
-//console.log(hillclimb(testSchedule, testTasks)[2].timings)
-//console.log(generateAvailableSlots(testSchedule));
 
 testSolution = [
     {
@@ -386,20 +351,5 @@ testSolution = [
     },
 ]
 
-/*
-const possibleNeighbours = generateNeighbors(testSolution);
-let counter = 1;
-for (let neighbour of possibleNeighbours) {
-    console.log("Neighbour #" + counter);
-    for (let unit of neighbour) {
-        console.log(`${unit.title} has timings: `);
-        for (let timing of unit.timings) {
-            console.log(timing);
-        }
-    }
-    counter += 1;
-    console.log("----------");
-}
-*/
 
 module.exports = hillclimb;

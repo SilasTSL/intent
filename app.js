@@ -265,6 +265,10 @@ app.get('/calculate', async (req, res) => {
     const unassignedUnits = await Unit.find({userId: req.user.id, isAssigned: false});
     if (unassignedUnits.length > 0) {
         const optimalSchedule = hillclimb(assignedUnits, unassignedUnits);
+        if (optimalSchedule <= 0) {
+            res.status(400).send('No way to assign tasks within deadlines!');
+
+        }
         for (let unit of optimalSchedule) {
             if (!unit.isAssigned) {
                 unit.isAssigned = true;
