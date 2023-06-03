@@ -227,7 +227,7 @@ function hillclimb(assignedUnits, unassignedUnits) {
         let unitTimings = [];
         while (unitTimingLeft > 0) {
             // Not enough slots to assign task:
-            if (availableSlotsForUnit.length < 0) {
+            if (availableSlotsForUnit.length <= 0) {
                 return 0;
             }
             unitTimings.push(availableSlotsForUnit[0]);

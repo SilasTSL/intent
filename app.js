@@ -266,8 +266,13 @@ app.get('/calculate', async (req, res) => {
     if (unassignedUnits.length > 0) {
         const optimalSchedule = hillclimb(assignedUnits, unassignedUnits);
         if (optimalSchedule <= 0) {
-            res.status(400).send('No way to assign tasks within deadlines!');
-
+            res.send(`
+                <script>
+                    alert('No way to assign tasks within deadlines!');
+                    window.location.href = '/weekly-tasks';
+                </script>
+            `);
+            return;
         }
         for (let unit of optimalSchedule) {
             if (!unit.isAssigned) {
@@ -276,10 +281,14 @@ app.get('/calculate', async (req, res) => {
             }
         }
     } else {
-        res.status(400).send('You have no unassigned tasks!');
+        res.send(`
+            <script>
+                alert('You have no unassigned tasks!');
+                window.location.href = '/weekly-tasks';
+            </script>
+        `);    
+        return;
     }
-
-    res.redirect('/timetable');
 })
 
 //ACCOUNT PAGES:
