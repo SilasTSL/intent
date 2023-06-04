@@ -4,9 +4,79 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stash</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Intent</title>
 </head>
-<body>
-    <h1>HELLO FROM STASH!</h1>
+<body id="landingBody">
+    <nav id="landingNav">
+        <div class="landingNavGroup">
+           <a href="#landingHeroContainer" class="landingNavItem landingNavHome">Intent</a>
+        </div>
+        <div class="landingNavGroup landingRightNavGroup">
+            <a href="#landingHeroContainer" class="landingNavItem">Introduction</a>
+            <a href="#landingSolutionContainer" class="landingNavItem">Solution</a>
+            <a href="#landingBenefitsContainer" class="landingNavItem">Benefits</a>
+            <a href="/login" class="landingNavItem">Login</a>
+        </div>
+    </nav>
+    <div id="landingHeroContainer">
+        <div class="landingLeftHeroContainer">
+            <h1 class="landingHeadline">Unlock Your Productivity,<br>Optimize Your Time</h1>
+            <h2 class="landingSubline"> Maximize Efficiency and Achieve Your Goals with<br>AI-Powered Timetable Optimization.</h2>
+            <a class="landingButton button cta-button" href="/register">Take charge of your time now!</a>
+            <div class="landingTickContainer">
+                <div class="tickRow"><img src="../images/tick.png" alt="Tick" class="landingTick"> Easily keep track of all your weekly tasks</div>
+                <div class="tickRow"><img src="../images/tick.png" alt="Tick" class="landingTick"> Organise your tasks and lessons automatically</div>
+                <div class="tickRow"><img src="../images/tick.png" alt="Tick" class="landingTick"> Be intentional with your time every day</div>
+            </div>
+        </div>
+        <img class="landingHeroImage" src="../images/landing-hero.png" alt="Man planning tasks">
+    </div>
+    <div id="landingSolutionContainer">
+        <img src="../images/landing-solution.png" alt="Solution" class="landingSolutionImage">
+        <div class="landingSolutionRightContainer">
+            <h1 class="landingSolutionTitle">Problem/Solution</h1>
+            <h2 class="landingProblemHeadline"><span class="landingBold">Balancing multiple tasks, deadlines, and personal commitments can be impossibly hard.</span> In today's busy world, people often struggle to prioritize their time effectively, leading to inefficiency and missed opportunities.<br><br>Having multiple problem sets, tutorials, recitation, lab assignments while keeping up to date with lecture material can quickly start to feel overwhelming...</h2>
+            <h2 class="landingSolutionHeadline"><span class="landingBold">With Intent, you can take control of your time and become more intentional in how you spend it.</span> By harnessing the power of machine learning, Intent analyzes your tasks, preferences, and deadlines to generate a personalized, optimized timetable.</h2>
+        </div>
+    </div>
+    <div id="landingBenefitsContainer">
+        <h1 class="landingBenefitsTitle">Introducing Intent!</h1>
+        <div class="landingBenefitsRow">
+            <div class="landingBenefitContainer">
+                <img src="../icons/ontask-icon.png" alt="" class="landingBenefitIcon">
+                <h1 class="landingBenefitTitle">On Task</h1>
+                <p class="landingBenefitSubtitle">Assign your tasks with our algorithm to finish all your tasks on time</p>
+            </div>
+            <div class="landingBenefitContainer">
+                <img src="../icons/efficient-icon.png" alt="" class="landingBenefitIcon">
+                <h1 class="landingBenefitTitle">Efficient</h1>
+                <p class="landingBenefitSubtitle">Our algorithm is optimised to ensure efficient use of your time</p>
+            </div>
+            <div class="landingBenefitContainer">
+                <img src="../icons/intentional-icon.png" alt="" class="landingBenefitIcon">
+                <h1 class="landingBenefitTitle">Intentional</h1>
+                <p class="landingBenefitSubtitle">Know what you need to do to be intentional with every minute of your day</p>
+            </div>
+        </div>
+    </div>
+    <a href="/register" class="landingDirectCTAButton button">Try it out for Free today!</a>
+    <footer id="landingFooterContainer">
+        <div class="landingFooterLeftContainer">
+            <h1 class="landingFooterContactUs">Contact Us</h1>
+            <h3 class="landingFooterContactUsSubtitle">If you ever need any help or have any ideas to improve the app, feel free to reach out!</h3>
+        </div>
+        <div class="landingFooterSocialsContainer">
+            <a href="mailto:silastaysl@gmail.com" class="landingFooterSocialLink">
+                <img src="../icons/email-icon.png" alt="" class="landingFooterSocial">
+            </a>
+            <a href="https://www.linkedin.com/in/silas-tay-97a523208/" class="landingFooterSocialLink">
+                <img src="../icons/linkedin-icon.png" alt="" class="landingFooterSocial">
+            </a>
+            <a href="tg://resolve?domain=SilasTSL" class="landingFooterSocialLink">
+                <img src="../icons/telegram-icon.png" alt="" class="landingFooterSocial">
+            </a>
+        </div>
+    </footer>
 </body>
 </html>

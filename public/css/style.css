@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Quicksand&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Quicksand:wght@400;700&display=swap');
 /* General */
 #mainBody {
   display: flex;
@@ -43,6 +42,279 @@ a {
   margin-bottom: 1rem;
   margin-left: 2rem;
   font-family: 'Figtree', sans-serif;
+}
+
+/* Landing Page */
+#landingBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;  
+  margin: 0;
+  padding: 0;
+  font-family: 'Figtree', sans-serif;
+}
+
+#landingNav {
+  width: 100%;
+  height: 10ch;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.landingNavItem {
+  text-decoration: none;
+  color: #696969;
+  transition-duration: 0.3s;
+}
+
+.landingNavItem:hover {
+  transform: scale(1.1);
+}
+
+.landingNavHome {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: black;
+}
+
+.landingNavGroup {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+.landingRightNavGroup {
+  width: 30%;
+  margin-right: 15%;
+}
+
+#landingHeroContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 90%;
+  margin-top: 2rem;
+  margin-left: 3rem;
+}
+
+.landingLeftHeroContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 40%;
+}
+
+.landingHeroImage {
+  object-fit: cover;
+  width: 44%;
+}
+
+.landingHeadline {
+  color: black;
+  font-size: 3.3rem;
+  font-weight: 800;
+  margin-bottom: 0;
+}
+
+.landingSubline {
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: #696969;
+  margin-bottom: 1.5rem;
+}
+
+.landingButton {
+  width: fit-content;
+  padding: 0.5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  font-size: 1.3rem;
+  background-color: #f9744b;
+  transition-duration: 0.3s;
+  margin-bottom: 1rem;
+}
+
+.landingButton:hover {
+  box-shadow: 0 0 15px 6px rgba(243, 156, 18, 0.7);
+  background-color: #FEB615;
+  transform: scale(1.03);
+}
+
+.landingButton:hover::before {
+  opacity: 1;
+}
+
+.landingTickContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.2rem;
+}
+
+.tickRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #696969;
+}
+
+.landingTick {
+  width: 1.3rem;
+  margin-right: 1rem;
+}
+
+#landingSolutionContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 90%;
+  margin-top: 7rem;                                          
+}
+
+.landingSolutionImage {
+  width: 50%;
+  height: auto;
+  object-fit: contain;
+  margin-left: 1rem;
+  margin-right: 0.5rem;
+}
+
+.landingSolutionRightContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  margin-left: 0.5rem;
+  margin-right: 1rem;
+}
+
+.landingSolutionTitle {
+  font-size: 1.8rem;
+  color: #f9744b; 
+}
+
+.landingProblemHeadline {
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin-bottom: 2rem;
+  color: #7e7e7e;
+}
+
+.landingBold {
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: black
+}
+
+.landingSolutionHeadline {
+  font-family: 'Figtree', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin-bottom: 2rem;
+  color: #7e7e7e;
+}
+
+#landingBenefitsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 7rem;
+}
+
+.landingBenefitsTitle {
+  font-size: 2.5rem;
+  color: #f9744b;
+}
+
+.landingBenefitsRow {
+  margin-top: 4rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
+
+.landingBenefitContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.landingBenefitIcon {
+  width: 6.5rem;
+}
+
+.landingBenefitTitle {
+  font-size: 2.5rem;
+}
+
+.landingBenefitSubtitle {
+  color: #7e7e7e;
+  padding: 2.5rem;
+  padding-top: 0;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.landingDirectCTAButton {
+  background-color: #f9744b;
+  font-size: 2.1rem;
+  text-decoration: none;
+  padding: 2.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  transition-duration: 0.5s;
+  margin-top: 4rem;
+  border-radius: 10px;
+}
+
+.landingDirectCTAButton:hover {
+  box-shadow: 0 0 15px 6px rgba(243, 156, 18, 0.7);
+  background-color: #FEB615;
+  transform: scale(1.03);
+}
+
+#landingFooterContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10rem;
+  height: 30vh;
+  background-color: black;
+  margin: 0;
+  width: 100%;
+  margin-top: 7rem;
+  margin-bottom: 0;
+  color: white;
+}
+
+.landingFooterSocialsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 2rem;
+}
+
+.landingFooterSocialLink {
+  text-decoration: none;
+  transition-duration: 0.3s;
+}
+
+.landingFooterSocialLink:hover {
+  transform: scale(1.1);
+}
+
+.landingFooterSocial {
+  width: 3rem;
+  margin-left: 2rem;
 }
 
 /* NavBar */
