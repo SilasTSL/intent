@@ -134,7 +134,16 @@ app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
 //WEEKLY TASK PAGES:
 //GET weekly task page:
 app.get('/weekly-tasks', catchAsync(async (req, res) => {
-    const weeklyTasks = await Unit.find({userId: req.user.id, type: "WeeklyTask"});
+    const weeklyTasks = await Unit.find({userId: req.user.id, type: "WeeklyTask"})
+    weeklyTasks.sort((a, b) => {
+        if (a.isAssigned && !b.isAssigned) {
+          return 1; // 'a' comes after 'b'
+        } else if (!a.isAssigned && b.isAssigned) {
+          return -1; // 'a' comes before 'b'
+        } else {
+          return 0; // 'a' and 'b' remain in the same order
+        }
+    });
     res.render('weekly-tasks', { weeklyTasks });
 }))
 
