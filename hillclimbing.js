@@ -75,13 +75,16 @@ function calculateScore(schedule) {
     const timings = [].concat(...schedule.map(unit => unit.timings));
     const backToBackPenalty = 10;
     const mealTimePenalty = 30;
+    const eveningTimePlus = 10;
 
     const lunchStart = "1200";
     const lunchEnd = "1400";
 
+    const eveningTime = "1500";
+
     let score = 0;
     let previousTiming = timings[0];
-    //Check for back-to-back units:
+    // Check for back-to-back units:
     for (let i = 0; i < timings.length - 1; i++) {
         currentTiming = timings[i];
         for (let j = i + 1; j < timings.length; j++) {
@@ -91,10 +94,14 @@ function calculateScore(schedule) {
             }
         }
     }
-    // Check for units during meal times
     for (let timing of timings) {
+        // Check for units during meal times
         if (timing.timingStart <= lunchEnd && timing.timingEnd >= lunchStart) {
             score -= mealTimePenalty;
+        }
+        // Check for units in evening (+)
+        if (timing.timingStart >= eveningTime || timing.timingEnd >= eveningTime) {
+            score += eveningTimePlus;
         }
     }
 
@@ -102,8 +109,15 @@ function calculateScore(schedule) {
 }
 
 function mergeTimings(timings) {
-    // Sort the timings based on the start time
-    const sortedTimings = timings.sort((a, b) => a.timingStart.localeCompare(b.timingStart));
+    const sortedTimings = timings.sort((a, b) => {
+        const dayComparison = a.day.localeCompare(b.day);
+    
+        if (dayComparison !== 0) {
+            return dayComparison;
+        } else {
+            return a.timingStart.localeCompare(b.timingStart);
+        }
+    });
   
     const mergedTimings = [];
     let currentTiming = sortedTimings[0];
@@ -115,8 +129,12 @@ function mergeTimings(timings) {
             currentTiming.day === nextTiming.day &&
             currentTiming.timingEnd >= nextTiming.timingStart
         ) {
-            // Merge the next timing into the current timing
-            currentTiming.timingEnd = nextTiming.timingEnd;
+            // Create a new merged timing object
+            currentTiming = {
+            day: currentTiming.day,
+            timingStart: currentTiming.timingStart,
+            timingEnd: Math.max(currentTiming.timingEnd, nextTiming.timingEnd),
+            };
         } else {
             // Add the current timing to the merged list
             mergedTimings.push(currentTiming);
@@ -127,6 +145,11 @@ function mergeTimings(timings) {
   
     // Add the last timing to the merged list
     mergedTimings.push(currentTiming);
+
+    // Check if the last timing has already been added
+    if (!mergedTimings.includes(sortedTimings[sortedTimings.length - 1])) {
+        mergedTimings.push(sortedTimings[sortedTimings.length - 1]);
+    }
   
     return mergedTimings;
 }
@@ -137,51 +160,31 @@ function generateNeighbors(schedule) {
     // Filter unassigned tasks
     const unassignedTasks = schedule.filter((task) => !task.isAssigned);
     
-    // For each unassigned task, pick one at a time and try assigning it to 10 random possible timings:
-    for (let unassignedTask of unassignedTasks) {
-        const oldTiming = [ ...unassignedTask.timings ];
-        unassignedTask.timings = [];
-        const availableSlots = generateAvailableSlots(schedule).filter(slot => days.indexOf(slot.day) >= days.indexOf(unassignedTask.releasedOn) && days.indexOf(slot.day) < days.indexOf(unassignedTask.deadline));;
-        const newTimingsSet = new Set();
-
-        // Generate new possible timings:
-        for (let i = 0; i < 10; i++) {
-            let currentTiming = [];
-            let taskDuration = unassignedTask.duration;
-            let fullScheduleCounter = 0; // To prevent infinite loop if task cannot be assigned!
-            let isFullSchedule = false;
-            while (taskDuration > 0) {
-                if (fullScheduleCounter > 10) {
-                    isFullSchedule = true;
-                    break
-                }
-                let randomTimeslot = availableSlots[Math.floor(Math.random() * availableSlots.length)];
-                if (currentTiming.includes(randomTimeslot)) {
-                    fullScheduleCounter += 1;
-                    continue;
-                }
-                currentTiming.push(randomTimeslot);
-                taskDuration -= 1;
-            }
-            if (isFullSchedule) {
-                continue;
-            }
-
-            // Merge each timing in currentTimings:
-            const mergedTimings = mergeTimings(currentTiming);
-            newTimingsSet.add(mergedTimings);
+    // Pick a random unassigned task and generate 50 random timings:
+    const pickedTask = unassignedTasks[Math.floor(Math.random() * unassignedTasks.length)];
+    pickedTask.timings = [];
+    const availableSlots = generateAvailableSlots(schedule).filter(slot => days.indexOf(slot.day) >= days.indexOf(pickedTask.releasedOn) && days.indexOf(slot.day) < days.indexOf(pickedTask.deadline));
+    // Not enough available slots for this task:
+    if (availableSlots.length < pickedTask.duration) {
+        return [];
+    }
+    const possibleTimings = new Set();
+    for (let i = 0; i < 50; i++) {
+        let taskDuration = pickedTask.duration;
+        const currentTiming = [];
+        while (taskDuration > 0) {
+            currentTiming.push(availableSlots[Math.floor(Math.random() * availableSlots.length)]);
+            taskDuration -= 1;
         }
-        
-        // For each new timing, get new neighbour:
-        for (let newTiming of newTimingsSet) {
-            unassignedTask.timings = newTiming;
-            neighbours.push(JSON.parse(JSON.stringify(schedule)));
-        }
-
-        // Assign old timing to selected task:
-        unassignedTask.timings = oldTiming;
+        const mergedTiming = mergeTimings(currentTiming);
+        possibleTimings.add(mergedTiming);
     }
 
+    for (let timing of possibleTimings) {
+        pickedTask.timings = timing;
+        neighbours.push(JSON.parse(JSON.stringify(schedule)));
+    }
+    
     return neighbours;
 }
   

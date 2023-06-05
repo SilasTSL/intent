@@ -289,6 +289,7 @@ app.get('/calculate', async (req, res) => {
         `);    
         return;
     }
+    res.redirect('/timetable');
 })
 
 //ACCOUNT PAGES:
