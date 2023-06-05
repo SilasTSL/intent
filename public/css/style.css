@@ -75,6 +75,10 @@ a {
   transform: scale(1.1);
 }
 
+.landingNavLogin:hover {
+  color: #f9744b;
+}
+
 .landingNavHome {
   font-size: 1.8rem;
   font-weight: 800;
@@ -386,7 +390,7 @@ a {
   padding: 1.5rem;
   padding-top: calc(10vh + 1rem);
   padding-bottom: calc(5vh + 1rem);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .sidebarGroup {
