@@ -195,70 +195,9 @@ app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
 
 
 //HILL CLIMBING:
-//Hill climbing function:
-/*
-async function hillclimb(assignedUnits, unassignedUnits) {
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
-    //GREEDY:
-    let unassignedUnitsIndex = 0;
-
-    let current_timings = [];
-    for (let c = 0; c < 5; c++) {
-        for (let r = 8; r < 18; r++) {
-            if (unassignedUnitsIndex >= unassignedUnits.length) {
-                break;
-            }
-
-            // Remove top task if finished:
-            if (unassignedUnits[unassignedUnitsIndex].hasOwnProperty("timeLeft") && unassignedUnits[unassignedUnitsIndex].timeLeft == 0) {
-                // Combine timings:
-                const mergedTimings = [];
-                let currentTiming = current_timings[0];
-                for (let i = 1; i < current_timings.length; i++) {
-                    const nextTiming = current_timings[i];
-                    if (currentTiming.day == nextTiming.day && currentTiming.timingEnd == nextTiming.timingStart) {
-                        currentTiming.timingEnd = nextTiming.timingEnd;
-                    } else {
-                        mergedTimings.push(currentTiming);
-                        currentTiming = nextTiming;
-                    }
-                }
-                mergedTimings.push(currentTiming)
-                await Unit.findByIdAndUpdate(unassignedUnits[unassignedUnitsIndex]._id, { timings: mergedTimings, isAssigned: true });
-                current_timings = [];
-                unassignedUnitsIndex++;
-            }
-
-            // Finished assigning all unassigned units:
-            if (unassignedUnitsIndex >= unassignedUnits.length) {
-                break;
-            }
-
-            //Allocate tasks:
-            var currentTask = unassignedUnits[unassignedUnitsIndex];
-            if (assignedUnits.some(assignedUnit => assignedUnit.timings.some( timing => timing.day == days[c] && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r))) {
-                continue;
-            } else {
-                if (!currentTask.hasOwnProperty("timeLeft")) {
-                    currentTask.timeLeft = currentTask.duration - 1;
-                } else {
-                    currentTask.timeLeft -= 1
-                }
-                current_timings.push({
-                    day: days[c],
-                    timingStart: (r.toString() + "00").padStart(4, "0"),
-                    timingEnd: ((r + 1).toString() + "00").padStart(4, "0")
-                })        
-            }
-        }
-    }
-}
-*/
-
+//Hillclimbing function
 const hillclimb = require('./hillclimbing.js');
   
-
 //GET calculate timetable:
 app.get('/calculate', async (req, res) => {
     const assignedUnits = await Unit.find({userId: req.user.id, isAssigned: true});

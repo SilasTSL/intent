@@ -503,8 +503,25 @@ td {
   margin-bottom: 1.5rem;
 }
 
-.confirmButton {
-  margin-top: 1rem;
+.assignButton {
+  font-size: 1.2rem;
+  text-decoration: none;
+  margin-top: 0.6rem;
+  margin-left: 2rem;
+  color: white;
+  background-color: #f9744b;
+  padding: 0.2rem;
+  padding-left: 2.2rem;
+  padding-right: 2.2rem;
+  border-radius: 3px;
+  transition-duration: 0.3s;
+}
+
+.assignButton:hover {
+  color: white;
+  box-shadow: 0 0 15px 6px rgba(243, 156, 18, 0.7);
+  background-color: #FEB615;
+  transform: scale(1.1);
 }
 
 .tasksBody {
@@ -517,17 +534,18 @@ td {
 }
 
 .task {
-  background-color: lightblue;
   width: 75%;
   margin-bottom: 20px;
   padding: 15px;
-  border-radius: 15px;
+  border-radius: 10px;
+  border: 1px solid black;
   cursor: pointer;
   transition-duration: 0.3s;
 }
 
 .task:hover {
-  opacity: 0.65;
+  background-color: #ebebeb;
+  transform: scale(1.03);
 }
 
 /* Form Pages */
