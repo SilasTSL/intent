@@ -13,7 +13,7 @@
     "passport-local-mongoose": "^8.0.0"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node app"
   },
   "engines": {
     "node": "18.x"
