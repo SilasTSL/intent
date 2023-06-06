@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'intent-app'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0D2F692DCA06437FA12B4EE62F1CF9B0 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FDEC79F46BE34BBF81B793E2687B848D }}
           package: .
