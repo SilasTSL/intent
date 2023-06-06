@@ -2,7 +2,7 @@
 <div id="tasksBodyContainer">
     <div class="taskIndexTitleRow">
         <h1 class="pageTitle">Tasks</h1>
-        <a href="/calculate" class="assignButton button">Assign</a>
+        <div class="assignButton button">Assign</div>
     </div>
     <div class="tasksBody">
     <% for (let weeklyTask of weeklyTasks) { %>
@@ -20,4 +20,16 @@
     <% } %>
     </div>
 </div>
+<script>
+    const weeklyTasks = JSON.parse('<%- JSON.stringify(weeklyTasks) %>');
+    const assignButton = document.getElementsByClassName('assignButton')[0];
+    assignButton.addEventListener('click', function() {
+        // No unassigned tasks
+        if (weeklyTasks.filter(task => !task.isAssigned).length <= 0) {
+            alert('You have no unassigned tasks!');
+        } else {
+            window.location.href = '/calculate';
+        }
+    });
+</script>
 

@@ -13,8 +13,11 @@ const Unit = require('./models/unit');
 
 const app = express();
 
+// CONFIG:
+const dbUrl = "mongodb+srv://silastaysl:0039200b@cluster0.dujsufb.mongodb.net/?retryWrites=true&w=majority"
+
 //Connecting to database:
-mongoose.connect('mongodb://localhost:27017/stash-db', {
+mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -211,31 +214,24 @@ const hillclimb = require('./hillclimbing.js');
 app.get('/calculate', async (req, res) => {
     const assignedUnits = await Unit.find({userId: req.user.id, isAssigned: true});
     const unassignedUnits = await Unit.find({userId: req.user.id, isAssigned: false});
-    if (unassignedUnits.length > 0) {
-        const optimalSchedule = hillclimb(assignedUnits, unassignedUnits);
-        if (optimalSchedule <= 0) {
-            res.send(`
-                <script>
-                    alert('No way to assign tasks within deadlines!');
-                    window.location.href = '/weekly-tasks';
-                </script>
-            `);
-            return;
-        }
-        for (let unit of optimalSchedule) {
-            if (!unit.isAssigned) {
-                unit.isAssigned = true;
-                await Unit.findByIdAndUpdate(unit._id, unit);
-            }
-        }
-    } else {
+    
+    const optimalSchedule = hillclimb(assignedUnits, unassignedUnits);
+    // Not enough timeslots to finish before deadline
+    if (optimalSchedule <= 0) {
         res.send(`
             <script>
-                alert('You have no unassigned tasks!');
+                alert('No way to assign tasks within deadlines!');
                 window.location.href = '/weekly-tasks';
             </script>
-        `);    
+        `);
         return;
+    }
+
+    for (let unit of optimalSchedule) {
+        if (!unit.isAssigned) {
+            unit.isAssigned = true;
+            await Unit.findByIdAndUpdate(unit._id, unit);
+        }
     }
     res.redirect('/timetable');
 })
