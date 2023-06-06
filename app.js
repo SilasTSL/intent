@@ -8,6 +8,8 @@ const ExpressError = require('./utils/ExpressError');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const MongoDBStore = require('connect-mongo');
+
 const User = require('./models/user');
 const Unit = require('./models/unit');
 
@@ -43,7 +45,20 @@ app.use(methodOverride('_method'));
 app.use(express.static('public'));
 
 //Configuring Session:
+const store = MongoDBStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: 'thisshouldbeabettersecret!'
+    }
+});
+
+store.on("error", function (e) {
+    console.log("SESSION STORE ERROR", e);
+})
+
 const sessionConfig = {
+    store: store,
     secret: "thisshouldbeabettersecret!",
     resave: false,
     saveUninitialized: true
