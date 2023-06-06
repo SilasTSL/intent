@@ -15,6 +15,8 @@ const Unit = require('./models/unit');
 
 const app = express();
 
+console.log("TEST FROM APP.JS!")
+
 // CONFIG:
 const dbUrl = "mongodb+srv://silastaysl:0039200b@cluster0.dujsufb.mongodb.net/?retryWrites=true&w=majority"
 
@@ -29,6 +31,8 @@ db.on("error", console.error.bind(console, "conection error:"));
 db.once("open", () => {
     console.log("Database connected");
 });
+
+console.log("AFTER DATABASE!");
 
 //Setting app engine to ejs mate:
 app.engine('ejs', ejs_mate);
