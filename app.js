@@ -16,7 +16,7 @@ const Unit = require('./models/unit');
 const app = express();
 
 // CONFIG:
-const dbUrl = "mongodb+srv://silastaysl:0039200b@cluster0.dujsufb.mongodb.net/?retryWrites=true&w=majority"
+const dbUrl = process.env.DB_URL || "mongodb+srv://silastaysl:0039200b@cluster0.dujsufb.mongodb.net/?retryWrites=true&w=majority"
 
 //Connecting to database:
 mongoose.connect(dbUrl, {
@@ -45,11 +45,12 @@ app.use(methodOverride('_method'));
 app.use(express.static('public'));
 
 //Configuring Session:
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!'
 const store = MongoDBStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60,
     crypto: {
-        secret: 'thisshouldbeabettersecret!'
+        secret: secret
     }
 });
 
@@ -59,7 +60,7 @@ store.on("error", function (e) {
 
 const sessionConfig = {
     store: store,
-    secret: "thisshouldbeabettersecret!",
+    secret: secret,
     resave: false,
     saveUninitialized: true
 }
