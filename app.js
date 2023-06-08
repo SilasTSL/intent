@@ -257,7 +257,6 @@ app.get('/calculate', async (req, res) => {
 //GET register page
 app.get('/register', (req, res) => {
     if (req.user) {
-        console.log("Already logged in!");
         res.redirect('/timetable');
     } else {
         res.render('authentication/register');
@@ -283,8 +282,13 @@ app.post('/register', catchAsync(async (req, res) => {
 
 //GET login page
 app.get('/login', (req, res) => {
-    const loginFailure = req.query.failure;
-    res.render('authentication/login', { loginFailure });
+    if (req.user) {
+        res.redirect('/timetable');
+    } else {
+        const loginFailure = req.query.failure;
+        res.render('authentication/login', { loginFailure });
+    }
+
 })
 
 //POST login
