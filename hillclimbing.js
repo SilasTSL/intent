@@ -73,9 +73,22 @@ const testTasks = [
 function calculateScore(schedule) {
 
     const timings = [].concat(...schedule.map(unit => unit.timings));
+
+    // Sort timings:
+    const sortedTimings = timings.sort((a, b) => {
+        const dayComparison = a.day.localeCompare(b.day);
+    
+        if (dayComparison !== 0) {
+            return dayComparison;
+        } else {
+            return a.timingStart.localeCompare(b.timingStart);
+        }
+    });
     const backToBackPenalty = 10;
-    const mealTimePenalty = 30;
+    const mealTimePenalty = 50;
     const eveningTimePlus = 10;
+    const singleUnitPenalty = 2;
+    const tooLongUnitPenalty = 4;
 
     const lunchStart = "1200";
     const lunchEnd = "1400";
@@ -83,17 +96,21 @@ function calculateScore(schedule) {
     const eveningTime = "1500";
 
     let score = 0;
-    let previousTiming = timings[0];
+    let previousTiming = sortedTimings[0];
     // Check for back-to-back units:
-    for (let i = 0; i < timings.length - 1; i++) {
-        currentTiming = timings[i];
-        for (let j = i + 1; j < timings.length; j++) {
-            previousTiming = timings[j];
+    for (let i = 0; i < sortedTimings.length - 1; i++) {
+        currentTiming = sortedTimings[i];
+        for (let j = i + 1; j < sortedTimings.length; j++) {
+            previousTiming = sortedTimings[j];
             if ((currentTiming.timingStart == previousTiming.timingEnd || currentTiming.timingEnd == previousTiming.timingStart) && currentTiming.day == previousTiming.day) {
                 score -= backToBackPenalty;
             }
         }
     }
+    
+    // Not too many single hour units:
+    score -= timings.length * singleUnitPenalty;
+
     for (let timing of timings) {
         // Check for units during meal times
         if (timing.timingStart <= lunchEnd && timing.timingEnd >= lunchStart) {
@@ -103,12 +120,18 @@ function calculateScore(schedule) {
         if (timing.timingStart >= eveningTime || timing.timingEnd >= eveningTime) {
             score += eveningTimePlus;
         }
+        // Not too long units
+        const tooLongPenalty = parseInt(timing.timingEnd.slice(0, 2)) - parseInt(timing.timingStart.slice(0, 2)) * tooLongUnitPenalty;
+        if (tooLongPenalty > 0) {
+            score -= tooLongPenalty;
+        }
     }
 
     return score;
 }
 
 function mergeTimings(timings) {
+    // Sort the timings based on day and timing start
     const sortedTimings = timings.sort((a, b) => {
         const dayComparison = a.day.localeCompare(b.day);
     
@@ -120,39 +143,30 @@ function mergeTimings(timings) {
     });
   
     const mergedTimings = [];
-    let currentTiming = sortedTimings[0];
   
-    for (let i = 1; i < sortedTimings.length; i++) {
-        const nextTiming = sortedTimings[i];
+    for (let timing of sortedTimings) {
+        const lastMergedTiming = mergedTimings[mergedTimings.length - 1];
     
         if (
-            currentTiming.day === nextTiming.day &&
-            currentTiming.timingEnd >= nextTiming.timingStart
+            lastMergedTiming &&
+            lastMergedTiming.day === timing.day &&
+            lastMergedTiming.timingEnd === timing.timingStart
         ) {
-            // Create a new merged timing object
-            currentTiming = {
-            day: currentTiming.day,
-            timingStart: currentTiming.timingStart,
-            timingEnd: Math.max(currentTiming.timingEnd, nextTiming.timingEnd),
-            };
+            // Extend the last merged timing
+            lastMergedTiming.timingEnd = timing.timingEnd;
         } else {
-            // Add the current timing to the merged list
-            mergedTimings.push(currentTiming);
-            // Move to the next timing
-            currentTiming = nextTiming;
+            // Add the timing as a new merged timing
+            mergedTimings.push({
+            day: timing.day,
+            timingStart: timing.timingStart,
+            timingEnd: timing.timingEnd
+            });
         }
-    }
-  
-    // Add the last timing to the merged list
-    mergedTimings.push(currentTiming);
-
-    // Check if the last timing has already been added
-    if (!mergedTimings.includes(sortedTimings[sortedTimings.length - 1])) {
-        mergedTimings.push(sortedTimings[sortedTimings.length - 1]);
     }
   
     return mergedTimings;
 }
+  
 
 function generateNeighbors(schedule) {
     const neighbours = [];
@@ -173,8 +187,14 @@ function generateNeighbors(schedule) {
         let taskDuration = pickedTask.duration;
         const currentTiming = [];
         while (taskDuration > 0) {
-            currentTiming.push(availableSlots[Math.floor(Math.random() * availableSlots.length)]);
-            taskDuration -= 1;
+            const randomIndex = Math.floor(Math.random() * availableSlots.length);
+            const availableSlot = availableSlots[randomIndex];
+            
+            // Check if the available slot is already in the current timing
+            if (!currentTiming.includes(availableSlot)) {
+                currentTiming.push(availableSlot);
+                taskDuration -= 1;
+            }
         }
         const mergedTiming = mergeTimings(currentTiming);
         possibleTimings.add(mergedTiming);
