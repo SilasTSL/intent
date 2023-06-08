@@ -78,6 +78,7 @@ passport.deserializeUser(User.deserializeUser());
 
 //Locals:
 app.use(async (req, res, next) => {
+    // Allows all templates access to user:
     res.locals.user = req.user;
     next();
 })
@@ -255,7 +256,12 @@ app.get('/calculate', async (req, res) => {
 //ACCOUNT PAGES:
 //GET register page
 app.get('/register', (req, res) => {
-    res.render('authentication/register');
+    if (req.user) {
+        console.log("Already logged in!");
+        res.redirect('/timetable');
+    } else {
+        res.render('authentication/register');
+    }
 })
 
 //POST register
