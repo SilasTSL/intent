@@ -37,7 +37,7 @@
                         <label class="form-label" for="timingStart0">Start</label>
                         <select class="form-select" id="timingStart0" name="lesson[timings][0][timingStart]" required>
                             <option value="" selected disabled>Select a starting time</option>
-                            <% for (let j = 8; j <= 17; j++) { %>
+                            <% for (let j = 8; j <= 18; j++) { %>
                                 <% let time = j < 10 ? '0' + j : j; %>
                                 <option value="<%= time %>00"><%= time %>:00</option>
                             <% } %>
@@ -47,7 +47,7 @@
                         <label class="form-label" for="timingEnd0">End</label>
                         <select class="form-select" id="timingEnd0" name="lesson[timings][0][timingEnd]" required>
                             <option value="" selected disabled>Select an ending time</option>
-                            <% for (let j = 9; j <= 17; j++) { %>
+                            <% for (let j = 9; j <= 18; j++) { %>
                                 <% let time = j < 10 ? '0' + j : j; %>
                                 <option value="<%= time %>00"><%= time %>:00</option>
                             <% } %>
@@ -86,7 +86,7 @@
                 <label class="form-label" for="timingStart${index}">Start</label>
                 <select class="form-select" id="timingStart${index}" name="lesson[timings][${index}][timingStart]" required>
                     <option value="" selected disabled>Select a starting time</option>
-                    <% for (let j = 8; j <= 17; j++) { %>
+                    <% for (let j = 8; j <= 18; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
                         <option value="<%= time %>00"><%= time %>:00</option>
                     <% } %>
@@ -96,7 +96,7 @@
                 <label class="form-label" for="timingEnd${index}">End</label>
                 <select class="form-select" id="timingEnd${index}" name="lesson[timings][${index}][timingEnd]" required>
                     <option value="" selected disabled>Select an ending time</option>
-                    <% for (let j = 9; j <= 17; j++) { %>
+                    <% for (let j = 9; j <= 18; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
                         <option value="<%= time %>00"><%= time %>:00</option>
                     <% } %>

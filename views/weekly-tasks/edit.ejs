@@ -61,7 +61,7 @@
                             <label class="form-label" for="timingStart<%= i %>">Start</label>
                             <select class="form-select" id="timingStart<%= i %>" name="task[timings][<%= i %>][timingStart]" required>
                                 <option value="" selected disabled>Select a starting time</option>
-                                <% for (let j = 8; j <= 17; j++) { %>
+                                <% for (let j = 8; j <= 18; j++) { %>
                                     <% let time = j < 10 ? '0' + j : j; %>
                                     <option value="<%= time %>00" <% if (task.timings[i].timingStart === time + '00') { %> selected <% } %>><%= time %>:00</option>
                                 <% } %>
@@ -123,7 +123,7 @@
                 <label class="form-label" for="timingStart${index}">Start</label>
                 <select class="form-select" id="timingStart${index}" name="task[timings][${index}][timingStart]" required>
                     <option value="" selected disabled>Select a starting time</option>
-                    <% for (let j = 8; j <= 17; j++) { %>
+                    <% for (let j = 8; j <= 18; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
                         <option value="<%= time %>00"><%= time %>:00</option>
                     <% } %>
