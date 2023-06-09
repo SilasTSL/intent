@@ -7,4 +7,4 @@ Tech Stack:
 - Express.js
 - MongoDB
 - Azure
-- MongoDB Atlas
+- Deployed on Render
