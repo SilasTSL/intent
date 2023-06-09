@@ -1,5 +1,10 @@
 <% layout('layouts/boilerplate')%>
 <div id="tasksBodyContainer">
+    <div id="loadingScreenWrapper">
+        <div class="loading">
+        </div>
+    </div>
+
     <div class="taskIndexTitleRow">
         <h1 class="pageTitle">Tasks</h1>
         <div class="assignButton button">Assign</div>
@@ -23,13 +28,43 @@
 <script>
     const weeklyTasks = JSON.parse('<%- JSON.stringify(weeklyTasks) %>');
     const assignButton = document.getElementsByClassName('assignButton')[0];
-    assignButton.addEventListener('click', function() {
+
+    function showLoadingScreen() {
+        console.log("Showing Loading Screen!")
+        document.getElementById('loadingScreenWrapper').style.display = 'flex';
+    }
+
+    function hideLoadingScreen() {
+        console.log("Hiding Loading Screen!")
+        document.getElementById('loadingScreenWrapper').style.display = 'none';
+    }
+
+    function assignOnClick() {
         // No unassigned tasks
         if (weeklyTasks.filter(task => !task.isAssigned).length <= 0) {
             alert('You have no unassigned tasks!');
-        } else {
-            window.location.href = '/calculate';
+            return;
         }
-    });
+
+        // Display loading screen:
+        showLoadingScreen();
+
+        fetch('/assign')
+        .then(response => {
+            if (response.ok) {
+                window.location.href = '/timetable';
+            } else if (response.status === 401) {
+                // No way to assign
+                alert('No way to assign tasks within deadlines!');
+                hideLoadingScreen();
+            } else {
+                // Something went wrong
+                alert("Something went wrong! Please refresh and try again.");
+                hideLoadingScreen();
+            }
+        })
+    }
+
+    assignButton.addEventListener('click', assignOnClick);
 </script>
 

@@ -227,20 +227,15 @@ app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
 //Hillclimbing function
 const hillclimb = require('./hillclimbing.js');
   
-//GET calculate timetable:
-app.get('/calculate', async (req, res) => {
+//GET assign timetable:
+app.get('/assign', async (req, res) => {
     const assignedUnits = await Unit.find({userId: req.user.id, isAssigned: true});
     const unassignedUnits = await Unit.find({userId: req.user.id, isAssigned: false});
     
     const optimalSchedule = hillclimb(assignedUnits, unassignedUnits);
     // Not enough timeslots to finish before deadline
     if (optimalSchedule <= 0) {
-        res.send(`
-            <script>
-                alert('No way to assign tasks within deadlines!');
-                window.location.href = '/weekly-tasks';
-            </script>
-        `);
+        res.sendStatus(401);
         return;
     }
 
@@ -250,7 +245,7 @@ app.get('/calculate', async (req, res) => {
             await Unit.findByIdAndUpdate(unit._id, unit);
         }
     }
-    res.redirect('/timetable');
+    res.sendStatus(200);
 })
 
 //ACCOUNT PAGES:
