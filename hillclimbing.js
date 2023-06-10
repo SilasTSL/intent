@@ -87,8 +87,8 @@ function calculateScore(schedule) {
     const backToBackPenalty = 10;
     const mealTimePenalty = 50;
     const eveningTimePlus = 10;
-    const singleUnitPenalty = 2;
-    const tooLongUnitPenalty = 4;
+    const singleUnitPenalty = 20;
+    const tooLongUnitPenalty = 15;
 
     const lunchStart = "1200";
     const lunchEnd = "1400";
