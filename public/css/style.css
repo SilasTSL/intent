@@ -591,6 +591,27 @@ td {
   transform: scale(1.1);
 }
 
+.unassignButton {
+  font-size: 1.2rem;
+  text-decoration: none;
+  margin-top: 0.6rem;
+  margin-left: 2rem;
+  color: white;
+  background-color: #ED2939;
+  padding: 0.2rem;
+  padding-left: 2.2rem;
+  padding-right: 2.2rem;
+  border-radius: 3px;
+  transition-duration: 0.3s;
+}
+
+.unassignButton:hover {
+  color: white;
+  box-shadow: 0 0 15px 6px rgba(246, 71, 71, 0.7);
+  background-color: #FF0000;
+  transform: scale(1.1);
+}
+
 .tasksBody {
   display: flex;
   flex-direction: column;

@@ -222,13 +222,20 @@ app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
     res.redirect(`/timetable`);
 }))
 
+//GET unassign all tasks
+app.get('/unassign-all', validateIsLoggedIn, catchAsync(async (req, res) => {
+    // Set all units to unassigned:
+    await Unit.updateMany({ userId: req.user.id, type:'WeeklyTask', isAssigned: true }, { $set: { isAssigned: false } });
+    res.redirect('/weekly-tasks');
+}))
+
 
 //HILL CLIMBING:
 //Hillclimbing function
 const hillclimb = require('./hillclimbing.js');
   
 //GET assign timetable:
-app.get('/assign', async (req, res) => {
+app.get('/assign', catchAsync(async (req, res) => {
     const assignedUnits = await Unit.find({userId: req.user.id, isAssigned: true});
     const unassignedUnits = await Unit.find({userId: req.user.id, isAssigned: false});
     
@@ -246,7 +253,7 @@ app.get('/assign', async (req, res) => {
         }
     }
     res.sendStatus(200);
-})
+}))
 
 //ACCOUNT PAGES:
 //GET register page
