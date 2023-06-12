@@ -9,7 +9,6 @@
         <h1 class="pageTitle">Tasks</h1>
         <div class="assignButton taskIndexButton">Assign</div>
         <div class="addTaskButton taskIndexButton">+ Add Task</div>
-        <div class="unassignButton taskIndexButton">Unassign all</div>
     </div>
     <div class="tasksBody">
     <% for (let weeklyTask of weeklyTasks) { %>
@@ -30,7 +29,6 @@
 <script>
     const weeklyTasks = JSON.parse('<%- JSON.stringify(weeklyTasks) %>');
     const assignButton = document.getElementsByClassName('assignButton')[0];
-    const unassignButton = document.getElementsByClassName('unassignButton')[0];
     const addTaskButton = document.getElementsByClassName('addTaskButton')[0];
 
     function showLoadingScreen() {
@@ -69,17 +67,7 @@
         })
     }
 
-    function unassignOnClick() {
-        if (weeklyTasks.filter(task => task.isAssigned).length <= 0) {
-            alert("You have no assigned tasks!")
-        }
-        if (confirm("Are you sure you want to unassign all your tasks?")) {
-            window.location.href = '/unassign-all';
-        }
-    }
-
     assignButton.addEventListener('click', assignOnClick);
-    unassignButton.addEventListener('click', unassignOnClick);
     addTaskButton.addEventListener('click', () => window.location.href = '/weekly-tasks/new');
 </script>
 

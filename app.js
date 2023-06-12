@@ -222,13 +222,6 @@ app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
     res.redirect(`/timetable`);
 }))
 
-//GET unassign all tasks
-app.get('/unassign-all', validateIsLoggedIn, catchAsync(async (req, res) => {
-    // Set all units to unassigned:
-    await Unit.updateMany({ userId: req.user.id, type:'WeeklyTask', isAssigned: true }, { $set: { isAssigned: false } });
-    res.redirect('/weekly-tasks');
-}))
-
 
 //HILL CLIMBING:
 //Hillclimbing function
