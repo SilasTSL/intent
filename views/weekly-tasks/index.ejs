@@ -7,8 +7,9 @@
 
     <div class="taskIndexTitleRow">
         <h1 class="pageTitle">Tasks</h1>
-        <div class="assignButton button">Assign</div>
-        <div class="unassignButton button">Unassign all</div>
+        <div class="assignButton taskIndexButton">Assign</div>
+        <div class="addTaskButton taskIndexButton">+ Add Task</div>
+        <div class="unassignButton taskIndexButton">Unassign all</div>
     </div>
     <div class="tasksBody">
     <% for (let weeklyTask of weeklyTasks) { %>
@@ -30,6 +31,7 @@
     const weeklyTasks = JSON.parse('<%- JSON.stringify(weeklyTasks) %>');
     const assignButton = document.getElementsByClassName('assignButton')[0];
     const unassignButton = document.getElementsByClassName('unassignButton')[0];
+    const addTaskButton = document.getElementsByClassName('addTaskButton')[0];
 
     function showLoadingScreen() {
         console.log("Showing Loading Screen!")
@@ -78,5 +80,6 @@
 
     assignButton.addEventListener('click', assignOnClick);
     unassignButton.addEventListener('click', unassignOnClick);
+    addTaskButton.addEventListener('click', () => window.location.href = '/weekly-tasks/new');
 </script>
 
