@@ -17,11 +17,14 @@
             <h6><span style="opacity: 0.7; font-size: 0.85rem;">Released on:</span> <%= weeklyTask.releasedOn %></h6>
             <h6><span style="opacity: 0.7; font-size: 0.85rem;">Deadline:</span> <%= weeklyTask.deadline %></h6>
             <h6><span style="opacity: 0.7; font-size: 0.85rem;">Duration:</span> <%= weeklyTask.duration %> Hrs</h6>
-            <% if (weeklyTask.isAssigned) { %>
-                <h6><span style="opacity: 0.7; font-size: 0.85rem; colour: white">Assigned</h6>
-            <% } else { %>
-                <h6><span style="opacity: 0.7; font-size: 0.85rem; color: red">Unassigned</h6>
-            <% } %>
+            <div class="taskBottomRow">
+                <% if (weeklyTask.isAssigned) { %>
+                    <h6 class="taskAssignText">Assigned</h6>
+                <% } else { %>
+                    <h6 class="taskAssignText" style="color: red">Unassigned</h6>
+                <% } %>
+                <div taskTitle="<%= weeklyTask.title %>" taskId="<%= weeklyTask._id %>" class="button indexDeleteTaskButton">Delete</div>
+            </div>
         </div>
     <% } %>
     </div>
@@ -30,6 +33,24 @@
     const weeklyTasks = JSON.parse('<%- JSON.stringify(weeklyTasks) %>');
     const assignButton = document.getElementsByClassName('assignButton')[0];
     const addTaskButton = document.getElementsByClassName('addTaskButton')[0];
+    const deleteTaskButtons = document.getElementsByClassName('indexDeleteTaskButton');
+    
+    for (let deleteTaskButton of deleteTaskButtons) {
+        deleteTaskButton.addEventListener('click', () => {
+            event.stopPropagation();
+            if (confirm(`Are you sure you want to delete the task: [${deleteTaskButton.getAttribute('tasktitle')}]`)) {
+                const taskId = deleteTaskButton.getAttribute('taskid');
+                console.log("TASK ID: " + taskId);
+                fetch(`/timetable/${taskId}`, {
+                    method: 'DELETE',
+                }).then(() => {
+                    window.location.href = '/weekly-tasks';
+                }).catch(e => {
+                    console.log(e);
+                })
+            };
+        })
+    }
 
     function showLoadingScreen() {
         console.log("Showing Loading Screen!")
