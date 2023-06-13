@@ -17,14 +17,12 @@
                     <% if (unitFound) { %>
                         <% const unitTiming = unitFound.timings.find(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                         <% let unitDuration = parseInt(unitTiming.timingEnd.substring(0, 2)) - parseInt(unitTiming.timingStart.substring(0, 2)); %>
-                        <div class="timetableBlock" style="background-color: <%= unitFound.colour %>; height: <%= (50 * unitDuration) + (4 * (unitDuration - 1)) %>px;">
-                        
+                        <div class="timetableBlock unitBlock" unit_id="<%= unitFound._id %>" style="background-color: <%= unitFound.colour %>; height: <%= (70 * unitDuration) + (4 * (unitDuration - 1)) %>px;">
+                            <%= unitFound.title %>
                         </div>
                         <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>
                     <% } else { %>
-                    <div class="timetableBlock">
-                        
-                    </div>
+                    <div class="timetableBlock"></div>
                     <% } %>
                 <% } %>
             </div>
@@ -32,20 +30,20 @@
     </div>
 </div>
 <script>
-    const cells = document.querySelectorAll(".lesson-cell");
+    const cells = document.querySelectorAll(".unitBlock");
     cells.forEach(cell => {
         cell.addEventListener('mouseover', () => {
-            const sameUnitCells = document.getElementsByClassName(cell.classList[0]);
+            const sameUnitCells = document.querySelectorAll(`[unit_id="${cell.getAttribute('unit_id')}"]`);
             for (const sameUnitCell of sameUnitCells) {
                 sameUnitCell.style.opacity = 0.8;
-                sameUnitCell.style.borderColor = "#505050";
+                sameUnitCell.style.transform = 'scale(1.04)';
             }
         })
         cell.addEventListener('mouseout', function() {
-            const sameUnitCells = document.getElementsByClassName(cell.classList[0]);
+            const sameUnitCells = document.querySelectorAll(`[unit_id="${cell.getAttribute('unit_id')}"]`);
             for (const sameUnitCell of sameUnitCells) {
                 sameUnitCell.style.opacity = 1;
-                sameUnitCell.style.borderColor = "black";
+                sameUnitCell.style.transform = 'scale(1)';
             }
         });
     });

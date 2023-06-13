@@ -496,11 +496,21 @@ a {
 }
 
 .timetableBlock {
-  height: 50px;
+  height: 70px;
   width: 100%;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 5px;
   margin: 2px;
+}
+
+.unitBlock {
+  cursor: pointer;
+  transition-duration: 0.3s;
+  font-size: 0.7rem;
+  color: white;
+  padding: 1rem;
+  padding-top: 0.5rem;
+  overflow: hidden;  
 }
 
 /* Task Index Page */
