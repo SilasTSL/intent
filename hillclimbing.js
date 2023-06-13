@@ -2,73 +2,6 @@ const { array } = require("joi");
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-const testSchedule = [
-    {
-        _id: "6475ed32bac98a75e624a880",
-        userId: '64664d2d92f130e23eaea655',
-        type: 'Lesson',
-        isAssigned: true,
-        title: 'CS2109S - Introduction to ML and AI',
-        colour: '#C62828',
-        timings: [
-          {
-            day: 'Monday',
-            timingStart: '1000',
-            timingEnd: '1200',
-          },
-          {
-            day: 'Monday',
-            timingStart: '1200',
-            timingEnd: '1300',
-          },
-          {
-            day: 'Tuesday',
-            timingStart: '0900',
-            timingEnd: '1100',
-          },
-          {
-            day: 'Wednesday',
-            timingStart: '1300',
-            timingEnd: '1400',
-          }
-        ]
-    },
-    {
-        _id: "6475ed32bac98c75e624a880",
-        userId: '64664d2d92f13ae23eaea655',
-        type: 'Lesson',
-        isAssigned: true,
-        title: 'CS2106 - OS',
-        colour: '#C62828',
-        timings: [
-          {
-            day: 'Tuesday',
-            timingStart: '1100',
-            timingEnd: '1500',
-          },
-          {
-            day: 'Thursday',
-            timingStart: '0900',
-            timingEnd: '1100',
-          }
-        ]
-    }
-];
-
-const testTasks = [
-    {
-        _id: "6475ed3fbac98a75e624a893",
-        userId: '64664d2d92f130e23eaea655',
-        type: 'WeeklyTask',
-        isAssigned: false,
-        title: 'CS2109S Problem Set',
-        colour: '#696969',
-        releasedOn: 'Tuesday',
-        deadline: 'Wednesday',
-        duration: 6,
-        timings: []
-    }
-]
 
 function calculateScore(schedule) {
 
@@ -209,7 +142,7 @@ function generateNeighbors(schedule) {
 }
   
 function generateAvailableSlots(schedule) {
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const availableSlots = [];
     for (const day of days) {
         for (let i = 8; i <= 17; i++) {
@@ -298,81 +231,6 @@ function hillclimb(assignedUnits, unassignedUnits) {
     // Return the final solution
     return currentSolution;
 }
-
-
-testSolution = [
-    {
-        _id: "6475ed32bac98a75e624a880",
-        userId: '64664d2d92f130e23eaea655',
-        type: 'Lesson',
-        isAssigned: true,
-        title: 'CS2109S - Introduction to ML and AI',
-        colour: '#C62828',
-        timings: [
-          {
-            day: 'Monday',
-            timingStart: '1000',
-            timingEnd: '1200',
-          },
-          {
-            day: 'Monday',
-            timingStart: '1200',
-            timingEnd: '1300',
-          },
-          {
-            day: 'Tuesday',
-            timingStart: '0900',
-            timingEnd: '1100',
-          },
-          {
-            day: 'Wednesday',
-            timingStart: '1300',
-            timingEnd: '1400',
-          }
-        ]
-    },
-    {
-        _id: "6475ed32bac98c75e624a880",
-        userId: '64664d2d92f13ae23eaea655',
-        type: 'Lesson',
-        isAssigned: true,
-        title: 'CS2106 - OS',
-        colour: '#C62828',
-        timings: [
-          {
-            day: 'Tuesday',
-            timingStart: '1100',
-            timingEnd: '1500',
-          },
-          {
-            day: 'Thursday',
-            timingStart: '0900',
-            timingEnd: '1100',
-          }
-        ]
-    },
-    {
-        _id: "6475ed32bac98a85e624a880",
-        userId: '64664d2d92f132e23eaea655',
-        type: 'WeeklyTask',
-        isAssigned: false,
-        title: 'CS2101 - Speaking',
-        colour: '#C62828',
-        duration: 3,
-        timings: [
-          {
-            day: 'Friday',
-            timingStart: '1000',
-            timingEnd: '1200',
-          },
-          {
-              day: 'Friday',
-              timingStart: '1400',
-              timingEnd: '1500'
-          }
-        ]
-    },
-]
 
 
 module.exports = hillclimb;

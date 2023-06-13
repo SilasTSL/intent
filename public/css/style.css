@@ -465,54 +465,64 @@ a {
   padding: 2rem;
   padding-top: 1rem;
   margin-left: 13%;
-  font-family: 'Quicksand', sans-serif;
+  font-family: 'Figtree', sans-serif;
 }
 
+/* timetable to blocks */
 .timetableContainer {
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  padding-left: 2rem;
+  padding-right: 3rem;
+  margin-bottom: 5rem;
+}
+
+.timingColumn {
+  display: flex;
   flex-direction: column;
-  align-items: start;
-  width: 80%;
-  margin-left: 3rem;
-  margin-bottom: 4rem;
-}
-
-.timetable {
-  width: 90%;
+  align-items: center;
   height: 100%;
-  border-collapse: collapse;
+  width: 7%;
 }
 
-.timetableDayHeader {
-  text-align: center;
+.timingLabel {
+  font-size: 0.9rem;
+  margin-top: 50px;
 }
 
-tr {
-  height: 50px;
+.timingLabel:first-child {
+  margin-top: 2rem;
 }
 
-td {
-  vertical-align: top;
+.dayColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 13%;
 }
 
-.timetableTimingLabels {
-  vertical-align: top;
+.dayLabel {
+  font-size: 1rem;
 }
 
-.lesson-cell {
-  color: white;
-  font-size: 0.8rem;
-  padding: 10px;
-  text-align: center;
+.timetableBlock {
+  height: 70px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  margin: 2px;
+}
+
+.unitBlock {
   cursor: pointer;
-  border: solid black 2px;
   transition-duration: 0.3s;
-}
-
-.empty-cell {
-  height: 50px;
-  border: solid #C0C0C0 1px;
-  position: relative;
+  font-size: 0.7rem;
+  color: white;
+  padding: 1rem;
+  padding-top: 0.5rem;
+  overflow: hidden;  
 }
 
 /* Task Index Page */
