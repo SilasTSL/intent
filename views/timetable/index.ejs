@@ -3,16 +3,15 @@
     <h1 class="pageTitle">Timetable</h1>
     <div class="timetableContainer">
         <div class="timingColumn">
-            <div class="timingColumnTiming"></div>
             <% for (let r=8; r <= 18; r++) { %>
-                <div class="timingColumnTiming"><%= r + ":00" %></div>
+                <div class="timingLabel"><%= r + ":00" %></div>
             <% } %>        
         </div>
         <% const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; %>
         <% for (let day of daysOfWeek) { %>
             <div class="dayColumn">
-                <p><%= day %></p>
-                <% for (let r=8; r <= 18; r++) { %>
+                <p class="dayLabel"><%= day %></p>
+                <% for (let r=8; r < 18; r++) { %>
                     <% let unitFound = units.find(unit => unit.timings.some(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
                     <% if (unitFound) { %>
                         <% const unitTiming = unitFound.timings.find(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
@@ -30,6 +29,7 @@
     </div>
 </div>
 <script>
+    // Make same lesson cells hover the same:
     const cells = document.querySelectorAll(".unitBlock");
     cells.forEach(cell => {
         cell.addEventListener('mouseover', () => {
