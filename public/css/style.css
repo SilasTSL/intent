@@ -468,51 +468,43 @@ a {
   font-family: 'Quicksand', sans-serif;
 }
 
+/* timetable to blocks */
 .timetableContainer {
   display: flex;
-  flex-direction: column;
-  align-items: start;
-  width: 80%;
-  margin-left: 3rem;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  padding-left: 3rem;
+  padding-right: 3rem;
   margin-bottom: 4rem;
 }
 
-.timetable {
-  width: 90%;
+.timingColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   height: 100%;
-  border-collapse: collapse;
+  width: 7%;
 }
 
-.timetableDayHeader {
-  text-align: center;
+.timingColumnTiming {
+
 }
 
-tr {
+.dayColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 13%;
+}
+
+.timetableBlock {
   height: 50px;
-}
-
-td {
-  vertical-align: top;
-}
-
-.timetableTimingLabels {
-  vertical-align: top;
-}
-
-.lesson-cell {
-  color: white;
-  font-size: 0.8rem;
-  padding: 10px;
-  text-align: center;
-  cursor: pointer;
-  border: solid black 2px;
-  transition-duration: 0.3s;
-}
-
-.empty-cell {
-  height: 50px;
-  border: solid #C0C0C0 1px;
-  position: relative;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  margin: 2px;
 }
 
 /* Task Index Page */

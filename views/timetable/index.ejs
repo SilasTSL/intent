@@ -2,7 +2,47 @@
 <div id="timetableBodyContainer">
     <h1 class="pageTitle">Timetable</h1>
     <div class="timetableContainer">
-        <table class="timetable">
+        <div class="timingColumn">
+            <div class="timingColumnTiming"></div>
+            <% for (let r=8; r <= 18; r++) { %>
+                <div class="timingColumnTiming"><%= r + ":00" %></div>
+            <% } %>        
+        </div>
+        <% const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; %>
+        <% for (let day of daysOfWeek) { %>
+            <div class="dayColumn">
+                <p><%= day %></p>
+                <% for (let r=8; r <= 18; r++) { %>
+                    <div class="timetableBlock">
+                        
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+</div>
+<script>
+    const cells = document.querySelectorAll(".lesson-cell");
+    cells.forEach(cell => {
+        cell.addEventListener('mouseover', () => {
+            const sameUnitCells = document.getElementsByClassName(cell.classList[0]);
+            for (const sameUnitCell of sameUnitCells) {
+                sameUnitCell.style.opacity = 0.8;
+                sameUnitCell.style.borderColor = "#505050";
+            }
+        })
+        cell.addEventListener('mouseout', function() {
+            const sameUnitCells = document.getElementsByClassName(cell.classList[0]);
+            for (const sameUnitCell of sameUnitCells) {
+                sameUnitCell.style.opacity = 1;
+                sameUnitCell.style.borderColor = "black";
+            }
+        });
+    });
+</script>
+
+<!--
+            <table class="timetable">
             <thead>
             <tr>
                 <% const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; %>
@@ -53,25 +93,4 @@
             <% } %>
             </tbody>
         </table>
-    </div>
-</div>
-<script>
-    const cells = document.querySelectorAll(".lesson-cell");
-    cells.forEach(cell => {
-        cell.addEventListener('mouseover', () => {
-            const sameUnitCells = document.getElementsByClassName(cell.classList[0]);
-            for (const sameUnitCell of sameUnitCells) {
-                sameUnitCell.style.opacity = 0.8;
-                sameUnitCell.style.borderColor = "#505050";
-            }
-        })
-        cell.addEventListener('mouseout', function() {
-            const sameUnitCells = document.getElementsByClassName(cell.classList[0]);
-            for (const sameUnitCell of sameUnitCells) {
-                sameUnitCell.style.opacity = 1;
-                sameUnitCell.style.borderColor = "black";
-            }
-        });
-    });
-</script>
-
+-->
