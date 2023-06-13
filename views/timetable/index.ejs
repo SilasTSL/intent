@@ -13,9 +13,19 @@
             <div class="dayColumn">
                 <p><%= day %></p>
                 <% for (let r=8; r <= 18; r++) { %>
+                    <% let unitFound = units.find(unit => unit.timings.some(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
+                    <% if (unitFound) { %>
+                        <% const unitTiming = unitFound.timings.find(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
+                        <% let unitDuration = parseInt(unitTiming.timingEnd.substring(0, 2)) - parseInt(unitTiming.timingStart.substring(0, 2)); %>
+                        <div class="timetableBlock" style="background-color: <%= unitFound.colour %>; height: <%= (50 * unitDuration) + (4 * (unitDuration - 1)) %>px;">
+                        
+                        </div>
+                        <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>
+                    <% } else { %>
                     <div class="timetableBlock">
                         
                     </div>
+                    <% } %>
                 <% } %>
             </div>
         <% } %>
