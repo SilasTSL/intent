@@ -474,9 +474,8 @@ a {
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
-  padding-left: 3rem;
+  padding-left: 2rem;
   padding-right: 3rem;
-  margin-bottom: 4rem;
 }
 
 .timingColumn {

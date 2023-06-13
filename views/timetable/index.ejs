@@ -17,7 +17,7 @@
                     <% if (unitFound) { %>
                         <% const unitTiming = unitFound.timings.find(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                         <% let unitDuration = parseInt(unitTiming.timingEnd.substring(0, 2)) - parseInt(unitTiming.timingStart.substring(0, 2)); %>
-                        <div class="timetableBlock unitBlock" unit_id="<%= unitFound._id %>" style="background-color: <%= unitFound.colour %>; height: <%= (70 * unitDuration) + (4 * (unitDuration - 1)) %>px;">
+                        <div class="timetableBlock unitBlock" unit_id="<%= unitFound._id %>" style="background-color: <%= unitFound.colour %>; height: <%= (70 * unitDuration) + (4 * (unitDuration - 1)) %>px;" <% if (unitFound.type == "Lesson") { %> onclick="window.location.href = '/timetable/<%= unitFound._id %>/edit'" <% } else { %> onclick="window.location.href = '/weekly-tasks/<%= unitFound._id %>/edit'" <% } %>>
                             <%= unitFound.title %>
                         </div>
                         <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>
