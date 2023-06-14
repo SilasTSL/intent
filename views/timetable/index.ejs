@@ -1,6 +1,19 @@
 <% layout('layouts/boilerplate')%>
 <div id="timetableBodyContainer">
-    <h1 class="pageTitle">Timetable</h1>
+    <div class="timetableHeadingContainer">
+        <h1 class="timetableTitle">Timetable</h1>
+        <div class="timetableOptionsContainer">
+            <div class="timetableOptionsTopRow">
+                <div class="timetablePeriodButton timetablePeriodButtonSelected">Week</div>
+                <div class="timetablePeriodButton">Month</div>
+            </div>
+            <div class="timetableWeeklyRow">
+                <img class="timetableWeeklyArrow" src="../../icons/timetable-left-arrow.png" alt="Left weekly timetable arrow icon">
+                <div class="timetableWeek">13.05.2023 - 20.05.2023</div>
+                <img class="timetableWeeklyArrow" src="../../icons/timetable-right-arrow.png" alt="Right weekly timetable arrow icon">
+            </div>
+        </div>
+    </div>
     <div class="timetableContainer">
         <div class="timingColumn">
             <% for (let r=8; r <= 18; r++) { %>

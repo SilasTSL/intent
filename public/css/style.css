@@ -36,13 +36,78 @@ a {
   margin-bottom: 4rem;
 }
 
-.pageTitle {
+.timetableHeadingContainer {
+  display: flex;
+  flex-direction: row;
+  width: 60%;
+}
+
+.timetableTitle {
   text-align: center;
   font-weight: 400;
-  margin-top: 1.3rem;
-  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
   margin-left: 2rem;
   font-family: 'Figtree', sans-serif;
+}
+
+.timetableOptionsContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+  margin-left: 2rem;
+}
+
+.timetableOptionsTopRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.timetablePeriodButton {
+  border: 1px solid black;
+  border-radius: 20px;
+  padding-left:1rem;
+  padding-right: 1rem;
+  cursor: pointer;
+  transition-duration: 0.3s;
+}
+
+.timetablePeriodButton:hover {
+  transform: scale(1.1);
+}
+
+.timetablePeriodButtonSelected {
+  background-color: #404040;
+  color: white;
+}
+
+.timetableWeeklyRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.timetableWeeklyArrow {
+  height: 1.3rem;
+  width: 1.3rem;
+  transition-duration: 0.2s;
+  cursor: pointer;
+}
+
+.timetableWeeklyArrow:hover {
+  transform: scale(1.22);
+}
+
+.timetableWeek {
+  font-size: 1.2rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 /* Landing Page */
@@ -500,7 +565,7 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 13%;
+  width: 12.5%;
 }
 
 .dayLabel {
