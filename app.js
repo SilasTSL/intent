@@ -98,10 +98,34 @@ app.get('/', (req, res) => {
 })
 
 //TIMETABLE PAGES:
-//GET Index page
-app.get('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
+//GET Index page with parameters
+app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async (req, res) => {
+    const weekOrMonth = req.params.weekOrMonth;
+    const period = req.params.period;
+    let formattedPeriod = period;
+
+    if (weekOrMonth == "week" && period == "today") {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+        const monday = new Date(today.setDate(diff));
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        
+        const options = { month: 'long', day: 'numeric', year: 'numeric' };
+        const formattedMonday = monday.toLocaleDateString('en', options).replace(/\//g, '.');
+        const formattedSunday = sunday.toLocaleDateString('en', options).replace(/\//g, '.');
+        
+        formattedPeriod = formattedMonday + " - " + formattedSunday;
+    } else if (weekOrMonth == "month" && period == "today") {
+        const today = new Date();
+        const month = today.toLocaleString('default', { month: 'long' });
+        const monthString = month.charAt(0).toUpperCase() + month.slice(1);
+        formattedPeriod = monthString;
+    }
+
     const units = await Unit.find({userId: req.user.id, isAssigned: true});
-    res.render('timetable/index', { units });
+    res.render('timetable/index', { units, weekOrMonth, formattedPeriod });
 }))
 
 //GET make new lesson page
@@ -147,7 +171,7 @@ app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
 app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     await Unit.findByIdAndDelete(id);
-    res.redirect('/timetable');
+    res.redirect('/timetable/week/today');
 }))
 
 
@@ -252,7 +276,7 @@ app.get('/assign', catchAsync(async (req, res) => {
 //GET register page
 app.get('/register', (req, res) => {
     if (req.user) {
-        res.redirect('/timetable');
+        res.redirect('/timetable/week/today');
     } else {
         res.render('authentication/register');
     }
@@ -267,7 +291,7 @@ app.post('/register', catchAsync(async (req, res) => {
 
         req.login(registeredUser, e => {
             if (e) return next(e);
-            res.redirect('/timetable');
+            res.redirect('/timetable/week/today');
         })
     } catch(e) {
         console.log(e);
@@ -278,7 +302,7 @@ app.post('/register', catchAsync(async (req, res) => {
 //GET login page
 app.get('/login', (req, res) => {
     if (req.user) {
-        res.redirect('/timetable');
+        res.redirect('/timetable/week/today');
     } else {
         const loginFailure = req.query.failure;
         res.render('authentication/login', { loginFailure });
@@ -288,7 +312,7 @@ app.get('/login', (req, res) => {
 
 //POST login
 app.post('/login', passport.authenticate('local', { failureRedirect: '/login?failure=true' }), (req, res) => {
-    res.redirect('/timetable');
+    res.redirect('/timetable/week/today');
 })
 
 //GET logout

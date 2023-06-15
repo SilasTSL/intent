@@ -4,17 +4,18 @@
         <h1 class="timetableTitle">Timetable</h1>
         <div class="timetableOptionsContainer">
             <div class="timetableOptionsTopRow">
-                <div class="timetablePeriodButton timetablePeriodButtonSelected">Week</div>
-                <div class="timetablePeriodButton">Month</div>
+                <a class="timetablePeriodButton <% if (weekOrMonth == 'week') { %> timetablePeriodButtonSelected <% } %>" href="/timetable/week/today">Week</a>
+                <a class="timetablePeriodButton <% if (weekOrMonth == 'month') { %> timetablePeriodButtonSelected <% } %>" href="/timetable/month/today">Month</a>
             </div>
             <div class="timetableWeeklyRow">
                 <img class="timetableWeeklyArrow" src="../../icons/timetable-left-arrow.png" alt="Left weekly timetable arrow icon">
-                <div class="timetableWeek">13.05.2023 - 20.05.2023</div>
+                <div class="timetableWeek"><%= formattedPeriod %></div>
                 <img class="timetableWeeklyArrow" src="../../icons/timetable-right-arrow.png" alt="Right weekly timetable arrow icon">
             </div>
         </div>
     </div>
     <div class="timetableContainer">
+        <% if (weekOrMonth == 'week') { %>
         <div class="timingColumn">
             <% for (let r=8; r <= 18; r++) { %>
                 <div class="timingLabel"><%= r + ":00" %></div>
@@ -38,6 +39,9 @@
                     <% } %>
                 <% } %>
             </div>
+        <% } %>
+        <% } else if (weekOrMonth == 'month') { %>
+
         <% } %>
     </div>
 </div>

@@ -65,11 +65,13 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 100%;
+  width: 200px;
   margin-bottom: 1rem;
 }
 
 .timetablePeriodButton {
+  text-decoration: none;
+  color: black;
   border: 1px solid black;
   border-radius: 20px;
   padding-left:1rem;
@@ -80,10 +82,15 @@ a {
 
 .timetablePeriodButton:hover {
   transform: scale(1.1);
+  color: black;
 }
 
 .timetablePeriodButtonSelected {
   background-color: #404040;
+  color: white;
+}
+
+.timetablePeriodButtonSelected:hover {
   color: white;
 }
 
