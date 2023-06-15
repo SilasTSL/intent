@@ -100,14 +100,14 @@ a {
   align-items: center;
 }
 
-.timetableWeeklyArrow {
+.timetableArrow {
   height: 1.3rem;
   width: 1.3rem;
   transition-duration: 0.2s;
   cursor: pointer;
 }
 
-.timetableWeeklyArrow:hover {
+.timetableArrow:hover {
   transform: scale(1.22);
 }
 
@@ -616,7 +616,6 @@ a {
 .loading{
   height : 25px;
   width : 25px;
-/*   background-color : blue; */
   border-radius : 50%;
   border : 2px solid transparent;
   border-top-color : blue;
