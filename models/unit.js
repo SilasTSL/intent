@@ -8,7 +8,7 @@ const UnitSchema = new Schema({
     },
     type: {
         type: String,
-        enum: ['Lesson', 'WeeklyTask'],
+        enum: ['Lesson', 'WeeklyTask', 'Assignment'],
         required: true
     },
     isAssigned: {
@@ -34,6 +34,8 @@ const UnitSchema = new Schema({
     releasedOn: String, // Specific to weekly task only
     deadline: String, // Specific to weekly task only
     duration: Number, // Specific to weekly task only
+    releasedOnDate: String, // Specific to assignment only
+    deadlineDate: String // Specific to assignment only
 
 });
 
