@@ -151,7 +151,7 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 }))
 
 //GET edit lesson page
-app.get('/timetable/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) => {
+app.get('/edit/:id/lesson', validateIsLoggedIn, catchAsync(async (req, res) => {
     const lesson = await Unit.findById(req.params.id);
     const units = await Unit.find({userId: req.user.id});
     const existingTimings = units.filter(unit => unit._id != req.params.id).map(unit => unit.timings);
@@ -209,7 +209,7 @@ app.post('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
 }))
 
 //GET edit weekly task page
-app.get('/weekly-tasks/:id/edit', validateIsLoggedIn, catchAsync(async (req, res) => {
+app.get('/edit/:id/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
     const task = await Unit.findById(req.params.id);
     const units = await Unit.find({userId: req.user.id});
     const existingTimings = units.filter(unit => unit._id != req.params.id).map(unit => unit.timings);

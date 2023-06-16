@@ -12,7 +12,7 @@
     </div>
     <div class="tasksBody">
     <% for (let weeklyTask of weeklyTasks) { %>
-        <div class="task" style="<% if (!weeklyTask.isAssigned) { %> border: 1px solid red; <% } %>" onclick="window.location.href = '/weekly-tasks/<%= weeklyTask._id %>/edit'" >
+        <div class="task" style="<% if (!weeklyTask.isAssigned) { %> border: 1px solid red; <% } %>" onclick="window.location.href = '/edit/<%= weeklyTask._id %>/weekly-tasks'" >
             <h5><%= weeklyTask.title %></h5>
             <h6><span style="opacity: 0.7; font-size: 0.85rem;">Released on:</span> <%= weeklyTask.releasedOn %></h6>
             <h6><span style="opacity: 0.7; font-size: 0.85rem;">Deadline:</span> <%= weeklyTask.deadline %></h6>
