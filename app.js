@@ -147,7 +147,7 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 
     const newLesson = new Unit(newLessonBody);
     await newLesson.save();
-    res.redirect(`/timetable`);
+    res.redirect('/timetable/week/now');
 }))
 
 //GET edit lesson page
@@ -164,7 +164,7 @@ app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const edittedBody = { ...req.body.lesson };
     const lesson = await Unit.findByIdAndUpdate(id, edittedBody);
-    res.redirect(`/timetable`);
+    res.redirect('/timetable/week/now');
 }))
 
 //DELETE lesson
@@ -243,7 +243,7 @@ app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
         edittedBody.duration = totalTime;
     }
     const weeklyTask = await Unit.findByIdAndUpdate(id, edittedBody);
-    res.redirect(`/timetable`);
+    res.redirect('/timetable/week/today');
 }))
 
 
