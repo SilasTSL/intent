@@ -13,6 +13,10 @@ a {
   text-decoration: none;
 }
 
+.pageTitle {
+  margin-left: 2rem;
+}
+
 .newButtons:hover {
   opacity: 0.6;
 }
@@ -479,65 +483,22 @@ a {
   font-size: 0.6rem;
 }
 
-
-/* Sidebar */
-#sidebar {
-  position: fixed;
-  background-color: #404040;
-  top: 0;
-  left: 0;
-  width: 13vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1.5rem;
-  padding-top: calc(10vh + 1rem);
-  padding-bottom: calc(5vh + 1rem);
-  font-weight: 400;
-}
-
-.sidebarGroup {
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebarItem {
-  text-decoration: none;
-  color: #A9A9A9;
-  transition-duration: 0.3s;
-  display: flex;
-}
-
-.sidebarItem:hover {
-  color: white;
-  transform: scale(1.1);
-}
-
-.sideHr {
-  width: 100%;
-  border: none;
-  height: 1px;
-  background-color: #101010;
-  margin-top: 0.8rem;
-  margin-bottom: 0.5rem;
-}
-
-.sidebarIcon {
-  height: 1rem;
-  align-self: center;
-  margin-right: 1.2rem;
-}
-
 /* Index Page */
+#indexPageBody {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-left: 4%;
+}
+
 #timetableBodyContainer {
   display: flex;
   flex-direction: column;
   align-items: start;
   padding: 2rem;
   padding-top: 1rem;
-  margin-left: 13%;
   font-family: 'Figtree', sans-serif;
+  width: 80%;
 }
 
 /* timetable to blocks */
@@ -545,7 +506,6 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 80%;
   padding-left: 0;
   padding-right: 3rem;
   margin-bottom: 5rem;
@@ -636,7 +596,7 @@ a {
   align-items: start;
   padding: 2rem;
   padding-top: 1rem;
-  margin-left: 13%;
+  margin-left: 4%;
   font-family: 'Quicksand', sans-serif;
   width: 70%;
 }
@@ -759,7 +719,7 @@ a {
   align-items: start;
   padding: 2rem;
   padding-top: 1rem;
-  margin-left: 13%;
+  margin-left: 5%;
   font-family: 'Quicksand', sans-serif;
 }
 
@@ -845,7 +805,7 @@ form {
   align-items: start;
   padding: 2rem;
   padding-top: 1rem;
-  margin-left: 13%;
+  margin-left: 4%;
   font-family: 'Quicksand', sans-serif;
 }
 
@@ -856,7 +816,7 @@ form {
   align-items: start;
   padding: 2rem;
   padding-top: 1rem;
-  margin-left: 13%;
+  margin-left: 4%;
   font-family: 'Quicksand', sans-serif;
 }
 
