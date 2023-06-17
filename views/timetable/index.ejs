@@ -46,9 +46,41 @@
         <% } %>
     </div>
 </div>
+<div class="indexNewFormsContainer">
+    <div class="indexNewLessonFormDropdownButton button">+ New Lesson</div>
+    <form class="indexNewLessonForm">
+
+    </form>
+    <div class="indexNewTaskFormDropdownButton button">+ New Task</div>
+    <form class="indexNewTaskForm">
+        
+    </form>
+</div>
 </div>
 
 <script>
+    // Onclick for new lesson/task dropdown buttons:
+    const newLessonDropdownButton = document.getElementsByClassName('indexNewLessonFormDropdownButton')[0];
+    const newTaskDropdownButton = document.getElementsByClassName('indexNewTaskFormDropdownButton')[0];
+
+    newLessonDropdownButton.addEventListener('click', () => {
+        const newLessonForm = document.getElementsByClassName('indexNewLessonForm')[0]
+        if (newLessonForm.offsetHeight == '0') {
+            newLessonForm.style.height = '100px';
+        } else {
+            newLessonForm.style.height = '0px';
+        }
+    });
+
+    newTaskDropdownButton.addEventListener('click', () => {
+        const newTaskForm = document.getElementsByClassName('indexNewTaskForm')[0]
+        if (newTaskForm.offsetHeight == '0') {
+            newTaskForm.style.height = '100px';
+        } else {
+            newTaskForm.style.height = '0px';
+        }
+    })
+
     // Make same lesson cells hover the same:
     const cells = document.querySelectorAll(".unitBlock");
     cells.forEach(cell => {

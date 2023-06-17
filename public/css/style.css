@@ -497,8 +497,9 @@ a {
   align-items: start;
   padding: 2rem;
   padding-top: 1rem;
+  padding-right: 0;
   font-family: 'Figtree', sans-serif;
-  width: 80%;
+  width: 74%;
 }
 
 /* timetable to blocks */
@@ -554,6 +555,61 @@ a {
   color: white;
   padding: 0.5rem;
   overflow: hidden;  
+}
+
+.indexNewFormsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 20%;
+  margin-top: 2rem;
+}
+
+.indexNewLessonFormDropdownButton {
+  background-color: #24a0ed;
+  padding: 0.3rem;
+  padding-left: 1.3rem;
+  padding-right: 1.3rem;
+  transition-duration: 0.3s;
+  margin: 1rem;
+  margin-top: 0;
+  margin-left: 0;
+}
+
+.indexNewLessonFormDropdownButton:hover {
+  box-shadow: 0 0 15px 6px rgba(29, 172, 255, 0.7);
+  background-color: #00c3ff;
+  transform: scale(1.1);
+}
+
+.indexNewTaskFormDropdownButton {
+  background-color: #696969;
+  padding: 0.3rem;
+  padding-left: 1.3rem;
+  padding-right: 1.3rem;
+  transition-duration: 0.3s;
+  margin: 1rem;
+  margin-left: 0;
+}
+
+.indexNewTaskFormDropdownButton:hover {
+  box-shadow: 0 0 15px 6px rgba(70, 70, 70, 0.7);
+  background-color: #3d3d3d;
+  transform: scale(1.1);
+}
+
+.indexNewLessonForm {
+  background-color: pink;
+  height: 0px;
+  width: 100%;
+  transition-duration: 0.4s;
+}
+
+.indexNewTaskForm {
+  background-color: pink;
+  height: 0px;
+  width: 100%;
+  transition-duration: 0.4s;
 }
 
 /* Task Index Page */
