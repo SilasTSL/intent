@@ -545,7 +545,7 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 100%;
+  width: 80%;
   padding-left: 0;
   padding-right: 3rem;
   margin-bottom: 5rem;
@@ -561,7 +561,7 @@ a {
 
 .timingLabel {
   font-size: 0.9rem;
-  margin-top: 50px;
+  margin-top: 35px;
 }
 
 .timingLabel:first-child {
@@ -580,7 +580,7 @@ a {
 }
 
 .timetableBlock {
-  height: 70px;
+  height: 55px;
   width: 100%;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 5px;
@@ -592,8 +592,7 @@ a {
   transition-duration: 0.3s;
   font-size: 0.7rem;
   color: white;
-  padding: 1rem;
-  padding-top: 0.5rem;
+  padding: 0.5rem;
   overflow: hidden;  
 }
 
