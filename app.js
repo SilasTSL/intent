@@ -177,7 +177,7 @@ app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
 
 //WEEKLY TASK PAGES:
 //GET weekly task page:
-app.get('/weekly-tasks', catchAsync(async (req, res) => {
+app.get('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
     const weeklyTasks = await Unit.find({userId: req.user.id, type: "WeeklyTask"})
     weeklyTasks.sort((a, b) => {
         if (a.isAssigned && !b.isAssigned) {
@@ -252,7 +252,7 @@ app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
 const hillclimb = require('./hillclimbing.js');
   
 //GET assign timetable:
-app.get('/assign', catchAsync(async (req, res) => {
+app.get('/assign', validateIsLoggedIn, catchAsync(async (req, res) => {
     const assignedUnits = await Unit.find({userId: req.user.id, isAssigned: true});
     const unassignedUnits = await Unit.find({userId: req.user.id, isAssigned: false});
     
