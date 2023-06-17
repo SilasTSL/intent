@@ -75,7 +75,7 @@
         fetch('/assign')
         .then(response => {
             if (response.ok) {
-                window.location.href = '/timetable';
+                window.location.href = '/timetable/week/today';
             } else if (response.status === 401) {
                 // No way to assign
                 alert("No way to assign tasks within deadlines!");
