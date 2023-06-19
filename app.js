@@ -38,7 +38,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 //Ask express to help decode our req bodies:
-app.use(express.urlencoded({extended: true}));
+app.use(express.json());
 //Allow us to override method types (can use PUT etc.):
 app.use(methodOverride('_method'));
 //Public folder:
@@ -125,7 +125,7 @@ app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async 
     }
 
     const units = await Unit.find({userId: req.user.id, isAssigned: true});
-    res.render('timetable/index', { units, weekOrMonth, formattedPeriod });
+    res.render('timetable/index', { units, unitsString: JSON.stringify(units), weekOrMonth, formattedPeriod });
 }))
 
 //GET make new lesson page
@@ -138,9 +138,7 @@ app.get('/timetable/new', validateIsLoggedIn, async (req, res) => {
 
 //POST make new lessons
 app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
-    console.log("Adding new lesson(s)!");
-    const newLessonBody = req.body.lesson;
-
+    const newLessonBody = req.body;
     newLessonBody.userId = req.user.id;
     newLessonBody.type = "Lesson";
     newLessonBody.isAssigned = true;
@@ -164,7 +162,7 @@ app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const edittedBody = { ...req.body.lesson };
     const lesson = await Unit.findByIdAndUpdate(id, edittedBody);
-    res.redirect('/timetable/week/now');
+    res.redirect('/timetable/week/today');
 }))
 
 //DELETE lesson

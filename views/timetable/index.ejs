@@ -48,39 +48,76 @@
 </div>
 <div class="indexNewFormsContainer">
     <div class="indexNewLessonFormDropdownButton button">+ New Lesson</div>
-    <form class="indexNewLessonForm">
+    <form id="indexNewLessonForm" action='/timetable' method='POST'>
+        <div class="indexInputRow">
+            <label class="form-label" for="title">Title</label>
+            <input class="form-control" type="text" id="title" required>
+        </div>
+        <div class="indexInputRow">
+            <label class="form-label" for="colour">Colour</label>
+            <select class="form-select" id="colour" required>
+                <option value="" selected disabled>Select a colour</option>
+                <option value="#C62828">Red</option>
+                <option value="#1565C0">Blue</option>
+                <option value="#2E7D32">Green</option>
+                <option value="#FFA000">Yellow</option>
+                <option value="#6A1B9A">Purple</option>
+                <option value="#F08731">Orange</option>
+            </select>
+        </div>
 
+        <div class="indexInputRow">
+            <div class="indexTimingColumn">
+                <label class="form-label" for="day">Day</label>
+                <select class="form-select" id="day" onchange="handleDayChange(this)" required>
+                    <option value="" selected disabled>Select a day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>            
+            </div>
+            <div class="indexTimingColumn">
+                <label class="form-label" for="timingStart">Start</label>
+                <select class="form-select" id="timingStart" onchange="handleStartChange(this)" disabled required>
+                    <option value="" selected disabled>Select a starting time</option>
+                    <% for (let j = 8; j <= 18; j++) { %>
+                        <% let time = j < 10 ? '0' + j : j; %>
+                        <option value="<%= time %>00"><%= time %>:00</option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="indexTimingColumn">
+                <label class="form-label" for="timingEnd">End</label>
+                <select class="form-select" id="timingEnd" onchange="handleEndChange(this)" disabled required>
+                    <option value="" selected disabled>Select an ending time</option>
+                    <% for (let j = 9; j <= 18; j++) { %>
+                        <% let time = j < 10 ? '0' + j : j; %>
+                        <option value="<%= time %>00"><%= time %>:00</option>
+                    <% } %>
+                </select>
+            </div>
+        </div>
+        <div id="selectedRows"></div>
+        <div class="indexFormsBottomRow">
+            <div class="indexCancelNewLessonButton indexCancelButton button">Cancel</div>
+            <div class="indexSubmitNewLessonButton indexSubmitButton button" type="submit">Submit</div>
+        </div>
     </form>
     <div class="indexNewTaskFormDropdownButton button">+ New Task</div>
-    <form class="indexNewTaskForm">
-        
+    <form id="indexNewTaskForm">
+        <div class="indexFormsBottomRow">
+            <div class="indexCancelNewTaskButton indexCancelButton button">Cancel</div>
+            <div class="indexSubmitNewTaskButton indexSubmitButton button">Submit</div>
+        </div>
     </form>
 </div>
 </div>
 
 <script>
-    // Onclick for new lesson/task dropdown buttons:
-    const newLessonDropdownButton = document.getElementsByClassName('indexNewLessonFormDropdownButton')[0];
-    const newTaskDropdownButton = document.getElementsByClassName('indexNewTaskFormDropdownButton')[0];
-
-    newLessonDropdownButton.addEventListener('click', () => {
-        const newLessonForm = document.getElementsByClassName('indexNewLessonForm')[0]
-        if (newLessonForm.offsetHeight == '0') {
-            newLessonForm.style.height = '100px';
-        } else {
-            newLessonForm.style.height = '0px';
-        }
-    });
-
-    newTaskDropdownButton.addEventListener('click', () => {
-        const newTaskForm = document.getElementsByClassName('indexNewTaskForm')[0]
-        if (newTaskForm.offsetHeight == '0') {
-            newTaskForm.style.height = '100px';
-        } else {
-            newTaskForm.style.height = '0px';
-        }
-    })
-
     // Make same lesson cells hover the same:
     const cells = document.querySelectorAll(".unitBlock");
     cells.forEach(cell => {
@@ -99,6 +136,185 @@
             }
         });
     });
+
+
+    // Onclick for new lesson/task dropdown buttons:
+    const newLessonDropdownButton = document.getElementsByClassName('indexNewLessonFormDropdownButton')[0];
+    const newTaskDropdownButton = document.getElementsByClassName('indexNewTaskFormDropdownButton')[0];
+
+    let currentTimings = [];
+
+    newLessonDropdownButton.addEventListener('click', () => {
+        const newLessonForm = document.getElementById('indexNewLessonForm');
+        if (newLessonForm.offsetHeight == '0') {
+            var height = newLessonForm.scrollHeight;
+            newLessonForm.style.height = height + "px";
+            newLessonForm.style.paddingBottom = "5px";
+        } else {
+            newLessonForm.style.height = '0px';
+            newLessonForm.style.paddingBottom = "0px";
+        }
+    });
+
+    newTaskDropdownButton.addEventListener('click', () => {
+        const newTaskForm = document.getElementById('indexNewTaskForm');
+        if (newTaskForm.offsetHeight == '0') {
+            var height = newTaskForm.scrollHeight;
+            newTaskForm.style.height = height + "px";
+        } else {
+            newTaskForm.style.height = '0px';
+        }
+    })
+
+    // Onclick for cancel buttons:
+    const newLessonCancelButton = document.getElementsByClassName('indexCancelNewLessonButton')[0];
+    const newTaskCancelButton = document.getElementsByClassName('indexCancelNewTaskButton')[0];
+
+    newLessonCancelButton.addEventListener('click', () => {
+        const newLessonForm = document.getElementById('indexNewLessonForm');
+        newLessonForm.style.height = "0px";
+        newLessonForm.style.paddingBottom = "0px";
+    })
+
+    newTaskCancelButton.addEventListener('click', () => {
+        const newTaskForm = document.getElementById('indexNewTaskForm');
+        newTaskForm.style.height = '0px';
+    })
+
+    // Onclick for submit buttons:
+    // New Lesson:
+    const newLessonSubmitButton = document.getElementsByClassName('indexSubmitNewLessonButton')[0];
+    newLessonSubmitButton.addEventListener('click', () => {
+        const newTimings = currentTimings.map(timing => {
+            delete timing.index;
+            return timing;
+        });
+        const requestBody = {
+            'title': document.getElementById('title').value,
+            'colour': document.getElementById('colour').value,
+            'timings': newTimings
+        }
+        console.log("REQUEST BODY!");
+        console.log(requestBody);
+        fetch('/timetable', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        })
+        .then(res => {
+            console.log("HELLOOO")
+            window.location.href = '/timetable/week/now';
+        }).catch(err => {
+            alert("There was something wrong adding your lesson!");
+            console.log(err);
+        })
+    })
+
+    //New Task:
+    const newTaskSubmitButton = document.getElementsByClassName('indexSubmitNewTaskButton')[0];
+    newTaskSubmitButton.addEventListener('click', () => {
+        // TO BE IMPLEMENTED!
+    })
+
+    // Timings:
+    let currentIndex = 0;
+
+    function handleDayChange(daySelect) {
+        const startSelect = document.getElementById("timingStart");
+        const endSelect = document.getElementById("timingEnd");
+
+        startSelect.disabled = false;
+
+        if (daySelect.selectedIndex === 0) {
+            startSelect.selectedIndex = 0;
+            startSelect.disabled = true;
+            endSelect.selectedIndex = 0;
+            endSelect.disabled = true;
+        } else {
+            endSelect.disabled = true;
+        }
+    }
+
+    function handleStartChange(startSelect) {
+        const endSelect = document.getElementById("timingEnd");
+        const daySelect = document.getElementById("day");
+
+        endSelect.disabled = false;
+
+        if (startSelect.selectedIndex === 0) {
+                endSelect.selectedIndex = 0;
+                endSelect.disabled = true;
+        } else {
+            if (daySelect.selectedIndex === 0) {
+                endSelect.selectedIndex = 0;
+                endSelect.disabled = true;
+            }
+        }
+    }
+
+    let timingCount = 0;
+    function handleEndChange(endSelect) {
+        if (endSelect.selectedIndex === 0) {
+            return;
+        }
+
+        const daySelect = document.getElementById("day");
+        const startSelect = document.getElementById("timingStart");
+        const selectedDay = daySelect.options[daySelect.selectedIndex].text;
+        const selectedStart = startSelect.options[startSelect.selectedIndex].text;
+        const selectedEnd = endSelect.options[endSelect.selectedIndex].text;
+
+        // Display the selected values above the indexInputRow
+        const selectedRows = document.getElementById('selectedRows');
+        const newRow = document.createElement('div');
+        newRow.innerText = `${selectedDay}, ${selectedStart} - ${selectedEnd}`;
+        newRow.className = 'indexNewLessonTimingRow';
+
+        // Create delete button
+        const deleteButton = document.createElement('button');
+        deleteButton.setAttribute('timing-index', timingCount);
+        deleteButton.innerText = 'Delete';
+        deleteButton.className = 'indexNewLessonTimingDeleteButton';
+        deleteButton.addEventListener('click', (event) => {
+            const newLessonForm = document.getElementById('indexNewLessonForm');
+            const timingRows = document.getElementsByClassName('indexNewLessonTimingRow');
+            const timingRowHeight = timingRows[0].scrollHeight
+            var formHeight = newLessonForm.scrollHeight;
+            newLessonForm.style.height = formHeight - timingRowHeight + "px";
+            if (timingRows.length == 1) {
+                newLessonForm.style.paddingBottom = "0px";
+            }
+            selectedRows.removeChild(newRow);
+            currentTimings = currentTimings.filter(timing => timing.index != event.target.getAttribute('timing-index'), 1);
+            timingCount--;
+            console.log(currentTimings);
+        });
+        newRow.appendChild(deleteButton);
+
+        selectedRows.appendChild(newRow);
+
+        currentTimings.push({
+            'index': timingCount,
+            'day': selectedDay,
+            'timingStart': selectedStart,
+            'timingEnd': selectedEnd
+        })
+        timingCount++;
+
+        // Expand for height:
+        const newLessonForm = document.getElementById('indexNewLessonForm');
+        var height = newLessonForm.scrollHeight;
+        newLessonForm.style.height = height + "px";
+        newLessonForm.style.paddingBottom = "5px";
+
+        // Reset the form for the next selection
+        currentIndex++;
+        daySelect.selectedIndex = 0;
+        startSelect.selectedIndex = 0;
+        endSelect.selectedIndex = 0;
+        startSelect.disabled = true;
+        endSelect.disabled = true;
+    }
 
     // Onclick for arrow buttons:
     const weekOrMonth = "<%= weekOrMonth %>";

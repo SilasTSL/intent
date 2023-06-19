@@ -488,7 +488,8 @@ a {
   display: flex;
   flex-direction: row;
   width: 100%;
-  margin-left: 4%;
+  padding-left: 2%;
+  padding-right: 2%;
 }
 
 #timetableBodyContainer {
@@ -499,10 +500,19 @@ a {
   padding-top: 1rem;
   padding-right: 0;
   font-family: 'Figtree', sans-serif;
-  width: 74%;
+  width: 76%;
+  margin: 0;
 }
 
-/* timetable to blocks */
+.indexNewFormsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 24%;
+  margin: 0;
+  margin-top: 2rem;
+}
+
 .timetableContainer {
   display: flex;
   flex-direction: row;
@@ -554,19 +564,13 @@ a {
   font-size: 0.7rem;
   color: white;
   padding: 0.5rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
   overflow: hidden;  
 }
 
-.indexNewFormsContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  width: 20%;
-  margin-top: 2rem;
-}
-
 .indexNewLessonFormDropdownButton {
-  background-color: #24a0ed;
+  background-color: #f9744b;
   padding: 0.3rem;
   padding-left: 1.3rem;
   padding-right: 1.3rem;
@@ -577,8 +581,8 @@ a {
 }
 
 .indexNewLessonFormDropdownButton:hover {
-  box-shadow: 0 0 15px 6px rgba(29, 172, 255, 0.7);
-  background-color: #00c3ff;
+  box-shadow: 0 0 15px 6px rgba(243, 156, 18, 0.7);
+  background-color: #FEB615;
   transform: scale(1.1);
 }
 
@@ -598,288 +602,100 @@ a {
   transform: scale(1.1);
 }
 
-.indexNewLessonForm {
+#indexNewLessonForm {
+  overflow: hidden;
+  height: 0px;
+  width: 100%;
+  transition-duration: 0.4s;
+}
+
+#indexNewTaskForm {
+  overflow: hidden;
   background-color: pink;
   height: 0px;
   width: 100%;
   transition-duration: 0.4s;
 }
 
-.indexNewTaskForm {
-  background-color: pink;
-  height: 0px;
-  width: 100%;
-  transition-duration: 0.4s;
-}
-
-/* Task Index Page */
-#loadingScreenWrapper {
-  position: fixed;
-  z-index: 1;
-  top: 10vh;
-  left: 13vw;
-  right: 0;
-  bottom: 5vh;
-  background-color: white;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding-right: 6.5vw;
-  padding-bottom: 5vh;
-}
-
-.loading{
-  height : 25px;
-  width : 25px;
-  border-radius : 50%;
-  border : 2px solid transparent;
-  border-top-color : blue;
-  animation : spin infinite 1s;
-}
-
-@keyframes spin{
-  from {
-    transform : translate(-50%,-50%) rotate(0deg);
-  }
-  to{
-    transform :translate(-50%,-50%) rotate(359deg);
-  }
-}
-
-#tasksBodyContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  padding: 2rem;
-  padding-top: 1rem;
-  margin-left: 4%;
-  font-family: 'Quicksand', sans-serif;
-  width: 70%;
-}
-
-.taskIndexTitleRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: start;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.taskIndexButton {
-  font-size: 1.2rem;
-  text-decoration: none;
-  margin-top: 0.6rem;
-  margin-left: 2rem;
-  color: white;
-  background-color: #f9744b;
-  padding: 0.2rem;
-  padding-left: 2.2rem;
-  padding-right: 2.2rem;
-  border-radius: 3px;
-  transition-duration: 0.3s;
-  cursor: pointer;
-}
-
-.assignButton {
-  background-color: #f9744b;
-}
-
-.assignButton:hover {
-  color: white;
-  box-shadow: 0 0 15px 6px rgba(243, 156, 18, 0.7);
-  background-color: #FEB615;
-  transform: scale(1.1);
-}
-
-.addTaskButton {
-  background-color: #24a0ed;
-}
-
-.addTaskButton:hover {
-  color: white;
-  box-shadow: 0 0 15px 6px rgba(29, 172, 255, 0.7);
-  background-color: #00c3ff;
-  transform: scale(1.1);
-}
-
-.tasksBody {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  width: 100%;
-  margin-left: 2rem;
-  margin-top: 0;
-}
-
-.task {
-  width: 75%;
-  margin-bottom: 20px;
-  padding: 15px;
-  border-radius: 10px;
-  border: 1px solid black;
-  cursor: pointer;
-  transition-duration: 0.3s;
-}
-
-.task:hover {
-  background-color: #ebebeb;
-}
-
-.taskBottomRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.taskAssignText {
-  opacity: 0.7;
-  font-size: 0.85rem;
-}
-
-.indexDeleteTaskButton {
-  background-color: #ED2939;
-  font-size: 0.85rem;
-  padding: 0.1rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  transition-duration: 0.2s;
-  z-index = 2;
-}
-
-.indexDeleteTaskButton:hover {
-  box-shadow: 0 0 3px 1px rgba(160, 3, 3, 0.7);
-  background-color: #a00923;
-  transform: scale(1.1);
-}
-
-/* Form Pages */
-.formMainBody {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.formContainer {
-  width: 70%;
-  border: 1px solid rgb(126, 123, 123);
-  padding: 2rem;
-  border-radius: 20px;
-  margin-left: 2rem;
-  margin-top: 1rem;
-}
-
-.editFormMainBody {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  padding: 2rem;
-  padding-top: 1rem;
-  margin-left: 5%;
-  font-family: 'Quicksand', sans-serif;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.editInputRow {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.timingContainerHeader {
-  align-self: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-#timingContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: lightgray;
-  padding: 2rem;
-  width: 75%;
-  align-self: center;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-}
-
-.timingRow {
-  width: 80%;
-  padding: 1rem;
-  border-radius: 8px;
-  background-color: white;
-}
-
-.timingRow:not(:last-child) {
-  margin-bottom: 1rem;
-}
-
-.timingInputRow {
+.indexInputRow {
   display: flex;
   flex-direction: row;
   align-items: center;
-  font-size: 0.8rem;
-  margin: 0px;
-}
-
-.timingInputRow:not(:last-child) {
   margin-bottom: 0.3rem;
-}
-
-.timingInputRow .form-label {
-  margin-right: 0.9rem;
-}
-
-.timingInputRow select {
   font-size: 0.8rem;
 }
 
-.editFormBottomButtonRow {
+.form-label {
+  margin: 0;
+  margin-right: 0.5rem;
+}
+
+.indexTimingColumn {
+  margin-right: 5px;
+}
+
+.indexTimingColumn:last-child {
+  margin-right: 0;
+}
+
+#selectedRows {
+  margin-top: 0.5rem;
+}
+
+.indexNewLessonTimingRow {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  font-size: 0.9rem;
+  width: 100%;
+  padding: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+.indexNewLessonTimingDeleteButton {
+  font-size: 0.7rem;
+  background-color: #D11A2A;
+  color: white;
+  border: 0.5px solid black;
+  border-radius: 3px;
+}
+
+.indexFormsBottomRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
-#deleteLessonButton {
-  background-color: #ED2939;
+.indexCancelButton {
+  background-color: white;
+  color: #8f8f8f;
+  border: 1px solid #8f8f8f;
+  padding: 0.8rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  transition-duration: 0.3s;
 }
 
-#deleteTaskButton {
-  background-color: #ED2939;
+.indexCancelButton:hover {
+  color: #4e4e4e;
+  background-color: #c5c5c5;
 }
 
-/* New Task Page */
-#newTaskBodyContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  padding: 2rem;
-  padding-top: 1rem;
-  margin-left: 4%;
-  font-family: 'Quicksand', sans-serif;
+.indexSubmitButton {
+  background-color: #24a0ed;
+  padding: 0.8rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  transition-duration: 0.3s;
 }
 
-/* New Lesson Page */
-#newLessonBodyContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  padding: 2rem;
-  padding-top: 1rem;
-  margin-left: 4%;
-  font-family: 'Quicksand', sans-serif;
-}
-
-#addLessonForm {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+.indexSubmitButton:hover {
+  background-color: #03639e;
 }
 
 /* Login Register Pages */
