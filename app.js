@@ -145,7 +145,7 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 
     const newLesson = new Unit(newLessonBody);
     await newLesson.save();
-    res.redirect('/timetable/week/now');
+    res.redirect('/timetable/week/today');
 }))
 
 //GET edit lesson page

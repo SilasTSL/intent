@@ -202,8 +202,7 @@
             body: JSON.stringify(requestBody)
         })
         .then(res => {
-            console.log("HELLOOO")
-            window.location.href = '/timetable/week/now';
+            window.location.href = '/timetable/week/today';
         }).catch(err => {
             alert("There was something wrong adding your lesson!");
             console.log(err);
@@ -260,9 +259,39 @@
 
         const daySelect = document.getElementById("day");
         const startSelect = document.getElementById("timingStart");
-        const selectedDay = daySelect.options[daySelect.selectedIndex].text;
-        const selectedStart = startSelect.options[startSelect.selectedIndex].text;
-        const selectedEnd = endSelect.options[endSelect.selectedIndex].text;
+        const selectedDay = daySelect.options[daySelect.selectedIndex].value;
+        const selectedStart = startSelect.options[startSelect.selectedIndex].value;
+        const selectedEnd = endSelect.options[endSelect.selectedIndex].value;
+
+        const units = JSON.parse('<%- unitsString %>');
+
+        // Check overlap with existing units:
+        if (units.some(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart))) {
+            alert("This timing overlaps with the timing of an existing lesson/task!");
+            daySelect.selectedIndex = 0;
+            startSelect.selectedIndex = 0;
+            endSelect.selectedIndex = 0;
+            startSelect.disabled = true;
+            endSelect.disabled = true;
+            return;
+        }
+
+        // Check overlap with current unit:
+        if (currentTimings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart)) {
+            alert("This timing overlaps with the timing of the current new lesson!");
+            daySelect.selectedIndex = 0;
+            startSelect.selectedIndex = 0;
+            endSelect.selectedIndex = 0;
+            startSelect.disabled = true;
+            endSelect.disabled = true;
+            return;
+        }
+
+        // Check start > end:
+        if (selectedStart >= selectedEnd) {
+            alert('Starting time should be later than Ending time!');
+            return;
+        }
 
         // Display the selected values above the indexInputRow
         const selectedRows = document.getElementById('selectedRows');
