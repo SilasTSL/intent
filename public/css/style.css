@@ -606,6 +606,8 @@ a {
   overflow: hidden;
   height: 0px;
   width: 100%;
+  padding-left: 5px;
+  padding-right: 5px;
   transition-duration: 0.4s;
 }
 
@@ -614,6 +616,8 @@ a {
   background-color: pink;
   height: 0px;
   width: 100%;
+  padding-left: 5px;
+  padding-right: 5px;
   transition-duration: 0.4s;
 }
 

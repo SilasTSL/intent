@@ -185,17 +185,33 @@
     // New Lesson:
     const newLessonSubmitButton = document.getElementsByClassName('indexSubmitNewLessonButton')[0];
     newLessonSubmitButton.addEventListener('click', () => {
+        // Check fields:
+        const newLessonTitle = document.getElementById('title').value;
+        const newLessonColour = document.getElementById('colour').value;
         const newTimings = currentTimings.map(timing => {
             delete timing.index;
             return timing;
         });
+        if (!newLessonTitle) {
+            alert('Please fill in the Lesson Title!');
+            return;
+        }
+        if (!newLessonColour) {
+            alert('Please pick a Lesson Colour!');
+            return;
+        }
+        if (newTimings.length <= 0) {
+            alert('Please fill in at least 1 timing!');
+            return;
+        }
+
+
         const requestBody = {
-            'title': document.getElementById('title').value,
-            'colour': document.getElementById('colour').value,
+            'title': newLessonTitle,
+            'colour': newLessonColour,
             'timings': newTimings
         }
-        console.log("REQUEST BODY!");
-        console.log(requestBody);
+
         fetch('/timetable', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -220,35 +236,13 @@
 
     function handleDayChange(daySelect) {
         const startSelect = document.getElementById("timingStart");
-        const endSelect = document.getElementById("timingEnd");
 
         startSelect.disabled = false;
-
-        if (daySelect.selectedIndex === 0) {
-            startSelect.selectedIndex = 0;
-            startSelect.disabled = true;
-            endSelect.selectedIndex = 0;
-            endSelect.disabled = true;
-        } else {
-            endSelect.disabled = true;
-        }
     }
 
     function handleStartChange(startSelect) {
         const endSelect = document.getElementById("timingEnd");
-        const daySelect = document.getElementById("day");
-
         endSelect.disabled = false;
-
-        if (startSelect.selectedIndex === 0) {
-                endSelect.selectedIndex = 0;
-                endSelect.disabled = true;
-        } else {
-            if (daySelect.selectedIndex === 0) {
-                endSelect.selectedIndex = 0;
-                endSelect.disabled = true;
-            }
-        }
     }
 
     let timingCount = 0;
