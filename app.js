@@ -145,7 +145,7 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 
     const newLesson = new Unit(newLessonBody);
     await newLesson.save();
-    res.redirect('/timetable/week/today');
+    res.sendStatus(200);
 }))
 
 //GET edit lesson page
@@ -196,14 +196,32 @@ app.get('/weekly-tasks/new', validateIsLoggedIn, (req, res) => {
 
 //POST make new weekly task
 app.post('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
-    var newWeeklyTaskBody = req.body.weeklyTask;
+    var newWeeklyTaskBody = req.body;
     newWeeklyTaskBody.userId = req.user.id;
     newWeeklyTaskBody.type = "WeeklyTask";
     newWeeklyTaskBody.colour = "#696969";
     newWeeklyTaskBody.isAssigned = false;
     const newWeeklyTask = new Unit(newWeeklyTaskBody);
     await newWeeklyTask.save();
-    res.redirect('/weekly-tasks');
+
+    // Assign task:
+    const assignedUnits = await Unit.find({userId: req.user.id, isAssigned: true});
+    const unassignedUnits = await Unit.find({userId: req.user.id, isAssigned: false});
+    
+    const optimalSchedule = hillclimb(assignedUnits, unassignedUnits);
+    // Not enough timeslots to finish before deadline
+    if (optimalSchedule <= 0) {
+        res.sendStatus(401);
+        return;
+    }
+
+    for (let unit of optimalSchedule) {
+        if (!unit.isAssigned) {
+            unit.isAssigned = true;
+            await Unit.findByIdAndUpdate(unit._id, unit);
+        }
+    }
+    res.sendStatus(200);
 }))
 
 //GET edit weekly task page

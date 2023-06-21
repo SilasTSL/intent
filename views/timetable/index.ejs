@@ -50,8 +50,8 @@
     <div class="indexNewLessonFormDropdownButton button">+ New Lesson</div>
     <form id="indexNewLessonForm" action='/timetable' method='POST'>
         <div class="indexInputRow">
-            <label class="form-label" for="title">Title</label>
-            <input class="form-control" type="text" id="title" required>
+            <label class="form-label" for="lessonTitle">Title</label>
+            <input class="form-control" type="text" id="lessonTitle" required>
         </div>
         <div class="indexInputRow">
             <label class="form-label" for="colour">Colour</label>
@@ -109,6 +109,40 @@
     </form>
     <div class="indexNewTaskFormDropdownButton button">+ New Task</div>
     <form id="indexNewTaskForm">
+        <div class="indexInputRow">
+            <label class="form-label" for="taskTitle">Title</label>
+            <input class="form-control" type="text" id="taskTitle" required>
+        </div>
+        <div class="indexInputRow">
+            <label class="form-label" for="duration">Duration (in hours)</label>
+            <input class="form-control" type="number" id="duration" required>
+        </div>
+        <div class="indexInputRow">
+            <label class="form-label" for="releasedOn">Released On</label>
+            <select class="form-select" id="releasedOn" required>
+                <option value="" selected disabled>Select a day</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
+        </div>
+        <div class="indexInputRow">
+            <label class="form-label" for="deadline">Deadline</label>
+            <select class="form-select" id="deadline" required>
+                <option value="" selected disabled>Select a day</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
+        </div>
         <div class="indexFormsBottomRow">
             <div class="indexCancelNewTaskButton indexCancelButton button">Cancel</div>
             <div class="indexSubmitNewTaskButton indexSubmitButton button">Submit</div>
@@ -164,71 +198,6 @@
         } else {
             newTaskForm.style.height = '0px';
         }
-    })
-
-    // Onclick for cancel buttons:
-    const newLessonCancelButton = document.getElementsByClassName('indexCancelNewLessonButton')[0];
-    const newTaskCancelButton = document.getElementsByClassName('indexCancelNewTaskButton')[0];
-
-    newLessonCancelButton.addEventListener('click', () => {
-        const newLessonForm = document.getElementById('indexNewLessonForm');
-        newLessonForm.style.height = "0px";
-        newLessonForm.style.paddingBottom = "0px";
-    })
-
-    newTaskCancelButton.addEventListener('click', () => {
-        const newTaskForm = document.getElementById('indexNewTaskForm');
-        newTaskForm.style.height = '0px';
-    })
-
-    // Onclick for submit buttons:
-    // New Lesson:
-    const newLessonSubmitButton = document.getElementsByClassName('indexSubmitNewLessonButton')[0];
-    newLessonSubmitButton.addEventListener('click', () => {
-        // Check fields:
-        const newLessonTitle = document.getElementById('title').value;
-        const newLessonColour = document.getElementById('colour').value;
-        const newTimings = currentTimings.map(timing => {
-            delete timing.index;
-            return timing;
-        });
-        if (!newLessonTitle) {
-            alert('Please fill in the Lesson Title!');
-            return;
-        }
-        if (!newLessonColour) {
-            alert('Please pick a Lesson Colour!');
-            return;
-        }
-        if (newTimings.length <= 0) {
-            alert('Please fill in at least 1 timing!');
-            return;
-        }
-
-
-        const requestBody = {
-            'title': newLessonTitle,
-            'colour': newLessonColour,
-            'timings': newTimings
-        }
-
-        fetch('/timetable', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
-        })
-        .then(res => {
-            window.location.href = '/timetable/week/today';
-        }).catch(err => {
-            alert("There was something wrong adding your lesson!");
-            console.log(err);
-        })
-    })
-
-    //New Task:
-    const newTaskSubmitButton = document.getElementsByClassName('indexSubmitNewTaskButton')[0];
-    newTaskSubmitButton.addEventListener('click', () => {
-        // TO BE IMPLEMENTED!
     })
 
     // Timings:
@@ -338,6 +307,112 @@
         startSelect.disabled = true;
         endSelect.disabled = true;
     }
+
+        // Onclick for cancel buttons:
+        const newLessonCancelButton = document.getElementsByClassName('indexCancelNewLessonButton')[0];
+    const newTaskCancelButton = document.getElementsByClassName('indexCancelNewTaskButton')[0];
+
+    newLessonCancelButton.addEventListener('click', () => {
+        const newLessonForm = document.getElementById('indexNewLessonForm');
+        newLessonForm.style.height = "0px";
+        newLessonForm.style.paddingBottom = "0px";
+    })
+
+    newTaskCancelButton.addEventListener('click', () => {
+        const newTaskForm = document.getElementById('indexNewTaskForm');
+        newTaskForm.style.height = '0px';
+    })
+
+    // Onclick for submit buttons:
+    // New Lesson:
+    const newLessonSubmitButton = document.getElementsByClassName('indexSubmitNewLessonButton')[0];
+    newLessonSubmitButton.addEventListener('click', () => {
+        // Check fields:
+        const newLessonTitle = document.getElementById('lessonTitle').value;
+        const newLessonColour = document.getElementById('colour').value;
+        const newTimings = currentTimings.map(timing => {
+            delete timing.index;
+            return timing;
+        });
+        if (!newLessonTitle) {
+            alert('Please fill in the Lesson Title!');
+            return;
+        }
+        if (!newLessonColour) {
+            alert('Please pick a Lesson Colour!');
+            return;
+        }
+        if (newTimings.length <= 0) {
+            alert('Please fill in at least 1 timing!');
+            return;
+        }
+
+        const requestBody = {
+            'title': newLessonTitle,
+            'colour': newLessonColour,
+            'timings': newTimings
+        }
+
+        fetch('/timetable', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        })
+        .then(data => {
+            window.location.href = '/timetable/week/today';
+        })
+        .catch(err => {
+            alert("There was a problem adding this lesson!");
+        })
+    })
+
+    //New Task:
+    const newTaskSubmitButton = document.getElementsByClassName('indexSubmitNewTaskButton')[0];
+    newTaskSubmitButton.addEventListener('click', () => {
+        const newTaskTitle = document.getElementById('taskTitle').value;
+        const newTaskDuration = document.getElementById('duration').value;
+        const newTaskReleasedOn = document.getElementById('releasedOn').value;
+        const newTaskDeadline = document.getElementById('deadline').value;
+
+        // Check fields:
+        if (!newTaskTitle) {
+            alert('Please fill in the Task Title!');
+            return;
+        }
+        if (!newTaskDuration) {
+            alert('Please fill in the Task Duration!');
+            return;
+        }
+        if (!newTaskReleasedOn) {
+            alert('Please pick a day the Task is Released!');
+            return;
+        }
+        if (!newTaskDeadline) {
+            alert('Please pick a day the Task is Due!');
+            return;
+        }
+
+        const requestBody = {
+            'title': newTaskTitle,
+            'duration': newTaskDuration,
+            'releasedOn': newTaskReleasedOn,
+            'deadline': newTaskDeadline
+        }
+        
+        fetch('/weekly-tasks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        })
+        .then(data => {
+            window.location.href = '/timetable/week/today';
+        })
+        .catch(err => {
+            alert("There was a problem adding this task!");
+        })
+    })
+
+
 
     // Onclick for arrow buttons:
     const weekOrMonth = "<%= weekOrMonth %>";
