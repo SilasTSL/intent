@@ -152,6 +152,23 @@
             <div class="indexSubmitNewTaskButton indexSubmitButton button">Submit</div>
         </div>
     </form>
+    <hr class="indexFormBorder">
+    <div class="indexListContainer">
+        <div class="indexLessonsList">
+            <h3 class="indexListHeader">Lessons:</h3>
+            <% const lessons = units.filter(unit => unit.type == 'Lesson') %>
+            <% for (let lesson of lessons) { %>
+                <div class="indexListUnit" style="background-color: <%= lesson.colour %>;" onclick="window.location.href = '/edit/<%= lesson._id %>/lesson'"><%= lesson.title %></div>
+            <% } %>
+        </div>
+        <div class="indexTasksList">
+            <h3 class="indexListHeader">Tasks:</h3>
+            <% const tasks = units.filter(unit => unit.type == 'WeeklyTask') %>
+            <% for (let task of tasks) { %>
+                <div class="indexListUnit" style="background-color: <%= task.colour %>;" onclick="window.location.href = '/edit/<%= task._id %>/weekly-tasks'"><%= task.title %></div>
+            <% } %>
+        </div>
+    </div>
 </div>
 </div>
 

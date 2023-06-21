@@ -701,6 +701,59 @@ a {
   background-color: #03639e;
 }
 
+.indexFormBorder {
+  border-bottom: 1px solid black;
+  width: 100%;
+}
+
+.indexListContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.indexLessonsList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1rem;
+  padding-right: 0.5rem;
+}
+
+.indexTasksList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1rem;
+  padding-left: 0.5rem;
+}
+
+.indexListHeader {
+  font-size: 1.2rem;
+}
+
+.indexListUnit {
+  padding: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  width: 100%;
+  color: white;
+  margin-top: 0.5rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  transition-duration: 0.3s;
+  cursor: pointer;
+}
+
+.indexListUnit:first-child {
+  margin-top: 0;
+}
+
+.indexListUnit:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
 #loadingScreenWrapper {
   position: fixed;
   z-index: 1;
