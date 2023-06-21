@@ -701,6 +701,41 @@ a {
   background-color: #03639e;
 }
 
+#loadingScreenWrapper {
+  position: fixed;
+  z-index: 1;
+  top: 10vh;
+  left: 0;
+  right: 26%;
+  bottom: 5vh;
+  background-color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding-right: 6.5vw;
+  padding-bottom: 5vh;
+}
+
+.loading{
+  height : 25px;
+  width : 25px;
+/*   background-color : blue; */
+  border-radius : 50%;
+  border : 2px solid transparent;
+  border-top-color : blue;
+  animation : spin infinite 1s;
+}
+
+@keyframes spin{
+  from {
+    transform : translate(-50%,-50%) rotate(0deg);
+  }
+  to{
+    transform :translate(-50%,-50%) rotate(359deg);
+  }
+}
+
+
 /* Login Register Pages */
 #accountBodyContainer {
   display: flex;
