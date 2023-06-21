@@ -128,14 +128,6 @@ app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async 
     res.render('timetable/index', { units, unitsString: JSON.stringify(units), weekOrMonth, formattedPeriod });
 }))
 
-//GET make new lesson page
-app.get('/timetable/new', validateIsLoggedIn, async (req, res) => {
-    const units = await Unit.find({userId: req.user.id});
-    const existingTimings = units.map(unit => unit.timings);
-    const existingTimingsList = [].concat(...existingTimings);
-    res.render('timetable/new', { existingTimingsList });
-})
-
 //POST make new lessons
 app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     const newLessonBody = req.body;
@@ -189,10 +181,8 @@ app.get('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
     res.render('weekly-tasks', { weeklyTasks });
 }))
 
-//GET make new weekly task page
-app.get('/weekly-tasks/new', validateIsLoggedIn, (req, res) => {
-    res.render('weekly-tasks/new');
-})
+//Hillclimbing function
+const hillclimb = require('./hillclimbing.js');
 
 //POST make new weekly task
 app.post('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
@@ -260,32 +250,6 @@ app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
     }
     const weeklyTask = await Unit.findByIdAndUpdate(id, edittedBody);
     res.redirect('/timetable/week/today');
-}))
-
-
-//HILL CLIMBING:
-//Hillclimbing function
-const hillclimb = require('./hillclimbing.js');
-  
-//GET assign timetable:
-app.get('/assign', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const assignedUnits = await Unit.find({userId: req.user.id, isAssigned: true});
-    const unassignedUnits = await Unit.find({userId: req.user.id, isAssigned: false});
-    
-    const optimalSchedule = hillclimb(assignedUnits, unassignedUnits);
-    // Not enough timeslots to finish before deadline
-    if (optimalSchedule <= 0) {
-        res.sendStatus(401);
-        return;
-    }
-
-    for (let unit of optimalSchedule) {
-        if (!unit.isAssigned) {
-            unit.isAssigned = true;
-            await Unit.findByIdAndUpdate(unit._id, unit);
-        }
-    }
-    res.sendStatus(200);
 }))
 
 //ACCOUNT PAGES:
