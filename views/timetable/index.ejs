@@ -328,6 +328,17 @@
     })
 
     // Onclick for submit buttons:
+
+    function showLoadingScreen() {
+        console.log("Showing Loading Screen!")
+        document.getElementById('loadingScreenWrapper').style.display = 'flex';
+    }
+
+    function hideLoadingScreen() {
+        console.log("Hiding Loading Screen!")
+        document.getElementById('loadingScreenWrapper').style.display = 'none';
+    }
+
     // New Lesson:
     const newLessonSubmitButton = document.getElementsByClassName('indexSubmitNewLessonButton')[0];
     newLessonSubmitButton.addEventListener('click', () => {
@@ -351,6 +362,9 @@
             return;
         }
 
+        // Display loading screen:
+        showLoadingScreen();
+
         const requestBody = {
             'title': newLessonTitle,
             'colour': newLessonColour,
@@ -367,20 +381,11 @@
         })
         .catch(err => {
             alert("There was a problem adding this lesson!");
+            hideLoadingScreen();
         })
     })
 
     //New Task:
-    function showLoadingScreen() {
-        console.log("Showing Loading Screen!")
-        document.getElementById('loadingScreenWrapper').style.display = 'flex';
-    }
-
-    function hideLoadingScreen() {
-        console.log("Hiding Loading Screen!")
-        document.getElementById('loadingScreenWrapper').style.display = 'none';
-    }
-
     const newTaskSubmitButton = document.getElementsByClassName('indexSubmitNewTaskButton')[0];
     newTaskSubmitButton.addEventListener('click', () => {
         const newTaskTitle = document.getElementById('taskTitle').value;
@@ -426,6 +431,7 @@
         })
         .catch(err => {
             alert("There was a problem adding this task!");
+            hideLoadingScreen();
         })
     })
 
