@@ -28,6 +28,17 @@ a {
   cursor: pointer;
 }
 
+/* Index page */
+
+.glowing-text {
+  color: #f9744b;
+  font-weight: 900;
+}
+
+.glowingBlock {
+  background-color: #d3d2d2;
+}
+
 .deleteTimingButton {
   background-color: #ED2939;
   font-size: 0.8rem;

@@ -26,10 +26,13 @@
                 <div class="timingLabel"><%= r + ":00" %></div>
             <% } %>        
         </div>
+        <% var todayDate = new Date(); %>
+        <% var todayNum = todayDate.getDay(); %>
         <% const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; %>
+        <% var today = daysOfWeek[todayNum == 0 ? 6 : todayNum - 1]; %>
         <% for (let day of daysOfWeek) { %>
             <div class="dayColumn">
-                <p class="dayLabel"><%= day %></p>
+                <p class="dayLabel <%= day == today ? 'glowing-text' : '' %>"><%= day %></p>
                 <% for (let r=8; r < 18; r++) { %>
                     <% let unitFound = units.find(unit => unit.timings.some(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
                     <% if (unitFound) { %>
@@ -40,7 +43,7 @@
                         </div>
                         <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>
                     <% } else { %>
-                    <div class="timetableBlock"></div>
+                    <div class="timetableBlock <%= day == today ? 'glowingBlock' : '' %>"></div>
                     <% } %>
                 <% } %>
             </div>
