@@ -53,7 +53,7 @@
         <% } %>
     </div>
 </div>
-<div class="indexNewFormsContainer">
+<div class="indexSideContainer">
     <div class="indexNewLessonFormDropdownButton button">+ New Lesson</div>
     <form id="indexNewLessonForm" action='/timetable' method='POST'>
         <div class="indexInputRow">
@@ -156,17 +156,18 @@
         </div>
     </form>
     <hr class="indexFormBorder">
+    <h2 class="indexListHeader">Today</h2>
     <div class="indexListContainer">
         <div class="indexLessonsList">
-            <h3 class="indexListHeader">Lessons:</h3>
-            <% const lessons = units.filter(unit => unit.type == 'Lesson') %>
+            <h3 class="indexListSubheader">Lessons:</h3>
+            <% const lessons = units.filter(unit => unit.type == 'Lesson' && unit.timings.some(timing => timing.day == today)) %>
             <% for (let lesson of lessons) { %>
                 <div class="indexListUnit" style="background-color: <%= lesson.colour %>;" onclick="window.location.href = '/edit/<%= lesson._id %>/lesson'"><%= lesson.title %></div>
             <% } %>
         </div>
         <div class="indexTasksList">
-            <h3 class="indexListHeader">Tasks:</h3>
-            <% const tasks = units.filter(unit => unit.type == 'WeeklyTask') %>
+            <h3 class="indexListSubheader">Tasks:</h3>
+            <% const tasks = units.filter(unit => unit.type == 'WeeklyTask' && unit.timings.some(timing => timing.day == today)) %>
             <% for (let task of tasks) { %>
                 <div class="indexListUnit" style="background-color: <%= task.colour %>;" onclick="window.location.href = '/edit/<%= task._id %>/weekly-tasks'"><%= task.title %></div>
             <% } %>
