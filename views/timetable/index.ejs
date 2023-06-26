@@ -5,6 +5,78 @@
         <div class="loading">
         </div>
     </div>
+    <div id="indexOverlay"></div>
+    <div id="indexEditLessonContainer" class="indexEditContainer">
+        <h3 class="indexEditLessonContainerTitle">Edit Lesson:</h3>
+        <div class="editInputRow">
+            <label class="form-label" for="editLessonTitle">Title</label>
+            <input class="form-control" type="text" id="editLessonTitle" required>
+        </div>
+        <div class="editInputRow">
+            <label class="form-label" for="editLessonColour">Colour</label>
+            <select class="form-select" id="editLessonColour" name="lesson[colour]" required>
+                <option class="" value="" selected disabled>Select a colour</option>
+                <option class="Red" value="#C62828">Red</option>
+                <option class="Blue" value="#1565C0">Blue</option>
+                <option class="Green" value="#2E7D32">Green</option>
+                <option class="Yellow" value="#FFA000">Yellow</option>
+                <option class="Purple" value="#6A1B9A">Purple</option>
+                <option class="Orange" value="#F08731">Orange</option>
+            </select>
+        </div>
+        <div class="editInputRow" id="editLessonTimingContainer">
+            <div class="editNewTimingRow editTimingRow">
+                <div class="indexTimingColumn">
+                    <label class="form-label" for="editLessonNewDay">Day</label>
+                    <select class="form-select" id="editLessonNewDay" onchange="handleEditLessonDayChange(this)" required>
+                        <option value="" selected disabled>Select a day</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>            
+                </div>
+                <div class="indexTimingColumn">
+                    <label class="form-label" for="editLessonNewTimingStart">Start</label>
+                    <select class="form-select" id="editLessonNewTimingStart" onchange="handleEditLessonStartChange(this)" disabled required>
+                        <option value="" selected disabled>Select a starting time</option>
+                        <% for (let j = 8; j <= 18; j++) { %>
+                            <% let time = j < 10 ? '0' + j : j; %>
+                            <option value="<%= time %>00"><%= time %>:00</option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="indexTimingColumn">
+                    <label class="form-label" for="editLessonNewTimingEnd">End</label>
+                    <select class="form-select" id="editLessonNewTimingEnd" onchange="handleEditLessonEndChange(this)" disabled required>
+                        <option value="" selected disabled>Select an ending time</option>
+                        <% for (let j = 8; j <= 18; j++) { %>
+                            <% let time = j < 10 ? '0' + j : j; %>
+                            <option value="<%= time %>00"><%= time %>:00</option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="indexEditButtonsRow">
+            <div class="indexEditCancelButton button" onclick="hideEditLessonContainer()">Cancel</div>
+            <div class="indexEditSubmitButton button" id="indexEditLessonSubmitButton">Submit</div>
+        </div>
+    </div>
+
+    <div id="indexEditTaskContainer" class="indexEditContainer">
+        <h3 class="indexEditTaskTitle">Edit Task:</h3>
+
+        <div class="indexEditButtonsRow">
+            <div class="indexEditCancelButton button" onclick="hideEditTaskContainer()">Cancel</div>
+            <div class="indexEditSubmitButton button" id="indexEditTaskSubmitButton">Submit</div>
+        </div>
+    </div>
+
     <div class="timetableHeadingContainer">
         <h1 class="timetableTitle">Timetable</h1>
         <div class="timetableOptionsContainer">
@@ -38,7 +110,7 @@
                     <% if (unitFound) { %>
                         <% const unitTiming = unitFound.timings.find(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                         <% let unitDuration = parseInt(unitTiming.timingEnd.substring(0, 2)) - parseInt(unitTiming.timingStart.substring(0, 2)); %>
-                        <div class="timetableBlock unitBlock" unit_id="<%= unitFound._id %>" style="background-color: <%= unitFound.colour %>; height: <%= (55 * unitDuration) + (4 * (unitDuration - 1)) %>px;" <% if (unitFound.type == "Lesson") { %> onclick="window.location.href = '/edit/<%= unitFound._id %>/lesson'" <% } else { %> onclick="window.location.href = '/edit/<%= unitFound._id %>/weekly-tasks'" <% } %>>
+                        <div class="timetableBlock unitBlock" unit_id="<%= unitFound._id %>" style="background-color: <%= unitFound.colour %>; height: <%= (55 * unitDuration) + (4 * (unitDuration - 1)) %>px;" %> <% if (unitFound.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unitFound) %>')" <% } else { %> onclick="showEditTaskContainer('<%= JSON.stringify(unitFound) %>')" <% } %>>
                             <%= unitFound.title %>
                         </div>
                         <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>
@@ -101,7 +173,7 @@
                 <label class="form-label" for="timingEnd">End</label>
                 <select class="form-select" id="timingEnd" onchange="handleEndChange(this)" disabled required>
                     <option value="" selected disabled>Select an ending time</option>
-                    <% for (let j = 9; j <= 18; j++) { %>
+                    <% for (let j = 8; j <= 18; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
                         <option value="<%= time %>00"><%= time %>:00</option>
                     <% } %>
@@ -230,7 +302,6 @@
 
     function handleDayChange(daySelect) {
         const startSelect = document.getElementById("timingStart");
-
         startSelect.disabled = false;
     }
 
@@ -333,8 +404,8 @@
         endSelect.disabled = true;
     }
 
-        // Onclick for cancel buttons:
-        const newLessonCancelButton = document.getElementsByClassName('indexCancelNewLessonButton')[0];
+    // Onclick for cancel buttons:
+    const newLessonCancelButton = document.getElementsByClassName('indexCancelNewLessonButton')[0];
     const newTaskCancelButton = document.getElementsByClassName('indexCancelNewTaskButton')[0];
 
     newLessonCancelButton.addEventListener('click', () => {
@@ -385,17 +456,17 @@
 
         // Display loading screen:
         showLoadingScreen();
+        
+        const requestBody = new URLSearchParams();
+        requestBody.append('title', newLessonTitle);
+        requestBody.append('colour', newLessonColour);
+        requestBody.append('timings', JSON.stringify(newTimings));
 
-        const requestBody = {
-            'title': newLessonTitle,
-            'colour': newLessonColour,
-            'timings': newTimings
-        }
 
         fetch('/timetable', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: requestBody.toString()
         })
         .then(data => {
             window.location.href = '/timetable/week/today';
@@ -435,17 +506,16 @@
         // Display loading screen:
         showLoadingScreen();
 
-        const requestBody = {
-            'title': newTaskTitle,
-            'duration': newTaskDuration,
-            'releasedOn': newTaskReleasedOn,
-            'deadline': newTaskDeadline
-        }
-        
+        const requestBody = new URLSearchParams();
+        requestBody.append('title', newTaskTitle);
+        requestBody.append('duration', newTaskDuration);
+        requestBody.append('releasedOn', newTaskReleasedOn);
+        requestBody.append('deadline', newTaskDeadline);
+
         fetch('/weekly-tasks', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: requestBody.toString()
         })
         .then(data => {
             window.location.href = '/timetable/week/today';
@@ -543,6 +613,245 @@
     rightArrowButton.addEventListener('click', () => {
         window.location.href = `/timetable/${weekOrMonth}/${nextPeriod}`;
     })
+
+
+    // Edit functionality:
+    let timingIndex = 0;
+    const colourList = ["", "#C62828", "#1565C0", "#2E7D32", "#FFA000", "#6A1B9A", "#F08731"];
+    const dayList = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const timingsList = ["", "0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800"];
+    
+    // Function to append a new timing row
+    function createTimingRow(index) {
+        const timingRow = document.createElement('div');
+        timingRow.classList.add('editTimingRow');
+        timingRow.setAttribute('edit-timing-index', index);
+        timingRow.innerHTML = `
+            <div class="indexTimingColumn">
+                <label class="form-label">Day</label>
+                <select class="form-select editLessonDay" id="editLessonDay${index}" required>
+                    <option value="" selected disabled>Select a day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>            
+            </div>
+            <div class="indexTimingColumn">
+                <label class="form-label">Start</label>
+                <select class="form-select editLessonTimingStart" id="editLessonTimingStart${index}" required>
+                    <option value="" selected>Select a starting time</option>
+                    <% for (let j = 8; j <= 18; j++) { %>
+                        <% let time = j < 10 ? '0' + j : j; %>
+                        <option value="<%= time %>00"><%= time %>:00</option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="indexTimingColumn">
+                <label class="form-label">End</label>
+                <select class="form-select editLessonTimingEnd" id="editLessonTimingEnd${index}" required>
+                    <option value="" selected>Select an ending time</option>
+                    <% for (let j = 8; j <= 18; j++) { %>
+                        <% let time = j < 10 ? '0' + j : j; %>
+                        <option value="<%= time %>00"><%= time %>:00</option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="editDeleteTimingButton button" onclick="deleteEditTimingRow(${index})">Delete</div>
+        `;
+        return timingRow;
+    }
+
+    function handleEditLessonDayChange(daySelect) {
+        const startSelect = document.getElementById("editLessonNewTimingStart");
+        startSelect.disabled = false;
+    }
+
+    function handleEditLessonStartChange(startSelect) {
+        const endSelect = document.getElementById("editLessonNewTimingEnd");
+        endSelect.disabled = false;
+    }
+    
+    function handleEditLessonEndChange(endSelect) {
+        if (endSelect.selectedIndex === 0) {
+            return;
+        }
+        const daySelect = document.getElementById("editLessonNewDay");
+        const startSelect = document.getElementById("editLessonNewTimingStart");
+        const selectedDay = daySelect.options[daySelect.selectedIndex].value;
+        const selectedStart = startSelect.options[startSelect.selectedIndex].value;
+        const selectedEnd = endSelect.options[endSelect.selectedIndex].value;
+
+        const units = JSON.parse('<%- unitsString %>');
+
+        // Check overlap with existing units:
+        if (units.some(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart))) {
+            alert("This timing overlaps with the timing of an existing lesson/task!");
+            daySelect.selectedIndex = 0;
+            startSelect.selectedIndex = 0;
+            endSelect.selectedIndex = 0;
+            startSelect.disabled = true;
+            endSelect.disabled = true;
+            return;
+        }
+
+        // Check start > end:
+        if (selectedStart >= selectedEnd) {
+            alert('Starting time should be later than Ending time!');
+            return;
+        }
+
+        // Insert new timing row:
+        const timingContainer = document.getElementById('editLessonTimingContainer');
+        const editNewTimingRow = document.getElementsByClassName('editNewTimingRow')[0];
+        const newTimingRow = createTimingRow(timingIndex);
+        timingContainer.insertBefore(newTimingRow, editNewTimingRow);
+
+        const timingDay = document.getElementById('editLessonDay' + timingIndex);
+        const timingStart = document.getElementById('editLessonTimingStart' + timingIndex);
+        const timingEnd = document.getElementById('editLessonTimingEnd' + timingIndex);
+
+        timingDay.selectedIndex = dayList.indexOf(selectedDay);
+        timingStart.selectedIndex = timingsList.indexOf(selectedStart);
+        timingEnd.selectedIndex = timingsList.indexOf(selectedEnd);
+        timingIndex++;
+
+        // Reset the form for the next selection:
+        daySelect.selectedIndex = 0;
+        startSelect.selectedIndex = 0;
+        endSelect.selectedIndex = 0;
+        startSelect.disabled = true;
+        endSelect.disabled = true;
+    }
+
+    function deleteEditTimingRow(index) {
+        const timingRow = document.querySelector(`[edit-timing-index="${index}"]`);
+        timingRow.remove();
+    }
+
+    // Lesson:
+    function showEditLessonContainer(lessonString) {
+        document.getElementById("indexOverlay").style.display = 'block';
+
+        const lesson = JSON.parse(lessonString);
+        var editContainer = document.getElementById('indexEditLessonContainer');
+        editContainer.style.display = 'block';
+        const editLessonTitle = document.getElementById('editLessonTitle');
+        const editLessonColour = document.getElementById('editLessonColour');
+
+        editLessonTitle.value = lesson.title;
+        editLessonColour.selectedIndex = colourList.indexOf(lesson.colour);
+        
+        const timingContainer = document.getElementById('editLessonTimingContainer');
+        const editNewTimingRow = document.getElementsByClassName('editNewTimingRow')[0];
+        for (let timing of lesson.timings) {
+            const timingRow = createTimingRow(timingIndex);
+            
+            timingContainer.insertBefore(timingRow, editNewTimingRow)
+
+            const timingDay = document.getElementById('editLessonDay' + timingIndex);
+            const timingStart = document.getElementById('editLessonTimingStart' + timingIndex);
+            const timingEnd = document.getElementById('editLessonTimingEnd' + timingIndex);
+
+            timingDay.selectedIndex = dayList.indexOf(timing.day);
+            timingStart.selectedIndex = timingsList.indexOf(timing.timingStart);
+            timingEnd.selectedIndex = timingsList.indexOf(timing.timingEnd);
+            timingIndex++;
+        }
+
+        const editLessonSubmitButton = document.getElementById('indexEditLessonSubmitButton');
+        editLessonSubmitButton.addEventListener('click', () => submitEditLesson(lesson._id));
+
+    }
+
+    function submitEditLesson(lessonId) {
+        // Check fields:
+        const newLessonTitle = document.getElementById('editLessonTitle').value;
+        const newLessonColour = document.getElementById('editLessonColour').value;
+        const newTimingRows = document.getElementsByClassName('editTimingRow');
+
+        if (!newLessonTitle) {
+            alert('Please fill in the Lesson Title!');
+            return;
+        }
+        if (!newLessonColour) {
+            alert('Please pick a Lesson Colour!');
+            return;
+        }
+        if (newTimingRows.length <= 0) {
+            alert('Please fill in at least 1 timing!');
+            return;
+        }
+        
+        // Display loading screen:
+        showLoadingScreen();
+
+        const newLessonTimings = [];
+        for (let timingRow of newTimingRows) {
+            if (timingRow.classList.contains('editNewTimingRow')) {
+                continue;
+            }
+            const day = timingRow.querySelector('select.editLessonDay').value;
+            const timingStart = timingRow.querySelector('select.editLessonTimingStart').value;
+            const timingEnd = timingRow.querySelector('select.editLessonTimingEnd').value;
+            newLessonTimings.push({ day, timingStart, timingEnd });
+        }
+        
+        const requestBody = new URLSearchParams();
+        requestBody.append('title', newLessonTitle);
+        requestBody.append('colour', newLessonColour);
+        requestBody.append('timings', JSON.stringify(newLessonTimings));
+        const putUrl = `/timetable/${lessonId}`
+        fetch(putUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: requestBody.toString()
+        })
+        .then(response => {
+            window.location.href = '/timetable/week/today';
+        })
+        .catch(err => {
+            alert("There was a problem editting this lesson!");
+            hideLoadingScreen();
+        })    
+    }
+
+    function hideEditLessonContainer() {
+        document.getElementById("indexOverlay").style.display = 'none';
+
+        // Remove timing rows:
+        const timingContainer = document.getElementById('editLessonTimingContainer');
+        for (let i = 0; i < timingContainer.children.length - 1; i++) {
+            let timingRow = timingContainer.children[i];
+            timingContainer.removeChild(timingRow);
+        }
+
+        timingIndex = 0;
+
+        // Hide container:
+        var editContainer = document.getElementById('indexEditLessonContainer');
+        editContainer.style.display = 'none';
+    }
+
+    // Task:
+    function showEditTaskContainer(taskString) {
+        document.getElementById("indexOverlay").style.display = 'block';
+
+        const task = JSON.parse(taskString);
+        console.log(task.title)
+        var editContainer = document.getElementById('indexEditTaskContainer');
+        editContainer.style.display = 'block';
+    }
+
+    function hideEditTaskContainer() {
+        document.getElementById("indexOverlay").style.display = 'none';
+
+        var editContainer = document.getElementById('indexEditTaskContainer');
+        editContainer.style.display = 'none';
+    }
 
 </script>
 

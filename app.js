@@ -16,7 +16,7 @@ const Unit = require('./models/unit');
 const app = express();
 
 // CONFIG:
-const dbUrl = process.env.DB_URL || "mongodb+srv://silastaysl:0039200b@cluster0.dujsufb.mongodb.net/?retryWrites=true&w=majority"
+const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/stash-db"
 
 //Connecting to database:
 mongoose.connect(dbUrl, {
@@ -38,7 +38,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 //Ask express to help decode our req bodies:
-app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 //Allow us to override method types (can use PUT etc.):
 app.use(methodOverride('_method'));
 //Public folder:
@@ -131,6 +131,7 @@ app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async 
 //POST make new lessons
 app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     const newLessonBody = req.body;
+    newLessonBody.timings = JSON.parse(newLessonBody.timings);
     newLessonBody.userId = req.user.id;
     newLessonBody.type = "Lesson";
     newLessonBody.isAssigned = true;
@@ -150,12 +151,13 @@ app.get('/edit/:id/lesson', validateIsLoggedIn, catchAsync(async (req, res) => {
 }))
 
 //PUT edit lesson
-app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
+app.put('/timetable/:id', validateIsLoggedIn, async (req, res) => {
     const { id } = req.params;
-    const edittedBody = { ...req.body.lesson };
+    const edittedBody = req.body;
+    edittedBody.timings = JSON.parse(edittedBody.timings);
     const lesson = await Unit.findByIdAndUpdate(id, edittedBody);
-    res.redirect('/timetable/week/today');
-}))
+    res.sendStatus(200);
+})
 
 //DELETE lesson
 app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
@@ -185,7 +187,7 @@ app.get('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
 const hillclimb = require('./hillclimbing.js');
 
 //POST make new weekly task
-app.post('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
+app.post('/weekly-tasks', validateIsLoggedIn, (async (req, res) => {
     var newWeeklyTaskBody = req.body;
     newWeeklyTaskBody.userId = req.user.id;
     newWeeklyTaskBody.type = "WeeklyTask";
@@ -236,7 +238,8 @@ function calculateTimeDifference(timingStart, timingEnd) {
 //PUT edit weekly task
 app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
-    const edittedBody = { ...req.body.task };
+    const edittedBody = req.body;
+    edittedBody.timings = JSON.parse(edittedBody.timings);
     edittedBody.isAssigned = req.body.task.isAssigned === 'true';
     if (!edittedBody.isAssigned) {
         edittedBody.timings = [];
