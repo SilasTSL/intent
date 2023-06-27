@@ -98,6 +98,22 @@ app.get('/', (req, res) => {
 })
 
 //TIMETABLE PAGES:
+
+function sortUnitsByTimings(objects) {
+    return objects.sort((a, b) => {
+        const timingA = a.timings.timingStart;
+        const timingB = b.timings.timingStart;
+        
+        // Compare the timing start values
+        if (timingA < timingB) {
+            return -1;
+        } else if (timingA > timingB) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
+}
 //GET Index page with parameters
 app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async (req, res) => {
     const weekOrMonth = req.params.weekOrMonth;
@@ -124,7 +140,10 @@ app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async 
         formattedPeriod = monthString;
     }
 
-    const units = await Unit.find({userId: req.user.id, isAssigned: true});
+    var units = await Unit.find({userId: req.user.id, isAssigned: true});
+    console.log(units)
+    units = sortUnitsByTimings(units);
+    console.log(units)
     res.render('timetable/index', { units, unitsString: JSON.stringify(units), weekOrMonth, formattedPeriod });
 }))
 
@@ -139,15 +158,6 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
     const newLesson = new Unit(newLessonBody);
     await newLesson.save();
     res.sendStatus(200);
-}))
-
-//GET edit lesson page
-app.get('/edit/:id/lesson', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const lesson = await Unit.findById(req.params.id);
-    const units = await Unit.find({userId: req.user.id});
-    const existingTimings = units.filter(unit => unit._id != req.params.id).map(unit => unit.timings);
-    const existingTimingsList = [].concat(...existingTimings);
-    res.render('timetable/edit', { lesson, existingTimingsList });
 }))
 
 //PUT edit lesson
@@ -168,20 +178,6 @@ app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
 
 
 //WEEKLY TASK PAGES:
-//GET weekly task page:
-app.get('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const weeklyTasks = await Unit.find({userId: req.user.id, type: "WeeklyTask"})
-    weeklyTasks.sort((a, b) => {
-        if (a.isAssigned && !b.isAssigned) {
-          return 1; // 'a' comes after 'b'
-        } else if (!a.isAssigned && b.isAssigned) {
-          return -1; // 'a' comes before 'b'
-        } else {
-          return 0; // 'a' and 'b' remain in the same order
-        }
-    });
-    res.render('weekly-tasks', { weeklyTasks });
-}))
 
 //Hillclimbing function
 const hillclimb = require('./hillclimbing.js');
@@ -214,15 +210,6 @@ app.post('/weekly-tasks', validateIsLoggedIn, (async (req, res) => {
         }
     }
     res.sendStatus(200);
-}))
-
-//GET edit weekly task page
-app.get('/edit/:id/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const task = await Unit.findById(req.params.id);
-    const units = await Unit.find({userId: req.user.id});
-    const existingTimings = units.filter(unit => unit._id != req.params.id).map(unit => unit.timings);
-    const existingTimingsList = [].concat(...existingTimings);
-    res.render('weekly-tasks/edit', { task, existingTimingsList });
 }))
 
 //Helper function to calculate time between:

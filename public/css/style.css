@@ -720,32 +720,13 @@ a {
 
 .indexListContainer {
   display: flex;
-  flex-direction: row;
-  width: 100%;
-}
-
-.indexLessonsList {
-  display: flex;
   flex-direction: column;
   width: 100%;
   padding: 1rem;
-  padding-right: 0.5rem;
-}
-
-.indexTasksList {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 1rem;
-  padding-left: 0.5rem;
 }
 
 .indexListHeader {
   font-size: 1.7rem;
-}
-
-.indexListSubheader {
-  font-size: 1.2rem;
 }
 
 .indexListUnit {

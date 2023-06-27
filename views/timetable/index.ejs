@@ -271,20 +271,9 @@
     <hr class="indexFormBorder">
     <h2 class="indexListHeader">Today</h2>
     <div class="indexListContainer">
-        <div class="indexLessonsList">
-            <h3 class="indexListSubheader">Lessons:</h3>
-            <% const lessons = units.filter(unit => unit.type == 'Lesson' && unit.timings.some(timing => timing.day == today)) %>
-            <% for (let lesson of lessons) { %>
-                <div class="indexListUnit" style="background-color: <%= lesson.colour %>;" onclick="window.location.href = '/edit/<%= lesson._id %>/lesson'"><%= lesson.title %></div>
-            <% } %>
-        </div>
-        <div class="indexTasksList">
-            <h3 class="indexListSubheader">Tasks:</h3>
-            <% const tasks = units.filter(unit => unit.type == 'WeeklyTask' && unit.timings.some(timing => timing.day == today)) %>
-            <% for (let task of tasks) { %>
-                <div class="indexListUnit" style="background-color: <%= task.colour %>;" onclick="window.location.href = '/edit/<%= task._id %>/weekly-tasks'"><%= task.title %></div>
-            <% } %>
-        </div>
+        <% for (let unit of units.filter(unit => unit.timings.some(timing => timing.day == today))) { %>
+            <div class="indexListUnit" style="background-color: <%= unit.colour %>;" <% if (unit.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unit) %>')" <% } else { %> onclick="showEditTaskContainer('<%= JSON.stringify(unit) %>')" <% } %>><%= unit.title %></div>
+        <% } %>
     </div>
 </div>
 </div>
