@@ -25,7 +25,7 @@
             </select>
         </div>
         <div class="editInputRow" id="editLessonTimingContainer">
-            <div class="editNewTimingRow editTimingRow">
+            <div class="editNewLessonTimingRow editTimingRow">
                 <div class="indexTimingColumn">
                     <label class="form-label" for="editLessonNewDay">Day</label>
                     <select class="form-select" id="editLessonNewDay" onchange="handleEditLessonDayChange(this)" required>
@@ -70,6 +70,47 @@
 
     <div id="indexEditTaskContainer" class="indexEditContainer">
         <h3 class="indexEditTaskTitle">Edit Task:</h3>
+        <div class="editInputRow">
+            <label class="form-label" for="editTaskTitle">Title</label>
+            <input class="form-control" type="text" id="editTaskTitle" required>
+        </div>
+        <div class="editInputRow" id="editTaskTimingContainer">
+            <div class="editNewTaskTimingRow editTimingRow">
+                <div class="indexTimingColumn">
+                    <label class="form-label" for="editTaskNewDay">Day</label>
+                    <select class="form-select" id="editTaskNewDay" onchange="handleEditTaskDayChange(this)" required>
+                        <option value="" selected disabled>Select a day</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>            
+                </div>
+                <div class="indexTimingColumn">
+                    <label class="form-label" for="editTaskNewTimingStart">Start</label>
+                    <select class="form-select" id="editTaskNewTimingStart" onchange="handleEditTaskStartChange(this)" disabled required>
+                        <option value="" selected disabled>Select a starting time</option>
+                        <% for (let j = 8; j <= 18; j++) { %>
+                            <% let time = j < 10 ? '0' + j : j; %>
+                            <option value="<%= time %>00"><%= time %>:00</option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="indexTimingColumn">
+                    <label class="form-label" for="editTaskNewTimingEnd">End</label>
+                    <select class="form-select" id="editTaskNewTimingEnd" onchange="handleEditTaskEndChange(this)" disabled required>
+                        <option value="" selected disabled>Select an ending time</option>
+                        <% for (let j = 8; j <= 18; j++) { %>
+                            <% let time = j < 10 ? '0' + j : j; %>
+                            <option value="<%= time %>00"><%= time %>:00</option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+        </div>
 
         <div class="indexEditButtonsRow">
             <div class="indexEditCancelButton button" onclick="hideEditTaskContainer()">Cancel</div>
@@ -622,14 +663,14 @@
     const timingsList = ["", "0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800"];
     
     // Function to append a new timing row
-    function createTimingRow(index) {
+    function createTimingRow(index, lessonOrTask) {
         const timingRow = document.createElement('div');
         timingRow.classList.add('editTimingRow');
         timingRow.setAttribute('edit-timing-index', index);
         timingRow.innerHTML = `
             <div class="indexTimingColumn">
                 <label class="form-label">Day</label>
-                <select class="form-select editLessonDay" id="editLessonDay${index}" required>
+                <select class="form-select ${"edit" + lessonOrTask + "Day"}" id="${"edit" + lessonOrTask + "Day" + index}" required>
                     <option value="" selected disabled>Select a day</option>
                     <option value="Monday">Monday</option>
                     <option value="Tuesday">Tuesday</option>
@@ -642,7 +683,7 @@
             </div>
             <div class="indexTimingColumn">
                 <label class="form-label">Start</label>
-                <select class="form-select editLessonTimingStart" id="editLessonTimingStart${index}" required>
+                <select class="form-select ${"edit" + lessonOrTask + "TimingStart"}" id="${"edit" + lessonOrTask + "TimingStart" + index}" required>
                     <option value="" selected>Select a starting time</option>
                     <% for (let j = 8; j <= 18; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
@@ -652,7 +693,7 @@
             </div>
             <div class="indexTimingColumn">
                 <label class="form-label">End</label>
-                <select class="form-select editLessonTimingEnd" id="editLessonTimingEnd${index}" required>
+                <select class="form-select ${"edit" + lessonOrTask + "TimingEnd"}"" id="${"edit" + lessonOrTask + "TimingEnd" + index}" required>
                     <option value="" selected>Select an ending time</option>
                     <% for (let j = 8; j <= 18; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
@@ -706,8 +747,8 @@
 
         // Insert new timing row:
         const timingContainer = document.getElementById('editLessonTimingContainer');
-        const editNewTimingRow = document.getElementsByClassName('editNewTimingRow')[0];
-        const newTimingRow = createTimingRow(timingIndex);
+        const editNewTimingRow = document.getElementsByClassName('editNewLessonTimingRow')[0];
+        const newTimingRow = createTimingRow(timingIndex, 'Lesson');
         timingContainer.insertBefore(newTimingRow, editNewTimingRow);
 
         const timingDay = document.getElementById('editLessonDay' + timingIndex);
@@ -727,6 +768,70 @@
         endSelect.disabled = true;
     }
 
+
+    function handleEditTaskDayChange(daySelect) {
+        const startSelect = document.getElementById("editTaskNewTimingStart");
+        startSelect.disabled = false;
+    }
+
+    function handleEditTaskStartChange(startSelect) {
+        const endSelect = document.getElementById("editTaskNewTimingEnd");
+        endSelect.disabled = false;
+    }
+
+    function handleEditTaskEndChange(endSelect) {
+        if (endSelect.selectedIndex === 0) {
+            return;
+        }
+        const daySelect = document.getElementById("editTaskNewDay");
+        const startSelect = document.getElementById("editTaskNewTimingStart");
+        const selectedDay = daySelect.options[daySelect.selectedIndex].value;
+        const selectedStart = startSelect.options[startSelect.selectedIndex].value;
+        const selectedEnd = endSelect.options[endSelect.selectedIndex].value;
+
+        const units = JSON.parse('<%- unitsString %>');
+
+        // Check overlap with existing units:
+        if (units.some(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart))) {
+            alert("This timing overlaps with the timing of an existing lesson/task!");
+            daySelect.selectedIndex = 0;
+            startSelect.selectedIndex = 0;
+            endSelect.selectedIndex = 0;
+            startSelect.disabled = true;
+            endSelect.disabled = true;
+            return;
+        }
+
+        // Check start > end:
+        if (selectedStart >= selectedEnd) {
+            alert('Starting time should be later than Ending time!');
+            return;
+        }
+
+        // Insert new timing row:
+        const timingContainer = document.getElementById('editTaskTimingContainer');
+        const editNewTimingRow = document.getElementsByClassName('editNewTaskTimingRow')[0];
+        const newTimingRow = createTimingRow(timingIndex, 'Task');
+        timingContainer.insertBefore(newTimingRow, editNewTimingRow);
+
+        const timingDay = document.getElementById('editTaskDay' + timingIndex);
+        const timingStart = document.getElementById('editTaskTimingStart' + timingIndex);
+        const timingEnd = document.getElementById('editTaskTimingEnd' + timingIndex);
+
+        timingDay.selectedIndex = dayList.indexOf(selectedDay);
+        timingStart.selectedIndex = timingsList.indexOf(selectedStart);
+        timingEnd.selectedIndex = timingsList.indexOf(selectedEnd);
+        timingIndex++;
+
+        // Reset the form for the next selection:
+        daySelect.selectedIndex = 0;
+        startSelect.selectedIndex = 0;
+        endSelect.selectedIndex = 0;
+        startSelect.disabled = true;
+        endSelect.disabled = true;
+    }
+
+
     function deleteEditTimingRow(index) {
         const timingRow = document.querySelector(`[edit-timing-index="${index}"]`);
         timingRow.remove();
@@ -739,6 +844,7 @@
         const lesson = JSON.parse(lessonString);
         var editContainer = document.getElementById('indexEditLessonContainer');
         editContainer.style.display = 'block';
+
         const editLessonTitle = document.getElementById('editLessonTitle');
         const editLessonColour = document.getElementById('editLessonColour');
 
@@ -746,9 +852,9 @@
         editLessonColour.selectedIndex = colourList.indexOf(lesson.colour);
         
         const timingContainer = document.getElementById('editLessonTimingContainer');
-        const editNewTimingRow = document.getElementsByClassName('editNewTimingRow')[0];
+        const editNewTimingRow = document.getElementsByClassName('editNewLessonTimingRow')[0];
         for (let timing of lesson.timings) {
-            const timingRow = createTimingRow(timingIndex);
+            const timingRow = createTimingRow(timingIndex, 'Lesson');
             
             timingContainer.insertBefore(timingRow, editNewTimingRow)
 
@@ -791,7 +897,7 @@
 
         const newLessonTimings = [];
         for (let timingRow of newTimingRows) {
-            if (timingRow.classList.contains('editNewTimingRow')) {
+            if (timingRow.classList.contains('editNewLessonTimingRow') || timingRow.classList.contains('editNewTaskTimingRow')) {
                 continue;
             }
             const day = timingRow.querySelector('select.editLessonDay').value;
@@ -824,10 +930,12 @@
 
         // Remove timing rows:
         const timingContainer = document.getElementById('editLessonTimingContainer');
-        for (let i = 0; i < timingContainer.children.length - 1; i++) {
-            let timingRow = timingContainer.children[i];
-            timingContainer.removeChild(timingRow);
-        }
+        const timingRows = [...timingContainer.getElementsByClassName('editTimingRow')];
+        timingRows.forEach(timingRow => {
+            if (!timingRow.classList.contains('editNewLessonTimingRow')) {
+                timingRow.remove();
+            }
+        })
 
         timingIndex = 0;
 
@@ -844,13 +952,95 @@
         console.log(task.title)
         var editContainer = document.getElementById('indexEditTaskContainer');
         editContainer.style.display = 'block';
+
+                
+        const editTaskTitle = document.getElementById('editTaskTitle');
+
+        editTaskTitle.value = task.title;
+        
+        const timingContainer = document.getElementById('editTaskTimingContainer');
+        const editNewTimingRow = document.getElementsByClassName('editNewTaskTimingRow')[0];
+        for (let timing of task.timings) {
+            const timingRow = createTimingRow(timingIndex, 'Task');
+            
+            timingContainer.insertBefore(timingRow, editNewTimingRow)
+
+            const timingDay = document.getElementById('editTaskDay' + timingIndex);
+            const timingStart = document.getElementById('editTaskTimingStart' + timingIndex);
+            const timingEnd = document.getElementById('editTaskTimingEnd' + timingIndex);
+
+            timingDay.selectedIndex = dayList.indexOf(timing.day);
+            timingStart.selectedIndex = timingsList.indexOf(timing.timingStart);
+            timingEnd.selectedIndex = timingsList.indexOf(timing.timingEnd);
+            timingIndex++;
+        }
+
+        const editTaskSubmitButton = document.getElementById('indexEditTaskSubmitButton');
+        editTaskSubmitButton.addEventListener('click', () => submitEditTask(task._id));
     }
 
     function hideEditTaskContainer() {
         document.getElementById("indexOverlay").style.display = 'none';
 
+        // Remove timing rows:
+        const timingContainer = document.getElementById('editTaskTimingContainer');
+        const timingRows = [...timingContainer.getElementsByClassName('editTimingRow')];
+        timingRows.forEach(timingRow => {
+            if (!timingRow.classList.contains('editNewTaskTimingRow')) {
+                timingRow.remove();
+            }
+        })
+
+        timingIndex = 0;
+
         var editContainer = document.getElementById('indexEditTaskContainer');
         editContainer.style.display = 'none';
+    }
+
+    function submitEditTask(taskId) {
+        // Check fields:
+        const newTaskTitle = document.getElementById('editTaskTitle').value;
+        const newTimingRows = document.getElementsByClassName('editTimingRow');
+
+        if (!newTaskTitle) {
+            alert('Please fill in the Task Title!');
+            return;
+        }
+        if (newTimingRows.length <= 0) {
+            alert('Please fill in at least 1 timing!');
+            return;
+        }
+        
+        // Display loading screen:
+        showLoadingScreen();
+
+        const newTaskTimings = [];
+        for (let timingRow of newTimingRows) {
+            if (timingRow.classList.contains('editNewLessonTimingRow') || timingRow.classList.contains('editNewTaskTimingRow')) {
+                continue;
+            }
+            const day = timingRow.querySelector('select.editTaskDay').value;
+            const timingStart = timingRow.querySelector('select.editTaskTimingStart').value;
+            const timingEnd = timingRow.querySelector('select.editTaskTimingEnd').value;
+            newTaskTimings.push({ day, timingStart, timingEnd });
+        }
+        
+        const requestBody = new URLSearchParams();
+        requestBody.append('title', newTaskTitle);
+        requestBody.append('timings', JSON.stringify(newTaskTimings));
+        const putUrl = `/weekly-tasks/${taskId}`
+        fetch(putUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: requestBody.toString()
+        })
+        .then(response => {
+            window.location.href = '/timetable/week/today';
+        })
+        .catch(err => {
+            alert("There was a problem editting this task!");
+            hideLoadingScreen();
+        })    
     }
 
 </script>
