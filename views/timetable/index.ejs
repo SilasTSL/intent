@@ -64,6 +64,7 @@
 
         <div class="indexEditButtonsRow">
             <div class="indexEditCancelButton button" onclick="hideEditLessonContainer()">Cancel</div>
+            <div class="indexEditDeleteButton button">Delete</div>
             <div class="indexEditSubmitButton button" id="indexEditLessonSubmitButton">Submit</div>
         </div>
     </div>
@@ -114,6 +115,7 @@
 
         <div class="indexEditButtonsRow">
             <div class="indexEditCancelButton button" onclick="hideEditTaskContainer()">Cancel</div>
+            <div class="indexEditDeleteButton button">Delete</div>
             <div class="indexEditSubmitButton button" id="indexEditTaskSubmitButton">Submit</div>
         </div>
     </div>
@@ -860,6 +862,9 @@
         const editLessonSubmitButton = document.getElementById('indexEditLessonSubmitButton');
         editLessonSubmitButton.addEventListener('click', () => submitEditLesson(lesson._id));
 
+        const editLessonDeleteButton = document.getElementsByClassName('indexEditDeleteButton')[0];
+        editLessonDeleteButton.addEventListener('click', () => deleteOnclick(lesson._id));
+
     }
 
     function submitEditLesson(lessonId) {
@@ -966,6 +971,9 @@
 
         const editTaskSubmitButton = document.getElementById('indexEditTaskSubmitButton');
         editTaskSubmitButton.addEventListener('click', () => submitEditTask(task._id));
+
+        const editTaskDeleteButton = document.getElementsByClassName('indexEditDeleteButton')[1];
+        editTaskDeleteButton.addEventListener('click', () => deleteOnclick(task._id));
     }
 
     function hideEditTaskContainer() {
@@ -1030,6 +1038,21 @@
             alert("There was a problem editting this task!");
             hideLoadingScreen();
         })    
+    }
+
+
+    // Delete button onclick:
+    function deleteOnclick(unitId) {
+        const deleteUrl = `/timetable/${unitId}`;
+        fetch(deleteUrl, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            window.location.href = '/timetable/week/today';
+        })
+        .catch(err => {
+            alert("There was a problem deleting this lesson/task!");
+        }) 
     }
 
 </script>

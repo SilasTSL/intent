@@ -826,10 +826,18 @@ a {
 }
 
 .editDeleteTimingButton {
-  background-color: #D11A2A;
+  border: 1px solid #D11A2A;
+  color: #D11A2A;
   padding: 0.5rem;
   padding-top: 0.4rem;
   padding-bottom: 0.4rem;
+  transition-duration: 0.3s;
+}
+
+.editDeleteTimingButton:hover {
+  border: 1px solid #9c0814;
+  color: #9c0814;
+  background-color: #c9c9c9;
 }
 
 .editNewTimingRow {
@@ -854,6 +862,14 @@ a {
   transition-duration: 0.3s;
 }
 
+.indexEditDeleteButton {
+  background-color: #D11A2A;
+  padding: 0.8rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  transition-duration: 0.3s;
+}
+
 .indexEditSubmitButton {
   background-color: #24a0ed;
   padding: 0.8rem;
@@ -865,6 +881,10 @@ a {
 .indexEditCancelButton:hover {
   color: #4e4e4e;
   background-color: #c5c5c5;
+}
+
+.indexEditDeleteButton:hover {
+  background-color: #9c0814;
 }
 
 .indexEditSubmitButton:hover {
