@@ -141,9 +141,7 @@ app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async 
     }
 
     var units = await Unit.find({userId: req.user.id, isAssigned: true});
-    console.log(units)
     units = sortUnitsByTimings(units);
-    console.log(units)
     res.render('timetable/index', { units, unitsString: JSON.stringify(units), weekOrMonth, formattedPeriod });
 }))
 

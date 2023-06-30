@@ -131,6 +131,42 @@ a {
   margin-right: 1rem;
 }
 
+
+.monthContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  padding: 2rem;
+  padding-top: 0;
+}
+
+.monthColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  width: 14%;
+}
+
+.monthDay {
+  height: 60px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 7px;
+  margin-bottom: 3px;
+  padding: 0.2rem;
+  font-size: 0.8rem;
+  text-align: end;
+}
+
+.notCurrentMonthDay {
+  color: #c9c9c9;
+}
+
+.monthHeader {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
 /* Landing Page */
 #landingBody {
   display: flex;

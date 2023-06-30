@@ -59,7 +59,7 @@
                         <% } %>
                     </select>
                 </div>
-            </div>
+            </div>ƒ
         </div>
 
         <div class="indexEditButtonsRow">
@@ -136,35 +136,108 @@
     </div>
     <div class="timetableContainer">
         <% if (weekOrMonth == 'week') { %>
-        <div class="timingColumn">
-            <% for (let r=8; r <= 18; r++) { %>
-                <div class="timingLabel"><%= r + ":00" %></div>
-            <% } %>        
-        </div>
-        <% var todayDate = new Date(); %>
-        <% var todayNum = todayDate.getDay(); %>
-        <% const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; %>
-        <% var today = daysOfWeek[todayNum == 0 ? 6 : todayNum - 1]; %>
-        <% for (let day of daysOfWeek) { %>
-            <div class="dayColumn">
-                <p class="dayLabel <%= day == today ? 'glowing-text' : '' %>"><%= day %></p>
-                <% for (let r=8; r < 18; r++) { %>
-                    <% let unitFound = units.find(unit => unit.timings.some(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
-                    <% if (unitFound) { %>
-                        <% const unitTiming = unitFound.timings.find(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
-                        <% let unitDuration = parseInt(unitTiming.timingEnd.substring(0, 2)) - parseInt(unitTiming.timingStart.substring(0, 2)); %>
-                        <div class="timetableBlock unitBlock" unit_id="<%= unitFound._id %>" style="background-color: <%= unitFound.colour %>; height: <%= (55 * unitDuration) + (4 * (unitDuration - 1)) %>px;" %> <% if (unitFound.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unitFound) %>')" <% } else { %> onclick="showEditTaskContainer('<%= JSON.stringify(unitFound) %>')" <% } %>>
-                            <%= unitFound.title %>
-                        </div>
-                        <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>
-                    <% } else { %>
-                    <div class="timetableBlock <%= day == today ? 'glowingBlock' : '' %>"></div>
+            <div class="timingColumn">
+                <% for (let r=8; r <= 18; r++) { %>
+                    <div class="timingLabel"><%= r + ":00" %></div>
+                <% } %>        
+            </div>
+            <% var todayDate = new Date(); %>
+            <% var todayNum = todayDate.getDay(); %>
+            <% const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; %>
+            <% var today = daysOfWeek[todayNum == 0 ? 6 : todayNum - 1]; %>
+            <% for (let day of daysOfWeek) { %>
+                <div class="dayColumn">
+                    <p class="dayLabel <%= day == today ? 'glowing-text' : '' %>"><%= day %></p>
+                    <% for (let r=8; r < 18; r++) { %>
+                        <% let unitFound = units.find(unit => unit.timings.some(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
+                        <% if (unitFound) { %>
+                            <% const unitTiming = unitFound.timings.find(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
+                            <% let unitDuration = parseInt(unitTiming.timingEnd.substring(0, 2)) - parseInt(unitTiming.timingStart.substring(0, 2)); %>
+                            <div class="timetableBlock unitBlock" unit_id="<%= unitFound._id %>" style="background-color: <%= unitFound.colour %>; height: <%= (55 * unitDuration) + (4 * (unitDuration - 1)) %>px;" %> <% if (unitFound.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unitFound) %>')" <% } else { %> onclick="showEditTaskContainer('<%= JSON.stringify(unitFound) %>')" <% } %>>
+                                <%= unitFound.title %>
+                            </div>
+                            <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>
+                        <% } else { %>
+                        <div class="timetableBlock <%= day == today ? 'glowingBlock' : '' %>"></div>
+                        <% } %>
                     <% } %>
+                </div>
+            <% } %>
+        <% } else if (weekOrMonth == 'month') { %>
+            <% 
+                // Helper functions for month display:
+                function getDaysInMonth(month) {
+                    const monthNames = [
+                        "January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"
+                    ];
+                    const year = new Date().getFullYear(); // Assuming current year
+                                
+                    const monthIndex = monthNames.findIndex(m => m === month);
+                    const date = new Date(year, monthIndex + 1, 0);
+                    return date.getDate();
+                }
+            
+                function getStartingDay(month) {
+                    const monthNames = [
+                        "January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"
+                    ];
+                    const year = new Date().getFullYear(); // Assuming current year
+                                
+                    const monthIndex = monthNames.findIndex(m => m === month);
+                    const date = new Date(year, monthIndex, 1);
+                    const startingDay = date.getDay();
+                                
+                    return (startingDay + 6) % 7 + 1;
+                }
+            
+                function getDayNumber(column, row, startingDay, daysInMonth) {
+                    const emptyCells = startingDay;
+                    const currentCell = column + row * 7;
+                    const dayNumber = currentCell - emptyCells + 1;
+            
+                    if (dayNumber > 0 && dayNumber <= daysInMonth) {
+                        return dayNumber;
+                    } else if (dayNumber <= 0) {
+                        const prevMonthDays = getDaysInMonth(getPreviousMonth());
+                        return -(prevMonthDays + dayNumber); // Return negative to have class for not current month day
+                    } else {
+                        return -(dayNumber - daysInMonth); // Return negative to have class for not current month day
+                    }
+                }
+            
+                function getPreviousMonth() {
+                    // Assuming you have access to the formattedPeriod variable
+                    // that contains the selected month, you can modify this function accordingly
+                    const monthNames = [
+                        "January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"
+                    ];
+                    const currentMonth = formattedPeriod;
+                    const currentMonthIndex = monthNames.findIndex(m => m === currentMonth);
+                    const previousMonthIndex = (currentMonthIndex + 11) % 12;
+                    return monthNames[previousMonthIndex];
+                }
+            %>
+            
+            <div class="monthContainer">
+                <% const daysOfWeekMonthly = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; %>
+                <% const daysInMonth = getDaysInMonth(formattedPeriod); %>
+                <% const startingDay = getStartingDay(formattedPeriod); %>
+                
+                <% for (let c = 0; c < 7; c++) { %>
+                    <div class="monthColumn">
+                        <h4 class="monthHeader"><%= daysOfWeekMonthly[c] %></h4>
+                        <% for (let r = 0; r < 6; r++) { %>
+                            <% const dayNumber = getDayNumber(c, r, startingDay, daysInMonth); %>
+                            <div class="monthDay <%= dayNumber < 0 ? 'notCurrentMonthDay' : '' %>">
+                                <%= Math.abs(dayNumber) %>
+                            </div>
+                        <% } %>
+                    </div>
                 <% } %>
             </div>
-        <% } %>
-        <% } else if (weekOrMonth == 'month') { %>
-
         <% } %>
     </div>
 </div>
@@ -407,7 +480,6 @@
             selectedRows.removeChild(newRow);
             currentTimings = currentTimings.filter(timing => timing.index != event.target.getAttribute('timing-index'), 1);
             timingCount--;
-            console.log(currentTimings);
         });
         newRow.appendChild(deleteButton);
 
@@ -454,12 +526,10 @@
     // Onclick for submit buttons:
 
     function showLoadingScreen() {
-        console.log("Showing Loading Screen!")
         document.getElementById('loadingScreenWrapper').style.display = 'flex';
     }
 
     function hideLoadingScreen() {
-        console.log("Hiding Loading Screen!")
         document.getElementById('loadingScreenWrapper').style.display = 'none';
     }
 
@@ -943,7 +1013,6 @@
         document.getElementById("indexOverlay").style.display = 'block';
 
         const task = JSON.parse(taskString);
-        console.log(task.title)
         var editContainer = document.getElementById('indexEditTaskContainer');
         editContainer.style.display = 'block';
 
