@@ -169,6 +169,7 @@ a {
   color: #c9c9c9;
   opacity: 0.6;
   border: 1px solid rgba(0, 0, 0, 0.15);
+  pointer-events: none;
 }
 
 .monthDayTopRow {
@@ -196,6 +197,26 @@ a {
 .monthDayUnit:hover {
   transform: scale(1.2);
 }
+
+#monthlyUnitPopup {
+  position: fixed;
+  display: none;
+  flex-direction: column;
+  height: fit-content;
+  width: fit-content;
+  border-radius: 5px;
+  z-index: 5;
+  background-color: hotpink;
+  font-size: 1rem;
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  color: white;
+}
+
+
+
+
 
 /* Landing Page */
 #landingBody {
@@ -792,7 +813,7 @@ a {
 }
 
 .indexListHeader {
-  font-size: 1.7rem;
+  font-size: 1.3rem;
 }
 
 .indexListUnit {
