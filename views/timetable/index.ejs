@@ -59,7 +59,7 @@
                         <% } %>
                     </select>
                 </div>
-            </div>ƒ
+            </div>
         </div>
 
         <div class="indexEditButtonsRow">
@@ -232,7 +232,16 @@
                         <% for (let r = 0; r < 6; r++) { %>
                             <% const dayNumber = getDayNumber(c, r, startingDay, daysInMonth); %>
                             <div class="monthDay <%= dayNumber < 0 ? 'notCurrentMonthDay' : '' %>">
-                                <%= Math.abs(dayNumber) %>
+                                <div class="notCurrentMonthDayOverlay"></div>
+                                <div class="monthDayTopRow">
+                                    <%= Math.abs(dayNumber) %>
+                                </div>
+                                <div class="monthDayBottomRow">
+                                    <% const unitsToday = units.filter(unit => unit.timings.some(timing => timing.day == daysOfWeekMonthly[c])) %>
+                                    <% for (let unitFound of unitsToday) { %>
+                                        <div class="monthDayUnit" style="background-color: <%= unitFound.colour %>;"  <% if (unitFound.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unitFound) %>')" <% } else { %> onclick="showEditTaskContainer('<%= JSON.stringify(unitFound) %>')" <% } %>></div>
+                                    <% } %>
+                                </div>
                             </div>
                         <% } %>
                     </div>
@@ -346,6 +355,10 @@
     <hr class="indexFormBorder">
     <h2 class="indexListHeader">Today</h2>
     <div class="indexListContainer">
+        <% var todayDate = new Date(); %>
+        <% var todayNum = todayDate.getDay(); %>
+        <% const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; %>
+        <% var today = daysOfWeek[todayNum == 0 ? 6 : todayNum - 1]; %>
         <% for (let unit of units.filter(unit => unit.timings.some(timing => timing.day == today))) { %>
             <div class="indexListUnit" style="background-color: <%= unit.colour %>;" <% if (unit.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unit) %>')" <% } else { %> onclick="showEditTaskContainer('<%= JSON.stringify(unit) %>')" <% } %>><%= unit.title %></div>
         <% } %>

@@ -71,7 +71,7 @@ a {
   justify-content: space-between;
   height: 100%;
   padding-top: 1rem;
-  padding-bottom: 2rem;
+  padding-bottom: 1rem;
   margin-left: 2rem;
 }
 
@@ -141,6 +141,11 @@ a {
   padding-top: 0;
 }
 
+.monthHeader {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
 .monthColumn {
   display: flex;
   flex-direction: column;
@@ -149,22 +154,47 @@ a {
 }
 
 .monthDay {
-  height: 60px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  height: 65px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
   border-radius: 7px;
   margin-bottom: 3px;
   padding: 0.2rem;
   font-size: 0.8rem;
   text-align: end;
+  display: flex;
+  flex-direction: column;
 }
 
 .notCurrentMonthDay {
   color: #c9c9c9;
+  opacity: 0.6;
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
-.monthHeader {
-  font-size: 1.2rem;
-  text-align: center;
+.monthDayTopRow {
+  width: 100%;
+  height: 40%;
+}
+
+.monthDayBottomRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  width: 100%;
+  height: 60%;
+}
+
+.monthDayUnit {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  margin: 3px;
+  cursor: pointer;
+  transition-duration: 0.1s;
+}
+
+.monthDayUnit:hover {
+  transform: scale(1.2);
 }
 
 /* Landing Page */
