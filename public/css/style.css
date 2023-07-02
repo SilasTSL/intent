@@ -38,18 +38,6 @@ a {
   background-color: #e0e0e0;
 }
 
-.deleteTimingButton {
-  background-color: #ED2939;
-  font-size: 0.8rem;
-}
-
-.addTimingButton {
-  background-color: green;
-  width: fit-content;
-  align-self: center;
-  margin-bottom: 4rem;
-}
-
 .timetableHeadingContainer {
   display: flex;
   flex-direction: row;
