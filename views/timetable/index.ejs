@@ -270,7 +270,7 @@
     </div>
 </div>
 <div class="indexSideContainer">
-    <div class="indexNewLessonFormDropdownButton button">+ New Lesson</div>
+    <div class="indexNewLessonFormDropdownButton button" onclick="expandNewForm('Lesson')">+ New Lesson</div>
     <form id="indexNewLessonForm" action='/timetable' method='POST'>
         <div class="indexInputRow">
             <label class="form-label" for="lessonTitle">Title</label>
@@ -326,11 +326,11 @@
         </div>
         <div id="selectedRows"></div>
         <div class="indexFormsBottomRow">
-            <div class="indexCancelNewLessonButton indexCancelButton button">Cancel</div>
+            <div class="indexCancelNewLessonButton indexCancelButton button" onclick="cancelNewForm('Lesson')">Cancel</div>
             <div class="indexSubmitNewLessonButton indexSubmitButton button" type="submit">Submit</div>
         </div>
     </form>
-    <div class="indexNewTaskFormDropdownButton button">+ New Task</div>
+    <div class="indexNewTaskFormDropdownButton button" onclick="expandNewForm('Task')">+ New Task</div>
     <form id="indexNewTaskForm">
         <div class="indexInputRow">
             <label class="form-label" for="taskTitle">Title</label>
@@ -338,7 +338,7 @@
         </div>
         <div class="indexInputRow">
             <label class="form-label" for="duration">Duration (in hours)</label>
-            <input class="form-control" type="number" id="duration" required>
+            <input class="form-control" type="number" id="taskDuration" required>
         </div>
         <div class="indexInputRow">
             <label class="form-label" for="releasedOn">Released On</label>
@@ -367,8 +367,31 @@
             </select>
         </div>
         <div class="indexFormsBottomRow">
-            <div class="indexCancelNewTaskButton indexCancelButton button">Cancel</div>
+            <div class="indexCancelNewTaskButton indexCancelButton button" onclick="cancelNewForm('Task')">Cancel</div>
             <div class="indexSubmitNewTaskButton indexSubmitButton button">Submit</div>
+        </div>
+    </form>
+    <div class="indexNewAssignmentFormDropdownButton button" onclick="expandNewForm('Assignment')">+ New Assignment</div>
+    <form id="indexNewAssignmentForm">
+        <div class="indexInputRow">
+            <label class="form-label" for="assignmentTitle">Title</label>
+            <input class="form-control" type="text" id="assignmentTitle" required>
+        </div>
+        <div class="indexInputRow">
+            <label class="form-label" for="assignmentDuration">Duration (in hours)</label>
+            <input class="form-control" type="number" id="assignmentDuration" required>
+        </div>
+        <div class="indexInputRow">
+            <label class="form-label" for="releasedOnDate">Released On (Date)</label>
+            <input type="date" class="form-label" id="releasedOnDate">
+        </div>
+        <div class="indexInputRow">
+            <label class="form-label" for="deadlineDate">Deadline (Date)</label>
+            <input type="date" class="form-label" id="deadlineDate">
+        </div>
+        <div class="indexFormsBottomRow">
+            <div class="indexCancelNewAssignmentButton indexCancelButton button" onclick="cancelNewForm('Assignment')">Cancel</div>
+            <div class="indexSubmitNewAssignmentButton indexSubmitButton button">Submit</div>
         </div>
     </form>
     <hr class="indexFormBorder">
@@ -407,34 +430,27 @@
 
 
     // Onclick for new lesson/task dropdown buttons:
-    const newLessonDropdownButton = document.getElementsByClassName('indexNewLessonFormDropdownButton')[0];
-    const newTaskDropdownButton = document.getElementsByClassName('indexNewTaskFormDropdownButton')[0];
-
-    let currentTimings = [];
-
-    newLessonDropdownButton.addEventListener('click', () => {
-        const newLessonForm = document.getElementById('indexNewLessonForm');
-        if (newLessonForm.offsetHeight == '0') {
-            var height = newLessonForm.scrollHeight;
-            newLessonForm.style.height = height + "px";
-            newLessonForm.style.paddingBottom = "5px";
+    function expandNewForm(type) {
+        const newForm = document.getElementById(`indexNew${type}Form`);
+        if (newForm.offsetHeight == '0') {
+            var height = newForm.scrollHeight;
+            newForm.style.height = height + "px";
+            newForm.style.paddingBottom = "5px";
         } else {
-            newLessonForm.style.height = '0px';
-            newLessonForm.style.paddingBottom = "0px";
+            newForm.style.height = '0px';
+            newForm.style.paddingBottom = "0px";
         }
-    });
+    }
 
-    newTaskDropdownButton.addEventListener('click', () => {
-        const newTaskForm = document.getElementById('indexNewTaskForm');
-        if (newTaskForm.offsetHeight == '0') {
-            var height = newTaskForm.scrollHeight;
-            newTaskForm.style.height = height + "px";
-        } else {
-            newTaskForm.style.height = '0px';
-        }
-    })
+    // Onclick for cancel buttons:
+    function cancelNewForm(type) {
+        const newForm = document.getElementById(`indexNew${type}Form`);
+        newForm.style.height = "0px";
+        newForm.style.paddingBottom = "0px";
+    }
 
     // Timings:
+    let currentTimings = [];
     let currentIndex = 0;
 
     function handleDayChange(daySelect) {
@@ -540,21 +556,6 @@
         endSelect.disabled = true;
     }
 
-    // Onclick for cancel buttons:
-    const newLessonCancelButton = document.getElementsByClassName('indexCancelNewLessonButton')[0];
-    const newTaskCancelButton = document.getElementsByClassName('indexCancelNewTaskButton')[0];
-
-    newLessonCancelButton.addEventListener('click', () => {
-        const newLessonForm = document.getElementById('indexNewLessonForm');
-        newLessonForm.style.height = "0px";
-        newLessonForm.style.paddingBottom = "0px";
-    })
-
-    newTaskCancelButton.addEventListener('click', () => {
-        const newTaskForm = document.getElementById('indexNewTaskForm');
-        newTaskForm.style.height = '0px';
-    })
-
     // Onclick for submit buttons:
 
     function showLoadingScreen() {
@@ -615,7 +616,7 @@
     const newTaskSubmitButton = document.getElementsByClassName('indexSubmitNewTaskButton')[0];
     newTaskSubmitButton.addEventListener('click', () => {
         const newTaskTitle = document.getElementById('taskTitle').value;
-        const newTaskDuration = document.getElementById('duration').value;
+        const newTaskDuration = document.getElementById('taskDuration').value;
         const newTaskReleasedOn = document.getElementById('releasedOn').value;
         const newTaskDeadline = document.getElementById('deadline').value;
 

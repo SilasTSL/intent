@@ -689,6 +689,16 @@ a {
   transform: scale(1.1);
 }
 
+.indexNewAssignmentFormDropdownButton {
+  background-color: #0275d8;
+  padding: 0.3rem;
+  padding-left: 1.3rem;
+  padding-right: 1.3rem;
+  transition-duration: 0.3s;
+  margin: 1rem;
+  margin-left: 0;
+}
+
 #indexNewLessonForm {
   overflow: hidden;
   height: 0px;
@@ -699,6 +709,15 @@ a {
 }
 
 #indexNewTaskForm {
+  overflow: hidden;
+  height: 0px;
+  width: 100%;
+  padding-left: 5px;
+  padding-right: 5px;
+  transition-duration: 0.4s;
+}
+
+#indexNewAssignmentForm {
   overflow: hidden;
   height: 0px;
   width: 100%;
