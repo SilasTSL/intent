@@ -1,5 +1,6 @@
 <% layout('layouts/boilerplate')%>
 <div id="indexPageBody">
+    <a href="/logout">LOGOUT</a>
 <div id="timetableBodyContainer">
     <div id="loadingScreenWrapper">
         <div class="loading">
@@ -28,7 +29,7 @@
             <div class="editNewLessonTimingRow editTimingRow">
                 <div class="indexTimingColumn">
                     <label class="form-label" for="editLessonNewDay">Day</label>
-                    <select class="form-select" id="editLessonNewDay" onchange="handleEditLessonDayChange(this)" required>
+                    <select class="form-select" id="editLessonNewDay" onchange="handleEditDayChange('Lesson')" required>
                         <option value="" selected disabled>Select a day</option>
                         <option value="Monday">Monday</option>
                         <option value="Tuesday">Tuesday</option>
@@ -41,7 +42,7 @@
                 </div>
                 <div class="indexTimingColumn">
                     <label class="form-label" for="editLessonNewTimingStart">Start</label>
-                    <select class="form-select" id="editLessonNewTimingStart" onchange="handleEditLessonStartChange(this)" disabled required>
+                    <select class="form-select" id="editLessonNewTimingStart" onchange="handleEditStartChange('Lesson')" disabled required>
                         <option value="" selected disabled>Select a starting time</option>
                         <% for (let j = 8; j <= 18; j++) { %>
                             <% let time = j < 10 ? '0' + j : j; %>
@@ -63,7 +64,7 @@
         </div>
 
         <div class="indexEditButtonsRow">
-            <div class="indexEditCancelButton button" onclick="hideEditLessonContainer()">Cancel</div>
+            <div class="indexEditCancelButton button" onclick="hideEditContainer('Lesson')">Cancel</div>
             <div class="indexEditDeleteButton button">Delete</div>
             <div class="indexEditSubmitButton button" id="indexEditLessonSubmitButton">Submit</div>
         </div>
@@ -79,7 +80,7 @@
             <div class="editNewTaskTimingRow editTimingRow">
                 <div class="indexTimingColumn">
                     <label class="form-label" for="editTaskNewDay">Day</label>
-                    <select class="form-select" id="editTaskNewDay" onchange="handleEditTaskDayChange(this)" required>
+                    <select class="form-select" id="editTaskNewDay" onchange="handleEditDayChange('Task')" required>
                         <option value="" selected disabled>Select a day</option>
                         <option value="Monday">Monday</option>
                         <option value="Tuesday">Tuesday</option>
@@ -92,7 +93,7 @@
                 </div>
                 <div class="indexTimingColumn">
                     <label class="form-label" for="editTaskNewTimingStart">Start</label>
-                    <select class="form-select" id="editTaskNewTimingStart" onchange="handleEditTaskStartChange(this)" disabled required>
+                    <select class="form-select" id="editTaskNewTimingStart" onchange="handleEditStartChange('Task')" disabled required>
                         <option value="" selected disabled>Select a starting time</option>
                         <% for (let j = 8; j <= 18; j++) { %>
                             <% let time = j < 10 ? '0' + j : j; %>
@@ -114,9 +115,51 @@
         </div>
 
         <div class="indexEditButtonsRow">
-            <div class="indexEditCancelButton button" onclick="hideEditTaskContainer()">Cancel</div>
+            <div class="indexEditCancelButton button" onclick="hideEditContainer('Task')">Cancel</div>
             <div class="indexEditDeleteButton button">Delete</div>
             <div class="indexEditSubmitButton button" id="indexEditTaskSubmitButton">Submit</div>
+        </div>
+    </div>
+
+    <div id="indexEditAssignmentContainer" class="indexEditContainer">
+        <h3 class="indexEditAssignmentTitle">Edit Assignment:</h3>
+        <div class="editInputRow">
+            <label class="form-label" for="editAssignmentTitle">Title</label>
+            <input class="form-control" type="text" id="editAssignmentTitle" required>
+        </div>
+        <div class="editInputRow" id="editAssignmentTimingContainer">
+            <div class="editNewAssignmentTimingRow editTimingRow">
+                <div class="indexTimingColumn">
+                    <label class="form-label" for="editAssignmentDate">Date</label>
+                    <input type="date" id="editAssignmentDate" onchange="handleEditDayChange('Assignment')">        
+                </div>
+                <div class="indexTimingColumn">
+                    <label class="form-label" for="editAssignmentNewTimingStart">Start</label>
+                    <select class="form-select" id="editAssignmentNewTimingStart" onchange="handleEditStartChange('Assignment')" disabled required>
+                        <option value="" selected disabled>Select a starting time</option>
+                        <% for (let j = 8; j <= 18; j++) { %>
+                            <% let time = j < 10 ? '0' + j : j; %>
+                            <option value="<%= time %>00"><%= time %>:00</option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="indexTimingColumn">
+                    <label class="form-label" for="editAssignmentNewTimingEnd">End</label>
+                    <select class="form-select" id="editAssignmentNewTimingEnd" onchange="handleEditAssignmentEndChange(this)" disabled required>
+                        <option value="" selected disabled>Select an ending time</option>
+                        <% for (let j = 8; j <= 18; j++) { %>
+                            <% let time = j < 10 ? '0' + j : j; %>
+                            <option value="<%= time %>00"><%= time %>:00</option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="indexEditButtonsRow">
+            <div class="indexEditCancelButton button" onclick="hideEditContainer('Assignment')">Cancel</div>
+            <div class="indexEditDeleteButton button">Delete</div>
+            <div class="indexEditSubmitButton button" id="indexEditAssignmentSubmitButton">Submit</div>
         </div>
     </div>
 
@@ -145,15 +188,23 @@
             <% var todayNum = todayDate.getDay(); %>
             <% const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; %>
             <% var today = daysOfWeek[todayNum == 0 ? 6 : todayNum - 1]; %>
+            <% const parts = formattedPeriod.split(" - "); %>
+            <% const startOfWeekDate = new Date(parts[0]); %>
             <% for (let day of daysOfWeek) { %>
                 <div class="dayColumn">
                     <p class="dayLabel <%= day == today ? 'glowing-text' : '' %>"><%= day %></p>
+                    <% const dayDate = new Date(startOfWeekDate.getTime()); %>
+                    <% dayDate.setDate(dayDate.getDate() + daysOfWeek.indexOf(day)); %>
+                    <% const dayString = `${dayDate.getFullYear()}-${(dayDate.getMonth() + 1).toString().padStart(2, '0')}-${dayDate.getDate().toString().padStart(2, '0')}`; %>
                     <% for (let r=8; r < 18; r++) { %>
-                        <% let unitFound = units.find(unit => unit.timings.some(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
+                        <% let unitFound = units.filter(unit => unit.type != 'Assignment').find(unit => unit.timings.some(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
+                        <% if (!unitFound) { %>
+                            <% unitFound = units.filter(unit => unit.type == 'Assignment').find(unit => unit.timings.some(timing => timing.date === dayString && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
+                        <% } %>
                         <% if (unitFound) { %>
-                            <% const unitTiming = unitFound.timings.find(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
+                            <% const unitTiming = unitFound.timings.find(timing => (timing.day == day || timing.date == dayString) && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                             <% let unitDuration = parseInt(unitTiming.timingEnd.substring(0, 2)) - parseInt(unitTiming.timingStart.substring(0, 2)); %>
-                            <div class="timetableBlock unitBlock" unit_id="<%= unitFound._id %>" style="background-color: <%= unitFound.colour %>; height: <%= (55 * unitDuration) + (4 * (unitDuration - 1)) %>px;" %> <% if (unitFound.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unitFound) %>')" <% } else { %> onclick="showEditTaskContainer('<%= JSON.stringify(unitFound) %>')" <% } %>>
+                            <div class="timetableBlock unitBlock" unit_id="<%= unitFound._id %>" style="background-color: <%= unitFound.colour %>; height: <%= (55 * unitDuration) + (4 * (unitDuration - 1)) %>px;"  <% if (unitFound.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unitFound) %>')" <% } else if (unitFound.type == 'WeeklyTask') { %> onclick="showEditTaskContainer('<%= JSON.stringify(unitFound) %>')" <% } else { %> onclick="showEditAssignmentContainer('<%= JSON.stringify(unitFound) %>')" <% } %>>
                                 <%= unitFound.title %>
                             </div>
                             <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>
@@ -215,7 +266,7 @@
                         "July", "August", "September", "October", "November", "December"
                     ];
                     const currentMonth = formattedPeriod;
-                    const currentMonthIndex = monthNames.findIndex(m => m === currentMonth);
+                    const currentMonthIndex = monthNames.indexOf(currentMonth);
                     const previousMonthIndex = (currentMonthIndex + 11) % 12;
                     return monthNames[previousMonthIndex];
                 }
@@ -223,6 +274,10 @@
             
             <div class="monthContainer">
                 <% const daysOfWeekMonthly = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; %>
+                <% const monthNames = [
+                    "January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                    ]; %>
                 <% const daysInMonth = getDaysInMonth(formattedPeriod); %>
                 <% const startingDay = getStartingDay(formattedPeriod); %>
                 
@@ -238,8 +293,32 @@
                                 </div>
                                 <div class="monthDayBottomRow">
                                     <% 
+                                        const parts = formattedPeriod.split(' ');
+                                        const year = parts[1];
+                                        let month = monthNames.indexOf(parts[0]);
+                                        if (dayNumber < 0) {
+                                            if (Math.abs(dayNumber) > 15) {
+                                                month -= 1;
+                                                if (month < 0) {
+                                                    month = 11;
+                                                }
+                                            } else {
+                                                month += 1;
+                                                if (month > 11) {
+                                                    month = 0;
+                                                }
+                                            }
+                                        }
+                                        const dayDate = new Date(year, month, Math.abs(dayNumber) + 1);
+                                        const dayDateString = `${dayDate.getFullYear()}-${(dayDate.getMonth() + 1).toString().padStart(2, '0')}-${dayDate.getDate().toString().padStart(2, '0')}`;
                                         const unitsToday = units.reduce((result, unit) => {
-                                            const timings = unit.timings.filter(timing => timing.day === daysOfWeekMonthly[c]);
+                                            let timings = [];
+                                            if (unit.type != 'Assignment') {
+                                                timings = unit.timings.filter(timing => timing.day === daysOfWeekMonthly[c]);
+                                            } else {
+                                                timings = unit.timings.filter(timing => timing.date === dayDateString);
+                                            }
+                                            
                                             if (timings.length > 0) {
                                                 timings.forEach(timing => {
                                                     result.push({
@@ -254,7 +333,7 @@
                                         }, []);
                                     %>
                                     <% for (let unitFound of unitsToday) { %>
-                                        <div class="monthDayUnit" unit-title="<%= unitFound.title %>" unit-timing="<%= unitFound.timing.timingStart + ' - ' + unitFound.timing.timingEnd %>" style="background-color: <%= unitFound.colour %>;"  <% if (unitFound.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(units.find(unit => unit._id == unitFound._id)) %>')" <% } else { %> onclick="showEditTaskContainer('<%= JSON.stringify(units.find(unit => unit._id == unitFound._id)) %>')" <% } %>></div>
+                                        <div class="monthDayUnit" unit-title="<%= unitFound.title %>" unit-timing="<%= unitFound.timing.timingStart + ' - ' + unitFound.timing.timingEnd %>" style="background-color: <%= unitFound.colour %>;"  <% if (unitFound.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(units.find(unit => unit._id == unitFound._id)) %>')" <% } else if (unitFound.type == 'WeeklyTask') { %> onclick="showEditTaskContainer('<%= JSON.stringify(units.find(unit => unit._id == unitFound._id)) %>')" <% } else { %> onclick="showEditAssignmentContainer('<%= JSON.stringify(units.find(unit => unit._id == unitFound._id)) %>')" <% } %>></div>
                                     <% } %>
                                 </div>
                             </div>
@@ -397,12 +476,34 @@
     <hr class="indexFormBorder">
     <h2 class="indexListHeader">TODAY</h2>
     <div class="indexListContainer">
-        <% var todayDate = new Date(); %>
+        <% var todayDate = new Date() %>
+        <% var todayDateString = `${todayDate.getFullYear()}-${(todayDate.getMonth() + 1).toString().padStart(2, '0')}-${todayDate.getDate().toString().padStart(2, '0')}`; %>
         <% var todayNum = todayDate.getDay(); %>
         <% const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]; %>
         <% var today = daysOfWeek[todayNum == 0 ? 6 : todayNum - 1]; %>
-        <% for (let unit of units.filter(unit => unit.timings.some(timing => timing.day == today))) { %>
-            <div class="indexListUnit" style="background-color: <%= unit.colour %>;" <% if (unit.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unit) %>')" <% } else { %> onclick="showEditTaskContainer('<%= JSON.stringify(unit) %>')" <% } %>><%= unit.title %></div>
+        <% const todaysUnits = units.reduce((result, unit) => {
+            let timings = [];
+            if (unit.type != 'Assignment') {
+                timings = unit.timings.filter(timing => timing.day === today);
+            } else {
+                timings = unit.timings.filter(timing => timing.date === todayDateString);
+            }
+            
+            if (timings.length > 0) {
+                timings.forEach(timing => {
+                    result.push({
+                    _id: unit._id,
+                    title: unit.title,
+                    timing: { timingStart: timing.timingStart, timingEnd: timing.timingEnd },
+                    colour: unit.colour
+                    });
+                });
+            }
+            return result;
+        }, []); %>
+        <% todaysUnits.sort((a, b) => a.timing.timingStart - b.timing.timingStart); %>
+        <% for (let unit of todaysUnits) { %>
+            <div class="indexListUnit" style="background-color: <%= unit.colour %>;" <% if (unit.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unit) %>')" <% } else if (unit.type == 'WeeklyTask') { %> onclick="showEditTaskContainer('<%= JSON.stringify(unit) %>')" <% } else { %> onclick="showEditAssignmentContainer('<%= JSON.stringify(unit) %>')" <% } %>><%= unit.title %> at <%= unit.timing.timingStart %> - <%= unit.timing.timingEnd %></div>
         <% } %>
     </div>
 </div>
@@ -449,7 +550,7 @@
         newForm.style.paddingBottom = "0px";
     }
 
-    // Timings:
+    // New Timings:
     let currentTimings = [];
     let currentIndex = 0;
 
@@ -479,7 +580,7 @@
 
         // Check overlap with existing units:
         if (units.some(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart))) {
-            alert("This timing overlaps with the timing of an existing lesson/task!");
+            alert("This timing overlaps with the timing of an existing lesson/task/assignment!");
             daySelect.selectedIndex = 0;
             startSelect.selectedIndex = 0;
             endSelect.selectedIndex = 0;
@@ -557,7 +658,6 @@
     }
 
     // Onclick for submit buttons:
-
     function showLoadingScreen() {
         document.getElementById('loadingScreenWrapper').style.display = 'flex';
     }
@@ -566,7 +666,7 @@
         document.getElementById('loadingScreenWrapper').style.display = 'none';
     }
 
-    // New Lesson:
+    // New Lesson Submit:
     const newLessonSubmitButton = document.getElementsByClassName('indexSubmitNewLessonButton')[0];
     newLessonSubmitButton.addEventListener('click', () => {
         // Check fields:
@@ -612,7 +712,7 @@
         })
     })
 
-    //New Task:
+    // New Task Submit:
     const newTaskSubmitButton = document.getElementsByClassName('indexSubmitNewTaskButton')[0];
     newTaskSubmitButton.addEventListener('click', () => {
         const newTaskTitle = document.getElementById('taskTitle').value;
@@ -652,16 +752,69 @@
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: requestBody.toString()
         })
-        .then(data => {
+        .then(res => {
+            if (res.status == 401) {
+                alert("There's not enough time to finish this task before it's deadline! Either clear up your schedule or estimate a shorter duration...");
+            }
             window.location.href = '/timetable/week/today';
         })
         .catch(err => {
-            alert("There was a problem adding this task!");
+            alert("Something went wrong creating your task!");
             hideLoadingScreen();
         })
     })
 
+    // New Assignment Submit:
+    const newAssignmentSubmitButton = document.getElementsByClassName('indexSubmitNewAssignmentButton')[0];
+    newAssignmentSubmitButton.addEventListener('click', () => {
+        const newAssignmentTitle = document.getElementById('assignmentTitle').value;
+        const newAssignmentDuration = document.getElementById('assignmentDuration').value;
+        const newAssignmentReleasedOnDate = document.getElementById('releasedOnDate').value;
+        const newAssignmentDeadlineDate = document.getElementById('deadlineDate').value;
 
+        // Check fields:
+        if (!newAssignmentTitle) {
+            alert('Please fill in the Assignment Title!');
+            return;
+        }
+        if (!newAssignmentDuration) {
+            alert('Please fill in the Assignment Duration!');
+            return;
+        }
+        if (!newAssignmentReleasedOnDate) {
+            alert('Please pick a date the Assignment is Released!');
+            return;
+        }
+        if (!newAssignmentDeadlineDate) {
+            alert('Please pick a date the Assignment is Due!');
+            return;
+        }
+
+        // Display loading screen:
+        showLoadingScreen();
+
+        const requestBody = new URLSearchParams();
+        requestBody.append('title', newAssignmentTitle);
+        requestBody.append('duration', newAssignmentDuration);
+        requestBody.append('releasedOnDate', newAssignmentReleasedOnDate);
+        requestBody.append('deadlineDate', newAssignmentDeadlineDate);
+
+        fetch('/assignments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: requestBody.toString()
+        })
+        .then(res => {
+            if (res.status == 401) {
+                alert("There's not enough time to finish this assignment before it's deadline! Either clear up your schedule or estimate a shorter duration...");
+            }
+            window.location.href = '/timetable/week/today';
+        })
+        .catch(err => {
+            alert("Something went wrong creating your assignment!");
+            hideLoadingScreen();
+        })
+    })
 
     // Onclick for arrow buttons:
     const weekOrMonth = "<%= weekOrMonth %>";
@@ -720,16 +873,22 @@
         );
     }
 
-    function getNextMonth(currentMonth) {
-        const currentDate = new Date(`1 ${currentMonth}`);
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        return currentDate.toLocaleString('default', { month: 'long' });
+    function getNextMonth(currentMonthYear) {
+        const [month, year] = currentMonthYear.split(' ');
+        const date = new Date(`${month} 1, ${year}`);
+        date.setMonth(date.getMonth() + 1);
+        const nextMonth = date.toLocaleString('default', { month: 'long' });
+        const nextYear = date.getFullYear();
+        return `${nextMonth} ${nextYear}`;
     }
 
-    function getPreviousMonth(currentMonth) {
-        const currentDate = new Date(`1 ${currentMonth}`);
-        currentDate.setMonth(currentDate.getMonth() - 1);
-        return currentDate.toLocaleString('default', { month: 'long' });
+    function getPreviousMonth(currentMonthYear) {
+        const [month, year] = currentMonthYear.split(' ');
+        const date = new Date(`${month} 1, ${year}`);
+        date.setMonth(date.getMonth() - 1);
+        const previousMonth = date.toLocaleString('default', { month: 'long' });
+        const previousYear = date.getFullYear();
+        return `${previousMonth} ${previousYear}`;
     }
 
     let previousPeriod = "";
@@ -757,27 +916,42 @@
     const timingsList = ["", "0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800"];
     
     // Function to append a new timing row
-    function createTimingRow(index, lessonOrTask) {
+    function createTimingRow(index, type) {
         const timingRow = document.createElement('div');
         timingRow.classList.add('editTimingRow');
         timingRow.setAttribute('edit-timing-index', index);
-        timingRow.innerHTML = `
-            <div class="indexTimingColumn">
-                <label class="form-label">Day</label>
-                <select class="form-select ${"edit" + lessonOrTask + "Day"}" id="${"edit" + lessonOrTask + "Day" + index}" required>
-                    <option value="" selected disabled>Select a day</option>
-                    <option value="Monday">Monday</option>
-                    <option value="Tuesday">Tuesday</option>
-                    <option value="Wednesday">Wednesday</option>
-                    <option value="Thursday">Thursday</option>
-                    <option value="Friday">Friday</option>
-                    <option value="Saturday">Saturday</option>
-                    <option value="Sunday">Sunday</option>
-                </select>            
-            </div>
+        if (type == 'Assignment') {
+            innerHTML = `
+                <div class="indexTimingColumn">
+                    <label class="form-label" for="editAssignmentDate${index}">Date</label>
+                    <input class="editAssignmentDate" type="date" id="editAssignmentDate${index}">           
+                </div>
+                
+            `;
+        } else {
+            innerHTML = `
+                <div class="indexTimingColumn">
+                    <label class="form-label" for="${"edit" + type + "Day" + index}">Day</label>
+                    <select class="form-select ${"edit" + type + "Day"}" id="${"edit" + type + "Day" + index}" required>
+                        <option value="" selected disabled>Select a day</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>            
+                </div>
+                
+            `;
+        }
+
+        timingRow.innerHTML = innerHTML + `
+
             <div class="indexTimingColumn">
                 <label class="form-label">Start</label>
-                <select class="form-select ${"edit" + lessonOrTask + "TimingStart"}" id="${"edit" + lessonOrTask + "TimingStart" + index}" required>
+                <select class="form-select ${"edit" + type + "TimingStart"}" id="${"edit" + type + "TimingStart" + index}" required>
                     <option value="" selected>Select a starting time</option>
                     <% for (let j = 8; j <= 18; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
@@ -787,7 +961,7 @@
             </div>
             <div class="indexTimingColumn">
                 <label class="form-label">End</label>
-                <select class="form-select ${"edit" + lessonOrTask + "TimingEnd"}"" id="${"edit" + lessonOrTask + "TimingEnd" + index}" required>
+                <select class="form-select ${"edit" + type + "TimingEnd"}"" id="${"edit" + type + "TimingEnd" + index}" required>
                     <option value="" selected>Select an ending time</option>
                     <% for (let j = 8; j <= 18; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
@@ -800,13 +974,15 @@
         return timingRow;
     }
 
-    function handleEditLessonDayChange(daySelect) {
-        const startSelect = document.getElementById("editLessonNewTimingStart");
+
+    // Edit Timing Option onChange functions:\
+    function handleEditDayChange(type) {
+        const startSelect = document.getElementById(`edit${type}NewTimingStart`);
         startSelect.disabled = false;
     }
 
-    function handleEditLessonStartChange(startSelect) {
-        const endSelect = document.getElementById("editLessonNewTimingEnd");
+    function handleEditStartChange(type) {
+        const endSelect = document.getElementById(`edit${type}NewTimingEnd`);
         endSelect.disabled = false;
     }
     
@@ -824,7 +1000,7 @@
 
         // Check overlap with existing units:
         if (units.some(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart))) {
-            alert("This timing overlaps with the timing of an existing lesson/task!");
+            alert("This timing overlaps with the timing of an existing lesson/task/assignment!");
             daySelect.selectedIndex = 0;
             startSelect.selectedIndex = 0;
             endSelect.selectedIndex = 0;
@@ -862,17 +1038,6 @@
         endSelect.disabled = true;
     }
 
-
-    function handleEditTaskDayChange(daySelect) {
-        const startSelect = document.getElementById("editTaskNewTimingStart");
-        startSelect.disabled = false;
-    }
-
-    function handleEditTaskStartChange(startSelect) {
-        const endSelect = document.getElementById("editTaskNewTimingEnd");
-        endSelect.disabled = false;
-    }
-
     function handleEditTaskEndChange(endSelect) {
         if (endSelect.selectedIndex === 0) {
             return;
@@ -887,7 +1052,7 @@
 
         // Check overlap with existing units:
         if (units.some(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart))) {
-            alert("This timing overlaps with the timing of an existing lesson/task!");
+            alert("This timing overlaps with the timing of an existing lesson/task/assignment!");
             daySelect.selectedIndex = 0;
             startSelect.selectedIndex = 0;
             endSelect.selectedIndex = 0;
@@ -925,13 +1090,75 @@
         endSelect.disabled = true;
     }
 
+    function handleEditAssignmentEndChange(endSelect) {
+        if (endSelect.selectedIndex === 0) {
+            return;
+        }
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dateSelect = document.getElementById("editAssignmentDate");
+        const startSelect = document.getElementById("editAssignmentNewTimingStart");
+        const selectedDate = dateSelect.value;
+        const selectedDay = days[new Date(selectedDate).getDay()];
+        const selectedStart = startSelect.options[startSelect.selectedIndex].value;
+        const selectedEnd = endSelect.options[endSelect.selectedIndex].value;
+
+        const units = JSON.parse('<%- unitsString %>');
+
+        // Check overlap with existing units:
+        if (units.some(unit => unit.timings.some(timing => {
+            let isSameDate = false;
+            if (unit.type == 'Assignment') {
+                isSameDate =  selectedDate === timing.date;
+            } else {
+                isSameDate = timing.day == selectedDay;
+            }
+            return (isSameDate && (timing.timingStart < selectedEnd && timing.timingEnd > selectedStart))
+        }))) {
+            alert("This timing overlaps with the timing of an existing lesson/task/assignment!");
+            dateSelect.value = '';
+            startSelect.selectedIndex = 0;
+            endSelect.selectedIndex = 0;
+            startSelect.disabled = true;
+            endSelect.disabled = true;
+            return;
+        }
+
+        // Check start > end:
+        if (selectedStart >= selectedEnd) {
+            alert('Starting time should be later than Ending time!');
+            return;
+        }
+
+        // Insert new timing row:
+        const timingContainer = document.getElementById('editAssignmentTimingContainer');
+        const editNewTimingRow = document.getElementsByClassName('editNewAssignmentTimingRow')[0];
+        const newTimingRow = createTimingRow(timingIndex, 'Assignment');
+        timingContainer.insertBefore(newTimingRow, editNewTimingRow);
+
+        const timingDate = document.getElementById('editAssignmentDate' + timingIndex);
+        const timingStart = document.getElementById('editAssignmentTimingStart' + timingIndex);
+        const timingEnd = document.getElementById('editAssignmentTimingEnd' + timingIndex);
+
+        timingDate.value = dateSelect.value;
+        timingStart.selectedIndex = timingsList.indexOf(selectedStart);
+        timingEnd.selectedIndex = timingsList.indexOf(selectedEnd);
+        timingIndex++;
+
+        // Reset the form for the next selection:
+        dateSelect.value = '';
+        startSelect.selectedIndex = 0;
+        endSelect.selectedIndex = 0;
+        startSelect.disabled = true;
+        endSelect.disabled = true;
+    }
+
 
     function deleteEditTimingRow(index) {
         const timingRow = document.querySelector(`[edit-timing-index="${index}"]`);
         timingRow.remove();
     }
 
-    // Lesson:
+    // Show functions:
     function showEditLessonContainer(lessonString) {
         document.getElementById("indexOverlay").style.display = 'block';
 
@@ -970,11 +1197,86 @@
 
     }
 
+    function showEditTaskContainer(taskString) {
+        document.getElementById("indexOverlay").style.display = 'block';
+
+        const task = JSON.parse(taskString);
+        var editContainer = document.getElementById('indexEditTaskContainer');
+        editContainer.style.display = 'block';
+
+                
+        const editTaskTitle = document.getElementById('editTaskTitle');
+
+        editTaskTitle.value = task.title;
+        
+        const timingContainer = document.getElementById('editTaskTimingContainer');
+        const editNewTimingRow = document.getElementsByClassName('editNewTaskTimingRow')[0];
+        for (let timing of task.timings) {
+            const timingRow = createTimingRow(timingIndex, 'Task');
+            
+            timingContainer.insertBefore(timingRow, editNewTimingRow)
+
+            const timingDay = document.getElementById('editTaskDay' + timingIndex);
+            const timingStart = document.getElementById('editTaskTimingStart' + timingIndex);
+            const timingEnd = document.getElementById('editTaskTimingEnd' + timingIndex);
+
+            timingDay.selectedIndex = dayList.indexOf(timing.day);
+            timingStart.selectedIndex = timingsList.indexOf(timing.timingStart);
+            timingEnd.selectedIndex = timingsList.indexOf(timing.timingEnd);
+            timingIndex++;
+        }
+
+        const editTaskSubmitButton = document.getElementById('indexEditTaskSubmitButton');
+        editTaskSubmitButton.addEventListener('click', () => submitEditTask(task._id));
+
+        const editTaskDeleteButton = document.getElementsByClassName('indexEditDeleteButton')[1];
+        editTaskDeleteButton.addEventListener('click', () => deleteOnclick(task._id));
+    }
+
+    function showEditAssignmentContainer(assignmentString) {
+        document.getElementById("indexOverlay").style.display = 'block';
+
+        const assignment = JSON.parse(assignmentString);
+        var editContainer = document.getElementById('indexEditAssignmentContainer');
+        editContainer.style.display = 'block';
+
+                
+        const editAssignmentTitle = document.getElementById('editAssignmentTitle');
+
+        editAssignmentTitle.value = assignment.title;
+        
+        const timingContainer = document.getElementById('editAssignmentTimingContainer');
+        const editNewTimingRow = document.getElementsByClassName('editNewAssignmentTimingRow')[0];
+        for (let timing of assignment.timings) {
+            const timingRow = createTimingRow(timingIndex, 'Assignment');
+            
+            timingContainer.insertBefore(timingRow, editNewTimingRow)
+
+            const timingDate = document.getElementById('editAssignmentDate' + timingIndex);
+            const timingStart = document.getElementById('editAssignmentTimingStart' + timingIndex);
+            const timingEnd = document.getElementById('editAssignmentTimingEnd' + timingIndex);
+
+            timingDate.value = timing.date;
+            timingStart.selectedIndex = timingsList.indexOf(timing.timingStart);
+            timingEnd.selectedIndex = timingsList.indexOf(timing.timingEnd);
+            timingIndex++;
+        }
+
+        const editAssignmentSubmitButton = document.getElementById('indexEditAssignmentSubmitButton');
+        editAssignmentSubmitButton.addEventListener('click', () => submitEditAssignment(assignment._id));
+
+        const editAssignmentDeleteButton = document.getElementsByClassName('indexEditDeleteButton')[2];
+        editAssignmentDeleteButton.addEventListener('click', () => deleteOnclick(assignment._id));
+    }
+
+
+    // Submit Edit functions:
     function submitEditLesson(lessonId) {
         // Check fields:
-        const newLessonTitle = document.getElementById('editLessonTitle').value;
-        const newLessonColour = document.getElementById('editLessonColour').value;
-        const newTimingRows = document.getElementsByClassName('editTimingRow');
+        const editLessonContainer = document.getElementById('indexEditLessonContainer');
+        const newLessonTitle = editLessonContainer.querySelector('#editLessonTitle').value;
+        const newLessonColour = editLessonContainer.querySelector('#editLessonColour').value;
+        const newTimingRows = editLessonContainer.querySelectorAll('.editTimingRow');
 
         if (!newLessonTitle) {
             alert('Please fill in the Lesson Title!');
@@ -1022,85 +1324,11 @@
         })    
     }
 
-    function hideEditLessonContainer() {
-        document.getElementById("indexOverlay").style.display = 'none';
-
-        // Remove timing rows:
-        const timingContainer = document.getElementById('editLessonTimingContainer');
-        const timingRows = [...timingContainer.getElementsByClassName('editTimingRow')];
-        timingRows.forEach(timingRow => {
-            if (!timingRow.classList.contains('editNewLessonTimingRow')) {
-                timingRow.remove();
-            }
-        })
-
-        timingIndex = 0;
-
-        // Hide container:
-        var editContainer = document.getElementById('indexEditLessonContainer');
-        editContainer.style.display = 'none';
-    }
-
-    // Task:
-    function showEditTaskContainer(taskString) {
-        document.getElementById("indexOverlay").style.display = 'block';
-
-        const task = JSON.parse(taskString);
-        var editContainer = document.getElementById('indexEditTaskContainer');
-        editContainer.style.display = 'block';
-
-                
-        const editTaskTitle = document.getElementById('editTaskTitle');
-
-        editTaskTitle.value = task.title;
-        
-        const timingContainer = document.getElementById('editTaskTimingContainer');
-        const editNewTimingRow = document.getElementsByClassName('editNewTaskTimingRow')[0];
-        for (let timing of task.timings) {
-            const timingRow = createTimingRow(timingIndex, 'Task');
-            
-            timingContainer.insertBefore(timingRow, editNewTimingRow)
-
-            const timingDay = document.getElementById('editTaskDay' + timingIndex);
-            const timingStart = document.getElementById('editTaskTimingStart' + timingIndex);
-            const timingEnd = document.getElementById('editTaskTimingEnd' + timingIndex);
-
-            timingDay.selectedIndex = dayList.indexOf(timing.day);
-            timingStart.selectedIndex = timingsList.indexOf(timing.timingStart);
-            timingEnd.selectedIndex = timingsList.indexOf(timing.timingEnd);
-            timingIndex++;
-        }
-
-        const editTaskSubmitButton = document.getElementById('indexEditTaskSubmitButton');
-        editTaskSubmitButton.addEventListener('click', () => submitEditTask(task._id));
-
-        const editTaskDeleteButton = document.getElementsByClassName('indexEditDeleteButton')[1];
-        editTaskDeleteButton.addEventListener('click', () => deleteOnclick(task._id));
-    }
-
-    function hideEditTaskContainer() {
-        document.getElementById("indexOverlay").style.display = 'none';
-
-        // Remove timing rows:
-        const timingContainer = document.getElementById('editTaskTimingContainer');
-        const timingRows = [...timingContainer.getElementsByClassName('editTimingRow')];
-        timingRows.forEach(timingRow => {
-            if (!timingRow.classList.contains('editNewTaskTimingRow')) {
-                timingRow.remove();
-            }
-        })
-
-        timingIndex = 0;
-
-        var editContainer = document.getElementById('indexEditTaskContainer');
-        editContainer.style.display = 'none';
-    }
-
     function submitEditTask(taskId) {
         // Check fields:
-        const newTaskTitle = document.getElementById('editTaskTitle').value;
-        const newTimingRows = document.getElementsByClassName('editTimingRow');
-
+        const editTaskContainer = document.getElementById('indexEditTaskContainer');
+        const newTaskTitle = editTaskContainer.querySelector('#editTaskTitle').value;
+        const newTimingRows = editTaskContainer.querySelectorAll('.editTimingRow');
         if (!newTaskTitle) {
             alert('Please fill in the Task Title!');
             return;
@@ -1115,7 +1343,7 @@
 
         const newTaskTimings = [];
         for (let timingRow of newTimingRows) {
-            if (timingRow.classList.contains('editNewLessonTimingRow') || timingRow.classList.contains('editNewTaskTimingRow')) {
+            if (timingRow.classList.contains('editNewTaskTimingRow')) {
                 continue;
             }
             const day = timingRow.querySelector('select.editTaskDay').value;
@@ -1137,9 +1365,77 @@
             window.location.href = '/timetable/week/today';
         })
         .catch(err => {
-            alert("There was a problem editting this task!");
+            alert("There was a problem editting this task! Error:");
             hideLoadingScreen();
         })    
+    }
+
+    function submitEditAssignment(assignmentId) {
+        // Check fields:
+        const editAssignmentContainer = document.getElementById('indexEditAssignmentContainer');
+        const newAssignmentTitle = editAssignmentContainer.querySelector('#editAssignmentTitle').value;
+        const newTimingRows = editAssignmentContainer.querySelectorAll('.editTimingRow');
+
+        if (!newAssignmentTitle) {
+            alert('Please fill in the Assignment Title!');
+            return;
+        }
+        if (newTimingRows.length <= 0) {
+            alert('Please fill in at least 1 timing!');
+            return;
+        }
+        
+        // Display loading screen:
+        showLoadingScreen();
+
+        const newAssignmentTimings = [];
+        for (let timingRow of newTimingRows) {
+            if (timingRow.classList.contains('editNewAssignmentTimingRow')) {
+                continue;
+            }
+            const date = timingRow.querySelector('.editAssignmentDate').value;
+            const timingStart = timingRow.querySelector('select.editAssignmentTimingStart').value;
+            const timingEnd = timingRow.querySelector('select.editAssignmentTimingEnd').value;
+            newAssignmentTimings.push({ date, timingStart, timingEnd });
+        }
+        
+        const requestBody = new URLSearchParams();
+        requestBody.append('title', newAssignmentTitle);
+        requestBody.append('timings', JSON.stringify(newAssignmentTimings));
+        const putUrl = `/assignments/${assignmentId}`
+        fetch(putUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: requestBody.toString()
+        })
+        .then(response => {
+            window.location.href = '/timetable/week/today';
+        })
+        .catch(err => {
+            alert("There was a problem editting this assignment!");
+            hideLoadingScreen();
+        })    
+    }
+
+
+    // Cancel function:
+    function hideEditContainer(type) {
+        document.getElementById("indexOverlay").style.display = 'none';
+
+        // Remove timing rows:
+        const timingContainer = document.getElementById(`edit${type}TimingContainer`);
+        const timingRows = [...timingContainer.getElementsByClassName('editTimingRow')];
+        timingRows.forEach(timingRow => {
+            if (!timingRow.classList.contains(`editNew${type}TimingRow`)) {
+                timingRow.remove();
+            }
+        })
+
+        timingIndex = 0;
+
+        // Hide container:
+        var editContainer = document.getElementById(`indexEdit${type}Container`);
+        editContainer.style.display = 'none';
     }
 
 
@@ -1153,7 +1449,7 @@
             window.location.href = '/timetable/week/today';
         })
         .catch(err => {
-            alert("There was a problem deleting this lesson/task!");
+            alert("There was a problem deleting this lesson/task/assignment!");
         }) 
     }
 

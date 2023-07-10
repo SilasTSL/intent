@@ -97,8 +97,8 @@ app.get('/', (req, res) => {
     res.render('home');
 })
 
-//TIMETABLE PAGES:
 
+//TIMETABLE:
 function sortUnitsByTimings(objects) {
     return objects.sort((a, b) => {
         const timingA = a.timings.timingStart;
@@ -137,7 +137,8 @@ app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async 
         const today = new Date();
         const month = today.toLocaleString('default', { month: 'long' });
         const monthString = month.charAt(0).toUpperCase() + month.slice(1);
-        formattedPeriod = monthString;
+        const currentYear = new Date().getFullYear();
+        formattedPeriod = monthString + " " + currentYear;
     }
 
     var units = await Unit.find({userId: req.user.id, isAssigned: true});
@@ -159,13 +160,13 @@ app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
 }))
 
 //PUT edit lesson
-app.put('/timetable/:id', validateIsLoggedIn, async (req, res) => {
+app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     const edittedBody = req.body;
     edittedBody.timings = JSON.parse(edittedBody.timings);
-    const lesson = await Unit.findByIdAndUpdate(id, edittedBody);
+    await Unit.findByIdAndUpdate(id, { $set: edittedBody });
     res.sendStatus(200);
-})
+}))
 
 //DELETE lesson
 app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
@@ -175,13 +176,12 @@ app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
 }))
 
 
-//WEEKLY TASK PAGES:
-
-//Hillclimbing function
-const hillclimb = require('./hillclimbing.js');
+//WEEKLY TASK:
+const hillclimb = require('./hillclimbing.js').hillclimb;
 
 //POST make new weekly task
-app.post('/weekly-tasks', validateIsLoggedIn, (async (req, res) => {
+app.post('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
+    // Create new weekly task unit:
     var newWeeklyTaskBody = req.body;
     newWeeklyTaskBody.userId = req.user.id;
     newWeeklyTaskBody.type = "WeeklyTask";
@@ -192,9 +192,8 @@ app.post('/weekly-tasks', validateIsLoggedIn, (async (req, res) => {
 
     // Assign task:
     const assignedUnits = await Unit.find({userId: req.user.id, isAssigned: true});
-    const unassignedUnits = await Unit.find({userId: req.user.id, isAssigned: false});
     
-    const optimalSchedule = hillclimb(assignedUnits, unassignedUnits);
+    const optimalSchedule = hillclimb(assignedUnits, newWeeklyTask.toObject());
     // Not enough timeslots to finish before deadline
     if (optimalSchedule <= 0) {
         res.sendStatus(401);
@@ -225,20 +224,66 @@ app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
     const { id } = req.params;
     const edittedBody = req.body;
     edittedBody.timings = JSON.parse(edittedBody.timings);
-    edittedBody.isAssigned = req.body.task.isAssigned === 'true';
-    if (!edittedBody.isAssigned) {
-        edittedBody.timings = [];
-    } else {
-        let totalTime = 0;
-        for (let timing of edittedBody.timings) {
-            const timeDiff = calculateTimeDifference(timing.timingStart, timing.timingEnd);
-            totalTime += timeDiff;
-        }
-        edittedBody.duration = totalTime;
+
+    let totalTime = 0;
+    for (let timing of edittedBody.timings) {
+        const timeDiff = calculateTimeDifference(timing.timingStart, timing.timingEnd);
+        totalTime += timeDiff;
     }
-    const weeklyTask = await Unit.findByIdAndUpdate(id, edittedBody);
+    edittedBody.duration = totalTime;
+    await Unit.findByIdAndUpdate(id, { $set: edittedBody });
     res.redirect('/timetable/week/today');
 }))
+
+
+// ASSIGNMENT
+//Hillclimbing function for Assignment
+const hillclimbAssignment = require('./hillclimbing.js').hillclimbAssignment;
+
+// POST make new assignment:
+app.post('/assignments', validateIsLoggedIn, (async (req, res) => {
+    // Create new assignment unit:
+    var newAssignmentBody = req.body;
+    newAssignmentBody.userId = req.user.id;
+    newAssignmentBody.type = "Assignment";
+    newAssignmentBody.colour = "#696969";
+    newAssignmentBody.isAssigned = false;
+    const newAssignment = new Unit(newAssignmentBody);
+    await newAssignment.save();
+
+    // Assign task:
+    const assignedUnits = await Unit.find({userId: req.user.id, isAssigned: true});
+    newAssignmentBody._id = newAssignment.toObject()._id;
+    const optimalSchedule = hillclimbAssignment(assignedUnits, newAssignmentBody);
+
+    // Not enough timeslots to finish before deadline
+    if (optimalSchedule <= 0) {
+        res.sendStatus(401);
+        return;
+    }
+
+    for (let unit of optimalSchedule) {
+        if (!unit.isAssigned) {
+            unit.isAssigned = true;
+            await Unit.findByIdAndUpdate(unit._id.toString(), unit);
+        }
+    }
+    res.sendStatus(200);
+}))
+
+//PUT edit assignment
+app.put('/assignments/:id', validateIsLoggedIn, (async (req, res) => {
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const { id } = req.params;
+    const edittedBody = req.body;
+    edittedBody.timings = JSON.parse(edittedBody.timings);
+    for (let timing of edittedBody.timings) {
+        timing.day = days[new Date(timing.date).getDay()];
+    }
+    await Unit.findByIdAndUpdate(id, { $set: edittedBody });
+    res.redirect('/timetable/week/today');
+}))
+
 
 //ACCOUNT PAGES:
 //GET register page
