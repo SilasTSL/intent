@@ -60,7 +60,7 @@ a {
   height: 100%;
   padding-top: 1rem;
   padding-bottom: 1rem;
-  margin-left: 2rem;
+  margin-left: 3rem;
 }
 
 .timetableOptionsTopRow {
@@ -524,27 +524,44 @@ a {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0.9rem;
+  padding: 0.5rem;
   font-family: 'Figtree', sans-serif;
   font-weight: 600;
   z-index: 1;
-  height: 10vh;
+  height: fit-content;
+}
+
+.navItem {
+  text-decoration: none;
+  color: #DCDCDC;
+  transition-duration: 0.4s;
+}
+
+.navItem:hover {
+  color: white;
+  transform: scale(1.1);
+}
+
+.navbar-center {
+  flex-grow: 1;
+  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 #navbarHome {
-  text-decoration: none;
-  color: #DCDCDC;
   font-size: 1.8rem;
   margin-left: auto;
   padding: 0px;
   margin-right: auto;
   font-weight: 800;
-  transition-duration: 0.4s;
 }
 
-#navbarHome:hover {
-  color: white;
-  transform: scale(1.1);
+#navbarLogout {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #adadad;
+  padding-right: 2rem;
 }
 
 /* Footer */
