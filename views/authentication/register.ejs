@@ -8,6 +8,11 @@
     </div>
     <div class="accountRightContainer">
         <h1 class="accountTitle">Register</h1>
+        <% if (registrationFailure) { %>
+            <p class="alert alert-danger" role="alert">
+              Username or email already exists. Please use another username or email.
+            </p>
+          <% } %>
         <form action="/register" method="POST" novalidate class="validated-form">
             <div class="mb-3">
                 <label class="form-label" for="username">Username</label>

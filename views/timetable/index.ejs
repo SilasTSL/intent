@@ -203,7 +203,7 @@
                         <% if (unitFound) { %>
                             <% const unitTiming = unitFound.timings.find(timing => (timing.day == day || timing.date == dayString) && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                             <% let unitDuration = parseInt(unitTiming.timingEnd.substring(0, 2)) - parseInt(unitTiming.timingStart.substring(0, 2)); %>
-                            <div class="timetableBlock unitBlock" unit_id="<%= unitFound._id %>" style="background-color: <%= unitFound.colour %>; height: <%= (55 * unitDuration) + (4 * (unitDuration - 1)) %>px;"  <% if (unitFound.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unitFound) %>')" <% } else if (unitFound.type == 'WeeklyTask') { %> onclick="showEditTaskContainer('<%= JSON.stringify(unitFound) %>')" <% } else { %> onclick="showEditAssignmentContainer('<%= JSON.stringify(unitFound) %>')" <% } %>>
+                            <div class="timetableBlock unitBlock" unit_id="<%= unitFound._id %>" style="background-color: <%= unitFound.colour %>; height: <%= (50 * unitDuration) + (4 * (unitDuration - 1)) %>px;"  <% if (unitFound.type == 'Lesson') { %> onclick="showEditLessonContainer('<%= JSON.stringify(unitFound) %>')" <% } else if (unitFound.type == 'WeeklyTask') { %> onclick="showEditTaskContainer('<%= JSON.stringify(unitFound) %>')" <% } else { %> onclick="showEditAssignmentContainer('<%= JSON.stringify(unitFound) %>')" <% } %>>
                                 <%= unitFound.title %>
                             </div>
                             <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>

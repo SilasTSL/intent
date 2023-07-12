@@ -289,28 +289,28 @@ app.put('/assignments/:id', validateIsLoggedIn, (async (req, res) => {
 //GET register page
 app.get('/register', (req, res) => {
     if (req.user) {
-        res.redirect('/timetable/week/today');
+      res.redirect('/timetable/week/today');
     } else {
-        res.render('authentication/register');
+      res.render('authentication/register', { registrationFailure: false });
     }
-})
+  });
 
-//POST register
-app.post('/register', catchAsync(async (req, res) => {
+// POST register
+app.post('/register', async (req, res) => {
     try {
-        const { email, username, password } = req.body;
-        const newUser = new User({email, username});
-        const registeredUser = await User.register(newUser, password);
-
-        req.login(registeredUser, e => {
-            if (e) return next(e);
-            res.redirect('/timetable/week/today');
-        })
-    } catch(e) {
-        console.log(e);
-        res.redirect('/register');
+      const { email, username, password } = req.body;
+      const user = new User({ email, username });
+      await User.register(user, password);
+  
+      // Automatically authenticate the user after successful registration
+      passport.authenticate('local')(req, res, () => {
+        res.redirect('/timetable/week/today');
+      });
+    } catch (err) {
+      console.log(err);
+      res.render('authentication/register', { registrationFailure: true });
     }
-}))
+  });
 
 //GET login page
 app.get('/login', (req, res) => {
