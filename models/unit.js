@@ -27,7 +27,8 @@ const UnitSchema = new Schema({
         type: [{
             day: String,
             timingStart: String,
-            timingEnd: String
+            timingEnd: String,
+            date: String
         }],
         default: []
     },

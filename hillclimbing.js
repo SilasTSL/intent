@@ -66,7 +66,7 @@ function calculateScore(schedule) {
 function mergeTimings(timings) {
     // Sort the timings based on day and timing start
     const sortedTimings = timings.sort((a, b) => {
-        const dayComparison = a.day.localeCompare(b.day);
+        const dayComparison = days.indexOf(a.day) - days.indexOf(b.day);
     
         if (dayComparison !== 0) {
             return dayComparison;
@@ -170,30 +170,28 @@ function generateAvailableSlots(schedule) {
     return availableSlots;
 }
 
-function hillclimb(assignedUnits, unassignedUnits) {
+function hillclimb(assignedUnits, unassignedTask) {
     // Initial schedule (Greedy):
     let currentBestSchedule = JSON.parse(JSON.stringify(assignedUnits));
     
     let availableSlots = generateAvailableSlots(currentBestSchedule);
-    for (let unassignedUnit of unassignedUnits) {
-        const unitReleasedOn = unassignedUnit.releasedOn;
-        const unitDeadline = unassignedUnit.deadline;
-        const availableSlotsForUnit = availableSlots.filter(slot => days.indexOf(slot.day) >= days.indexOf(unitReleasedOn) && days.indexOf(slot.day) < days.indexOf(unitDeadline));
-        let unitTimingLeft = unassignedUnit.duration;
-        let unitTimings = [];
-        while (unitTimingLeft > 0) {
-            // Not enough slots to assign task:
-            if (availableSlotsForUnit.length <= 0) {
-                return 0;
-            }
-            unitTimings.push(availableSlotsForUnit[0]);
-            availableSlotsForUnit.shift();
-            unitTimingLeft -= 1;
-        }
-        unassignedUnit.timings = mergeTimings(unitTimings);
-        currentBestSchedule.push(unassignedUnit)
-        availableSlots = generateAvailableSlots(currentBestSchedule);
+
+    const unitReleasedOn = unassignedTask.releasedOn;
+    const unitDeadline = unassignedTask.deadline;
+    const availableSlotsForUnit = availableSlots.filter(slot => days.indexOf(slot.day) >= days.indexOf(unitReleasedOn) && days.indexOf(slot.day) < days.indexOf(unitDeadline));
+    let unitTimingLeft = unassignedTask.duration;
+    let unitTimings = [];
+    // Not enough slots to assign task:
+    if (availableSlotsForUnit.length < unitTimingLeft) {
+        return 0;
     }
+    while (unitTimingLeft > 0) {
+        unitTimings.push(availableSlotsForUnit[0]);
+        availableSlotsForUnit.shift();
+        unitTimingLeft -= 1;
+    }
+    unassignedTask.timings = mergeTimings(unitTimings);
+    currentBestSchedule.push(unassignedTask)
     
 
     // Calculate score:
@@ -233,4 +231,275 @@ function hillclimb(assignedUnits, unassignedUnits) {
 }
 
 
-module.exports = hillclimb;
+// Assignments:
+function mergeTimingsDate(timings) {
+    // Sort the timings based on day and timing start
+    const sortedTimings = timings.sort((a, b) => {
+        const dateComparison = new Date(a.date) - new Date(b.date);
+        if (dateComparison !== 0) {
+            return dateComparison;
+        } else {
+            return a.timingStart.localeCompare(b.timingStart);
+        }
+    });
+  
+    const mergedTimings = [];
+    let lastMergedTiming = {...sortedTimings[0]};
+
+    for (let i = 1; i < sortedTimings.length; i++) {
+        timing = sortedTimings[i];
+        if (
+            lastMergedTiming &&
+            lastMergedTiming.timingEnd === timing.timingStart &&
+            lastMergedTiming.date === timing.date
+        ) {
+            // Extend the last merged timing
+            lastMergedTiming.timingEnd = timing.timingEnd;
+        } else {
+            // Add the timing as a new merged timing
+            mergedTimings.push({...lastMergedTiming});
+            lastMergedTiming = {...timing};
+        }
+    }
+    mergedTimings.push({...lastMergedTiming});
+  
+    return mergedTimings;
+}
+const exampleTiming = {day: 'Monday', timingStart: '0900', timingEnd: '1100', date: '2023-07-05'}
+
+
+function calculateScoreDate(schedule, releasedOnDate, deadlineDate) {
+    /* TODO
+    - Need to loop through dates from releasedOnDate to deadlineDate
+    */
+    const timings = [].concat(...schedule.map(unit => unit.timings));
+    const backToBackPenalty = 10;
+    const mealTimePenalty = 50;
+    const eveningTimePlus = 10;
+    const singleUnitPenalty = 20;
+    const tooLongUnitPenalty = 15;
+
+    const lunchStart = "1200";
+    const lunchEnd = "1400";
+
+    const eveningTime = "1500";
+
+    let score = 0;
+
+    let currentDate = new Date(releasedOnDate);
+    while (currentDate < deadlineDate) {
+        let dayIndex = currentDate.getDay() - 1;
+        dayIndex = dayIndex < 0 ? 6 : dayIndex;
+        const currentDay = days[dayIndex];
+        const timingsToday = timings.filter(timing => {
+            if (timing.date) {
+                return timing.date === `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+            } else {
+                return timing.day === currentDay;
+            }
+        });
+
+        if (!timingsToday) {
+            continue
+        }
+
+        const sortedTimingsToday = timingsToday.sort((a, b) => a.timingStart.localeCompare(b.timingStart));
+
+        let previousTiming = sortedTimingsToday[0];
+
+        // Check for back-to-back units:
+        for (let i = 1; i < sortedTimingsToday.length; i++) {
+            let currentTiming = sortedTimingsToday[i];
+            if (previousTiming.timingEnd == currentTiming.timingStart) {
+                score -= backToBackPenalty;
+            }
+            previousTiming = currentTiming;
+        }
+
+        // Not too many single hour units:
+        score -= timingsToday.length * singleUnitPenalty;
+
+        for (let timing of timingsToday) {
+            // Check for units during meal times
+            if (timing.timingStart <= lunchEnd && timing.timingEnd >= lunchStart) {
+                score -= mealTimePenalty;
+            }
+            // Check for units in evening (+)
+            if (timing.timingStart >= eveningTime || timing.timingEnd >= eveningTime) {
+                score += eveningTimePlus;
+            }
+            // Not too long units
+            const tooLongPenalty = parseInt(timing.timingEnd.slice(0, 2)) - parseInt(timing.timingStart.slice(0, 2)) * tooLongUnitPenalty;
+            if (tooLongPenalty > 0) {
+                score -= tooLongPenalty;
+            }
+        }
+
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return score;
+}
+
+/*
+const exampleLesson = {'title': 'CS2109S', 'colour': '#FFFFFF', 'timings': [{day: 'Monday', timingStart: '0900', timingEnd: '1100'}, {day: 'Tuesday', timingStart: '1200', timingEnd: '1400'}]};
+
+const exampleNeighbours = generateNeighborsDate([{'title': 'CS2109S', 'colour': '#FFFFFF', 'isAssigned': true, 'timings': [{day: 'Monday', timingStart: '0900', timingEnd: '1100'}, {day: 'Tuesday', timingStart: '1200', timingEnd: '1400'}]},
+{'title': 'CS2105', 'colour': '#FFFFFF', 'isAssigned': true, 'timings': [{day: 'Monday', timingStart: '1200', timingEnd: '1300'}, {day: 'Tuesday', timingStart: '0800', timingEnd: '0900'}]},
+{'title': 'CS2102', 'colour': '#FFFFFF', 'isAssigned': true, 'timings': [{day: 'Monday', timingStart: '1100', timingEnd: '1200'}, {day: 'Friday', timingStart: '0900', timingEnd: '1000'}]},
+{'title': 'CS2106', 'colour': '#FFFFFF', 'isAssigned': true, 'timings': [{day: 'Wednesday', timingStart: '0900', timingEnd: '1100'}, {day: 'Wednesday', timingStart: '1200', timingEnd: '1400'}]},
+{'title': 'CS2109S', 'colour': '#FFFFFF', 'duration': 4, 'isAssigned': false, 'timings': [{day: 'Wednesday', timingStart: '1600', timingEnd: '1800', date: new Date('2023-07-05')}, {day: 'Thursday', timingStart: '1600', timingEnd: '1800', date: new Date('2023-07-06')}]}], new Date('2023-07-02'), new Date('2023-07-12'));
+
+console.log(exampleNeighbours[0][4].timings);
+*/
+
+function generateNeighborsDate(schedule, releasedOnDate, deadlineDate) {
+    const neighbours = [];
+    
+    // Get unassigned assignment:
+    const unassignedAssignment = schedule.filter((assignment) => !assignment.isAssigned)[0];
+    unassignedAssignment.timings = [];
+    
+    // Get all available slots possible between releasedOnDate to deadlineDate:
+    const availableSlotsWeekly = generateAvailableSlots(schedule);
+    let availableSlots = [];
+
+    let currentDate = new Date(releasedOnDate);
+    const deadlineDateDate = new Date(deadlineDate);
+
+    while (currentDate < deadlineDateDate) {
+        let dayIndex = currentDate.getDay() - 1;
+        dayIndex = dayIndex < 0 ? 6 : dayIndex;
+        const currentDay = days[dayIndex];
+        const availableSlotsForDay = availableSlotsWeekly.filter(slot => slot.day == currentDay);
+        availableSlots.push(...availableSlotsForDay.map(slot => {
+            slot.date = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+            return JSON.parse(JSON.stringify(slot));
+        }));
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    // Generate 50 possible random timings:
+
+    if (availableSlots.length < unassignedAssignment.duration) {
+        return [];
+    }
+
+    const possibleTimings = new Set();
+    for (let i = 0; i < 3; i++) {
+        let assignmentDuration = unassignedAssignment.duration;
+        const currentTimings = [];
+        while (assignmentDuration > 0) {
+            const randomIndex = Math.floor(Math.random() * availableSlots.length);
+            const availableSlot = availableSlots[randomIndex];
+
+            // Check if the available slot is already in the current timing
+            if (!currentTimings.includes(availableSlot)) {
+                currentTimings.push(availableSlot);
+                assignmentDuration -= 1;
+            }
+        }
+        const mergedTimings = mergeTimingsDate(currentTimings);
+        possibleTimings.add(mergedTimings);
+    }
+
+    for (let timings of possibleTimings) {
+        unassignedAssignment.timings = timings;
+        neighbours.push(JSON.parse(JSON.stringify(schedule)));
+    }
+
+    return neighbours;
+}
+
+function hillclimbAssignment(assignedUnits, unassignedAssignment) {
+    // Initial schedule (Greedy):
+    let currentBestSchedule = JSON.parse(JSON.stringify(assignedUnits));
+    
+    let availableSlotsWeekly = generateAvailableSlots(currentBestSchedule);
+
+    const unitReleasedOnDate = unassignedAssignment.releasedOnDate;
+    const unitDeadlineDate = new Date(unassignedAssignment.deadlineDate);
+    
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    let availableSlots = [];
+    let currentDate = new Date(unitReleasedOnDate);
+    while (currentDate < unitDeadlineDate) {
+        let dayIndex = currentDate.getDay() - 1;
+        dayIndex = dayIndex < 0 ? 6 : dayIndex;
+        const currentDay = days[dayIndex];
+        const availableSlotsForDay = availableSlotsWeekly.filter(slot => slot.day == currentDay);
+        availableSlots.push(...availableSlotsForDay.map(slot => {
+            slot.date = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+            return JSON.parse(JSON.stringify(slot));
+        }));
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    let unitTimingLeft = unassignedAssignment.duration;
+    let unitTimings = [];
+    // Not enough slots to assign task:
+    if (availableSlots.length < unitTimingLeft) {
+        console.log(availableSlots)
+        return 0;
+    }
+    while (unitTimingLeft > 0) {
+        unitTimings.push(availableSlots[0]);
+        availableSlots.shift();
+        unitTimingLeft -= 1;
+    }
+
+    unassignedAssignment.timings = mergeTimingsDate(unitTimings);
+    currentBestSchedule.push(unassignedAssignment);
+
+    // Calculate score (For greedy):
+    let currentScore = calculateScoreDate(currentBestSchedule, unitReleasedOnDate, unitDeadlineDate);
+    let currentSolution = currentBestSchedule;
+
+    // Iterate until no better solution can be found
+    while (true) {
+        // Generate neighbors of the current solution
+        const neighbours = generateNeighborsDate(currentSolution, unitReleasedOnDate, unitDeadlineDate);
+
+        // Find the neighbor with the best score
+        let bestNeighbor = null;
+        let bestNeighborScore = currentScore;
+
+        for (const neighbour of neighbours) {
+            const neighborScore = calculateScoreDate(neighbour, unitReleasedOnDate, unitDeadlineDate);
+
+            if (neighborScore > bestNeighborScore) {
+                bestNeighbor = neighbour;
+                bestNeighborScore = neighborScore;
+            }
+        }
+
+        // If no better neighbor is found, stop the iteration
+        if (!bestNeighbor || bestNeighborScore <= currentScore) {
+            break;
+        }
+
+        // Move to the best neighbor
+        currentSolution = bestNeighbor;
+        currentScore = bestNeighborScore;
+    }
+    
+    // Return the final solution
+    return currentSolution;
+}
+
+/*
+const assignedUnits = [
+{'title': 'CS2105', 'type': 'Lesson', 'colour': '#FFFFFF', 'isAssigned': true, 'timings': [{day: 'Monday', timingStart: '1200', timingEnd: '1300'}, {day: 'Tuesday', timingStart: '0800', timingEnd: '0900'}]},
+{'title': 'CS2102', 'type': 'Lesson', 'colour': '#FFFFFF', 'isAssigned': true, 'timings': [{day: 'Monday', timingStart: '1100', timingEnd: '1200'}, {day: 'Friday', timingStart: '0900', timingEnd: '1000'}]},
+{'title': 'CS2106', 'type': 'Lesson', 'colour': '#FFFFFF', 'isAssigned': true, 'timings': [{day: 'Wednesday', timingStart: '0900', timingEnd: '1100'}, {day: 'Wednesday', timingStart: '1200', timingEnd: '1400'}]}
+]
+
+const unassignedAssignment = {'title': 'CS2105', 'type': 'Assignment', 'colour': '#FFFFFF', 'duration': 4, 'isAssigned': false, 'releasedOnDate': new Date('2023-07-08'), 'deadlineDate': new Date('2023-07-16')};
+
+
+const bestSchedule = hillclimbAssignment(assignedUnits, unassignedAssignment);
+console.log(bestSchedule[3].timings);
+*/
+
+
+module.exports = { hillclimb, hillclimbAssignment };

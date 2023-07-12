@@ -13,6 +13,10 @@ a {
   text-decoration: none;
 }
 
+.pageTitle {
+  margin-left: 2rem;
+}
+
 .newButtons:hover {
   opacity: 0.6;
 }
@@ -24,16 +28,14 @@ a {
   cursor: pointer;
 }
 
-.deleteTimingButton {
-  background-color: #ED2939;
-  font-size: 0.8rem;
+/* Index page */
+.glowing-text {
+  color: #f9744b;
+  font-weight: 900;
 }
 
-.addTimingButton {
-  background-color: green;
-  width: fit-content;
-  align-self: center;
-  margin-bottom: 4rem;
+.glowingBlock {
+  background-color: #e0e0e0;
 }
 
 .timetableHeadingContainer {
@@ -57,8 +59,8 @@ a {
   justify-content: space-between;
   height: 100%;
   padding-top: 1rem;
-  padding-bottom: 2rem;
-  margin-left: 2rem;
+  padding-bottom: 1rem;
+  margin-left: 3rem;
 }
 
 .timetableOptionsTopRow {
@@ -116,6 +118,93 @@ a {
   margin-left: 1rem;
   margin-right: 1rem;
 }
+
+
+.monthContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  padding: 2rem;
+  padding-top: 0;
+}
+
+.monthHeader {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.monthColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  width: 14%;
+}
+
+.monthDay {
+  height: 65px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 7px;
+  margin-bottom: 3px;
+  padding: 0.2rem;
+  font-size: 0.8rem;
+  text-align: end;
+  display: flex;
+  flex-direction: column;
+}
+
+.notCurrentMonthDay {
+  color: #c9c9c9;
+  opacity: 0.6;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+.monthDayTopRow {
+  width: 100%;
+  height: 40%;
+}
+
+.monthDayBottomRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  width: 100%;
+  height: 60%;
+}
+
+.monthDayUnit {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  margin: 3px;
+  cursor: pointer;
+  transition-duration: 0.1s;
+}
+
+.monthDayUnit:hover {
+  transform: scale(1.2);
+}
+
+#monthlyUnitPopup {
+  position: fixed;
+  display: none;
+  flex-direction: column;
+  height: fit-content;
+  width: fit-content;
+  border-radius: 5px;
+  z-index: 5;
+  background-color: hotpink;
+  font-size: 1rem;
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  color: white;
+}
+
+
+
+
 
 /* Landing Page */
 #landingBody {
@@ -176,7 +265,7 @@ a {
   flex-direction: row;
   justify-content: center;
   width: 90%;
-  margin-top: 2rem;
+  margin-top: 0.5rem;
   margin-left: 3rem;
 }
 
@@ -435,27 +524,44 @@ a {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 1.1rem;
+  padding: 0.5rem;
   font-family: 'Figtree', sans-serif;
   font-weight: 600;
   z-index: 1;
-  height: 10vh;
+  height: fit-content;
+}
+
+.navItem {
+  text-decoration: none;
+  color: #DCDCDC;
+  transition-duration: 0.4s;
+}
+
+.navItem:hover {
+  color: white;
+  transform: scale(1.1);
+}
+
+.navbar-center {
+  flex-grow: 1;
+  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 #navbarHome {
-  text-decoration: none;
-  color: #DCDCDC;
   font-size: 1.8rem;
   margin-left: auto;
   padding: 0px;
   margin-right: auto;
   font-weight: 800;
-  transition-duration: 0.4s;
 }
 
-#navbarHome:hover {
-  color: white;
-  transform: scale(1.1);
+#navbarLogout {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #adadad;
+  padding-right: 2rem;
 }
 
 /* Footer */
@@ -479,76 +585,45 @@ a {
   font-size: 0.6rem;
 }
 
-
-/* Sidebar */
-#sidebar {
-  position: fixed;
-  background-color: #404040;
-  top: 0;
-  left: 0;
-  width: 13vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1.5rem;
-  padding-top: calc(10vh + 1rem);
-  padding-bottom: calc(5vh + 1rem);
-  font-weight: 400;
-}
-
-.sidebarGroup {
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebarItem {
-  text-decoration: none;
-  color: #A9A9A9;
-  transition-duration: 0.3s;
-  display: flex;
-}
-
-.sidebarItem:hover {
-  color: white;
-  transform: scale(1.1);
-}
-
-.sideHr {
-  width: 100%;
-  border: none;
-  height: 1px;
-  background-color: #101010;
-  margin-top: 0.8rem;
-  margin-bottom: 0.5rem;
-}
-
-.sidebarIcon {
-  height: 1rem;
-  align-self: center;
-  margin-right: 1.2rem;
-}
-
 /* Index Page */
+#indexPageBody {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding-left: 2%;
+  padding-right: 2%;
+  margin-bottom: 10%;
+}
+
 #timetableBodyContainer {
   display: flex;
   flex-direction: column;
   align-items: start;
   padding: 2rem;
-  padding-top: 1rem;
-  margin-left: 13%;
+  padding-top: 0;
+  padding-right: 0;
   font-family: 'Figtree', sans-serif;
+  width: 76%;
+  margin: 0;
 }
 
-/* timetable to blocks */
+.indexSideContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 24%;
+  margin: 0;
+  margin-top: 2rem;
+}
+
 .timetableContainer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 80%;
   padding-left: 0;
   padding-right: 3rem;
   margin-bottom: 5rem;
+  width: 100%;
 }
 
 .timingColumn {
@@ -561,7 +636,7 @@ a {
 
 .timingLabel {
   font-size: 0.9rem;
-  margin-top: 35px;
+  margin-top: 30px;
 }
 
 .timingLabel:first-child {
@@ -580,7 +655,7 @@ a {
 }
 
 .timetableBlock {
-  height: 55px;
+  height: 50px;
   width: 100%;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 5px;
@@ -593,16 +668,206 @@ a {
   font-size: 0.7rem;
   color: white;
   padding: 0.5rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
   overflow: hidden;  
 }
 
-/* Task Index Page */
+.indexNewLessonFormDropdownButton {
+  background-color: #f9744b;
+  padding: 0.3rem;
+  padding-left: 1.3rem;
+  padding-right: 1.3rem;
+  transition-duration: 0.3s;
+  margin: 1rem;
+  margin-top: 0;
+  margin-left: 0;
+}
+
+.indexNewLessonFormDropdownButton:hover {
+  box-shadow: 0 0 15px 6px rgba(243, 156, 18, 0.7);
+  background-color: #FEB615;
+  transform: scale(1.1);
+}
+
+.indexNewTaskFormDropdownButton {
+  background-color: #696969;
+  padding: 0.3rem;
+  padding-left: 1.3rem;
+  padding-right: 1.3rem;
+  transition-duration: 0.3s;
+  margin: 1rem;
+  margin-left: 0;
+}
+
+.indexNewTaskFormDropdownButton:hover {
+  box-shadow: 0 0 15px 6px rgba(70, 70, 70, 0.7);
+  background-color: #3d3d3d;
+  transform: scale(1.1);
+}
+
+.indexNewAssignmentFormDropdownButton {
+  background-color: #0275d8;
+  padding: 0.3rem;
+  padding-left: 1.3rem;
+  padding-right: 1.3rem;
+  transition-duration: 0.3s;
+  margin: 1rem;
+  margin-left: 0;
+}
+
+#indexNewLessonForm {
+  overflow: hidden;
+  height: 0px;
+  width: 100%;
+  padding-left: 5px;
+  padding-right: 5px;
+  transition-duration: 0.4s;
+}
+
+#indexNewTaskForm {
+  overflow: hidden;
+  height: 0px;
+  width: 100%;
+  padding-left: 5px;
+  padding-right: 5px;
+  transition-duration: 0.4s;
+}
+
+#indexNewAssignmentForm {
+  overflow: hidden;
+  height: 0px;
+  width: 100%;
+  padding-left: 5px;
+  padding-right: 5px;
+  transition-duration: 0.4s;
+}
+
+.indexInputRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.form-label {
+  margin: 0;
+  margin-right: 0.5rem;
+}
+
+.indexTimingColumn {
+  margin-right: 5px;
+}
+
+.indexTimingColumn:last-child {
+  margin-right: 0;
+}
+
+#selectedRows {
+  margin-top: 0.5rem;
+}
+
+.indexNewLessonTimingRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  width: 100%;
+  padding: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+.indexNewLessonTimingDeleteButton {
+  font-size: 0.7rem;
+  background-color: #D11A2A;
+  color: white;
+  border: 0.5px solid black;
+  border-radius: 3px;
+}
+
+.indexFormsBottomRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.indexCancelButton {
+  background-color: white;
+  color: #8f8f8f;
+  border: 1px solid #8f8f8f;
+  padding: 0.8rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  transition-duration: 0.3s;
+}
+
+.indexCancelButton:hover {
+  color: #4e4e4e;
+  background-color: #c5c5c5;
+}
+
+.indexSubmitButton {
+  background-color: #24a0ed;
+  padding: 0.8rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  transition-duration: 0.3s;
+}
+
+.indexSubmitButton:hover {
+  background-color: #0b82cc;
+}
+
+.indexFormBorder {
+  border-bottom: 1px solid black;
+  width: 100%;
+}
+
+.indexListContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1rem;
+}
+
+.indexListHeader {
+  font-size: 1.3rem;
+}
+
+.indexListUnit {
+  padding: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  width: 100%;
+  color: white;
+  margin-top: 0.5rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  transition-duration: 0.3s;
+  cursor: pointer;
+}
+
+.indexListUnit:first-child {
+  margin-top: 0;
+}
+
+.indexListUnit:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
 #loadingScreenWrapper {
   position: fixed;
   z-index: 1;
   top: 10vh;
-  left: 13vw;
-  right: 0;
+  left: 0;
+  right: 26%;
   bottom: 5vh;
   background-color: white;
   display: none;
@@ -615,6 +880,7 @@ a {
 .loading{
   height : 25px;
   width : 25px;
+/*   background-color : blue; */
   border-radius : 50%;
   border : 2px solid transparent;
   border-top-color : blue;
@@ -630,241 +896,113 @@ a {
   }
 }
 
-#tasksBodyContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  padding: 2rem;
-  padding-top: 1rem;
-  margin-left: 13%;
-  font-family: 'Quicksand', sans-serif;
-  width: 70%;
-}
-
-.taskIndexTitleRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: start;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.taskIndexButton {
-  font-size: 1.2rem;
-  text-decoration: none;
-  margin-top: 0.6rem;
-  margin-left: 2rem;
-  color: white;
-  background-color: #f9744b;
-  padding: 0.2rem;
-  padding-left: 2.2rem;
-  padding-right: 2.2rem;
-  border-radius: 3px;
-  transition-duration: 0.3s;
-  cursor: pointer;
-}
-
-.assignButton {
-  background-color: #f9744b;
-}
-
-.assignButton:hover {
-  color: white;
-  box-shadow: 0 0 15px 6px rgba(243, 156, 18, 0.7);
-  background-color: #FEB615;
-  transform: scale(1.1);
-}
-
-.addTaskButton {
-  background-color: #24a0ed;
-}
-
-.addTaskButton:hover {
-  color: white;
-  box-shadow: 0 0 15px 6px rgba(29, 172, 255, 0.7);
-  background-color: #00c3ff;
-  transform: scale(1.1);
-}
-
-.tasksBody {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
+/* Edit container stuff: */
+#indexOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  margin-left: 2rem;
-  margin-top: 0;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10; /* Ensure the overlay is above other elements */
+  display: none;
 }
-
-.task {
-  width: 75%;
-  margin-bottom: 20px;
-  padding: 15px;
-  border-radius: 10px;
+.indexEditContainer {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f1f1f1;
+  z-index: 11;
+  padding: 1.5rem;
   border: 1px solid black;
-  cursor: pointer;
-  transition-duration: 0.3s;
-}
-
-.task:hover {
-  background-color: #ebebeb;
-}
-
-.taskBottomRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.taskAssignText {
-  opacity: 0.7;
-  font-size: 0.85rem;
-}
-
-.indexDeleteTaskButton {
-  background-color: #ED2939;
-  font-size: 0.85rem;
-  padding: 0.1rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  transition-duration: 0.2s;
-  z-index = 2;
-}
-
-.indexDeleteTaskButton:hover {
-  box-shadow: 0 0 3px 1px rgba(160, 3, 3, 0.7);
-  background-color: #a00923;
-  transform: scale(1.1);
-}
-
-/* Form Pages */
-.formMainBody {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.formContainer {
-  width: 70%;
-  border: 1px solid rgb(126, 123, 123);
-  padding: 2rem;
-  border-radius: 20px;
-  margin-left: 2rem;
-  margin-top: 1rem;
-}
-
-.editFormMainBody {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  padding: 2rem;
-  padding-top: 1rem;
-  margin-left: 13%;
-  font-family: 'Quicksand', sans-serif;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+  border-radius: 10px;
+  width: 40%;
 }
 
 .editInputRow {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-top: 0.6rem;
 }
 
-.timingContainerHeader {
-  align-self: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+.editInputRow:first-child {
+  margin-top: 0;
 }
 
-#timingContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: lightgray;
-  padding: 2rem;
-  width: 75%;
-  align-self: center;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-}
-
-.timingRow {
-  width: 80%;
-  padding: 1rem;
-  border-radius: 8px;
-  background-color: white;
-}
-
-.timingRow:not(:last-child) {
-  margin-bottom: 1rem;
-}
-
-.timingInputRow {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: 0.8rem;
-  margin: 0px;
-}
-
-.timingInputRow:not(:last-child) {
-  margin-bottom: 0.3rem;
-}
-
-.timingInputRow .form-label {
-  margin-right: 0.9rem;
-}
-
-.timingInputRow select {
-  font-size: 0.8rem;
-}
-
-.editFormBottomButtonRow {
+.editTimingRow {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  align-items: end;
 }
 
-#deleteLessonButton {
-  background-color: #ED2939;
+.editDeleteTimingButton {
+  border: 1px solid #D11A2A;
+  color: #D11A2A;
+  padding: 0.5rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  transition-duration: 0.3s;
 }
 
-#deleteTaskButton {
-  background-color: #ED2939;
+.editDeleteTimingButton:hover {
+  border: 1px solid #9c0814;
+  color: #9c0814;
+  background-color: #c9c9c9;
 }
 
-/* New Task Page */
-#newTaskBodyContainer {
+.editNewTimingRow {
+  margin-top: 1rem;
+}
+
+.indexEditButtonsRow {
   display: flex;
-  flex-direction: column;
-  align-items: start;
-  padding: 2rem;
-  padding-top: 1rem;
-  margin-left: 13%;
-  font-family: 'Quicksand', sans-serif;
-}
-
-/* New Lesson Page */
-#newLessonBodyContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  padding: 2rem;
-  padding-top: 1rem;
-  margin-left: 13%;
-  font-family: 'Quicksand', sans-serif;
-}
-
-#addLessonForm {
-  display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   width: 100%;
+  margin-top: 2rem;
 }
+
+.indexEditCancelButton {
+  background-color: white;
+  color: #8f8f8f;
+  border: 1px solid #8f8f8f;
+  padding: 0.8rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  transition-duration: 0.3s;
+}
+
+.indexEditDeleteButton {
+  background-color: #D11A2A;
+  padding: 0.8rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  transition-duration: 0.3s;
+}
+
+.indexEditSubmitButton {
+  background-color: #24a0ed;
+  padding: 0.8rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  transition-duration: 0.3s;
+}
+
+.indexEditCancelButton:hover {
+  color: #4e4e4e;
+  background-color: #c5c5c5;
+}
+
+.indexEditDeleteButton:hover {
+  background-color: #9c0814;
+}
+
+.indexEditSubmitButton:hover {
+  background-color: #0b82cc;
+}
+
+
 
 /* Login Register Pages */
 #accountBodyContainer {
