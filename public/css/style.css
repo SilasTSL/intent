@@ -283,7 +283,7 @@ a {
 
 .landingHeadline {
   color: black;
-  font-size: 3.3rem;
+  font-size: 3rem;
   font-weight: 800;
   margin-bottom: 0;
 }
@@ -427,6 +427,11 @@ a {
 
 .landingStepDescription {
   font-size: 1.2rem;
+}
+
+.landingStepDescriptionExample {
+  font-size: 1rem;
+  color: #9e9e9e;
 }
 
 .landingBenefitsRow {
