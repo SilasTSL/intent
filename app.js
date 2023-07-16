@@ -299,7 +299,8 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
     try {
       const { email, username, password } = req.body;
-      const user = new User({ email, username });
+      const time = new Date();
+      const user = new User({ email, time, username });
       await User.register(user, password);
   
       // Automatically authenticate the user after successful registration
