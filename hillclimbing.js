@@ -110,7 +110,10 @@ function generateNeighbors(schedule) {
     // Pick a random unassigned task and generate 50 random timings:
     const pickedTask = unassignedTasks[Math.floor(Math.random() * unassignedTasks.length)];
     pickedTask.timings = [];
-    const availableSlots = generateAvailableSlots(schedule).filter(slot => days.indexOf(slot.day) >= days.indexOf(pickedTask.releasedOn) && days.indexOf(slot.day) < days.indexOf(pickedTask.deadline));
+    let availableSlots = generateAvailableSlots(schedule)
+    if (pickedTask.releasedOn) {
+        availableSlots = availableSlots.filter(slot => days.indexOf(slot.day) >= days.indexOf(pickedTask.releasedOn) && days.indexOf(slot.day) < days.indexOf(pickedTask.deadline));
+    }
     // Not enough available slots for this task:
     if (availableSlots.length < pickedTask.duration) {
         return [];
@@ -178,7 +181,10 @@ function hillclimb(assignedUnits, unassignedTask) {
 
     const unitReleasedOn = unassignedTask.releasedOn;
     const unitDeadline = unassignedTask.deadline;
-    const availableSlotsForUnit = availableSlots.filter(slot => days.indexOf(slot.day) >= days.indexOf(unitReleasedOn) && days.indexOf(slot.day) < days.indexOf(unitDeadline));
+    let availableSlotsForUnit = [...availableSlots];
+    if (unitReleasedOn) {
+        availableSlotsForUnit = availableSlots.filter(slot => days.indexOf(slot.day) >= days.indexOf(unitReleasedOn) && days.indexOf(slot.day) < days.indexOf(unitDeadline));
+    }
     let unitTimingLeft = unassignedTask.duration;
     let unitTimings = [];
     // Not enough slots to assign task:

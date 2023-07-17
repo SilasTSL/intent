@@ -430,6 +430,8 @@
                 <option value="Saturday">Saturday</option>
                 <option value="Sunday">Sunday</option>
             </select>
+            <label class="form-label previousWeekLabel" for="previousWeekOption">Previous Week</label>
+            <input id="previousWeekOption" type="checkbox">
         </div>
         <div class="indexInputRow">
             <label class="form-label" for="deadline">Deadline</label>
@@ -717,6 +719,7 @@
         const newTaskTitle = document.getElementById('taskTitle').value;
         const newTaskDuration = document.getElementById('taskDuration').value;
         const newTaskReleasedOn = document.getElementById('releasedOn').value;
+        const newPreviousWeek = document.getElementById('previousWeekOption').checked;
         const newTaskDeadline = document.getElementById('deadline').value;
 
         // Check fields:
@@ -728,7 +731,7 @@
             alert('Please fill in the Task Duration!');
             return;
         }
-        if (!newTaskReleasedOn) {
+        if (!newTaskReleasedOn && !newPreviousWeek) {
             alert('Please pick a day the Task is Released!');
             return;
         }
@@ -745,7 +748,7 @@
         requestBody.append('duration', newTaskDuration);
         requestBody.append('releasedOn', newTaskReleasedOn);
         requestBody.append('deadline', newTaskDeadline);
-
+        console.log(requestBody.toString())
         fetch('/weekly-tasks', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1488,5 +1491,12 @@
         monthlyUnitPopup.style.top = e.pageY - scrollTop + offsetY + 'px';
     }
 
+    // Previous week checkbox listener:
+    const releasedOnInput = document.getElementById('releasedOn');
+    const previousWeekCheckbox = document.getElementById('previousWeekOption');
+    previousWeekCheckbox.addEventListener('change', () => {
+        releasedOnInput.disabled = previousWeekCheckbox.checked;
+        releasedOnInput.selectedIndex = 0;
+    })
 </script>
 
