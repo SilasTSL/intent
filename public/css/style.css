@@ -544,7 +544,7 @@ a {
 
 .navItem:hover {
   color: white;
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 .navbar-center {
@@ -562,11 +562,11 @@ a {
   font-weight: 800;
 }
 
-#navbarLogout {
-  font-size: 0.9rem;
-  font-weight: 400;
-  color: #adadad;
-  padding-right: 2rem;
+.nabarLogoutIcon {
+  height: 2rem;
+  width: 2rem;
+  margin-right: 2rem;
+  object-fit: contain;
 }
 
 /* Footer */
@@ -1007,7 +1007,27 @@ a {
   background-color: #0b82cc;
 }
 
+/* Profile page */
+#profilePageContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
+.profilePageTitle {
+  font-size: 3.4rem;
+  margin-top: 3rem;
+  width: 60%;
+}
+
+.changePasswordBody {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+}
 
 /* Login Register Pages */
 #accountBodyContainer {

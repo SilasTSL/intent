@@ -293,7 +293,7 @@ app.get('/register', (req, res) => {
     } else {
       res.render('authentication/register', { registrationFailure: false });
     }
-  });
+});
 
 // POST register
 app.post('/register', async (req, res) => {
@@ -311,7 +311,7 @@ app.post('/register', async (req, res) => {
       console.log(err);
       res.render('authentication/register', { registrationFailure: true });
     }
-  });
+});
 
 //GET login page
 app.get('/login', (req, res) => {
@@ -337,6 +337,38 @@ app.get('/logout', (req, res) => {
     });
 }); 
 
+//GET profile page
+app.get('/profile', (req, res) => {
+    res.render('timetable/profile');
+})
+
+//POST change password
+app.post('/change-password', (req, res) => {
+    // Ensure the user is authenticated
+    if (!req.isAuthenticated()) {
+      res.status(401).send('Unauthorized');
+      return;
+    }
+  
+    try {
+      // Get the current user
+      const user = req.user;
+  
+      // Get the new password from the request body
+      const newPassword = req.body.newPassword;
+  
+      // Change the password using the Passport `setPassword` method
+      user.setPassword(newPassword, async () => {
+        // Save the updated user with the new password
+        await user.save();
+  
+        res.send('Password changed successfully');
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }
+});
 
 
 //No matching path
