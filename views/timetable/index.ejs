@@ -1066,6 +1066,7 @@
         // Check start > end:
         if (selectedStart >= selectedEnd) {
             alert('Starting time should be later than Ending time!');
+            endSelect.selectedIndex = 0;
             return;
         }
 
@@ -1128,6 +1129,7 @@
         // Check start > end:
         if (selectedStart >= selectedEnd) {
             alert('Starting time should be later than Ending time!');
+            endSelect.selectedIndex = 0;
             return;
         }
 
@@ -1327,6 +1329,9 @@
     }
 
     function submitEditTask(taskId) {
+        const units = JSON.parse('<%- unitsString %>');
+        const task = units.filter(unit => unit._id === taskId)[0];
+
         // Check fields:
         const editTaskContainer = document.getElementById('indexEditTaskContainer');
         const newTaskTitle = editTaskContainer.querySelector('#editTaskTitle').value;
@@ -1343,12 +1348,18 @@
         // Display loading screen:
         showLoadingScreen();
 
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
         const newTaskTimings = [];
         for (let timingRow of newTimingRows) {
             if (timingRow.classList.contains('editNewTaskTimingRow')) {
                 continue;
             }
             const day = timingRow.querySelector('select.editTaskDay').value;
+            if (days.indexOf(day) > days.indexOf(task.deadline)) {
+                alert(`One of your timing(s) is after your task's deadline: [${task.deadline}]!`);
+                hideLoadingScreen();
+                return;
+            }
             const timingStart = timingRow.querySelector('select.editTaskTimingStart').value;
             const timingEnd = timingRow.querySelector('select.editTaskTimingEnd').value;
             newTaskTimings.push({ day, timingStart, timingEnd });
@@ -1373,6 +1384,9 @@
     }
 
     function submitEditAssignment(assignmentId) {
+        const units = JSON.parse('<%- unitsString %>');
+        const assignment = units.filter(unit => unit._id === assignmentId)[0];
+
         // Check fields:
         const editAssignmentContainer = document.getElementById('indexEditAssignmentContainer');
         const newAssignmentTitle = editAssignmentContainer.querySelector('#editAssignmentTitle').value;
@@ -1396,6 +1410,11 @@
                 continue;
             }
             const date = timingRow.querySelector('.editAssignmentDate').value;
+            if (new Date(date) > new Date(assignment.deadlineDate)) {
+                alert(`One of your timing(s) is after your assignment's deadline of [${assignment.deadlineDate}]!`);
+                hideLoadingScreen();
+                return;
+            }
             const timingStart = timingRow.querySelector('select.editAssignmentTimingStart').value;
             const timingEnd = timingRow.querySelector('select.editAssignmentTimingEnd').value;
             newAssignmentTimings.push({ date, timingStart, timingEnd });
