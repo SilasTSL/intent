@@ -580,8 +580,11 @@
         const units = JSON.parse('<%- unitsString %>');
 
         // Check overlap with existing units:
-        if (units.some(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart))) {
-            alert("This timing overlaps with the timing of an existing lesson/task/assignment!");
+        const overlappedUnit = units.find(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart));
+        if (overlappedUnit) {
+            const overlappedTiming = overlappedUnit.timings.find(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart);
+            const alertMessage = overlappedUnit.type == 'Assignment' ? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
+            alert(alertMessage);
             daySelect.selectedIndex = 0;
             startSelect.selectedIndex = 0;
             endSelect.selectedIndex = 0;
@@ -977,7 +980,7 @@
     }
 
 
-    // Edit Timing Option onChange functions:\
+    // Edit Timing Option onChange functions:
     function handleEditDayChange(type) {
         const startSelect = document.getElementById(`edit${type}NewTimingStart`);
         startSelect.disabled = false;
@@ -1001,8 +1004,11 @@
         const units = JSON.parse('<%- unitsString %>');
 
         // Check overlap with existing units:
-        if (units.some(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart))) {
-            alert("This timing overlaps with the timing of an existing lesson/task/assignment!");
+        const overlappedUnit = units.find(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart));
+        if (overlappedUnit) {
+            const overlappedTiming = overlappedUnit.timings.find(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart);
+            const alertMessage = overlappedUnit.type == 'Assignment' ? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
+            alert(alertMessage);
             daySelect.selectedIndex = 0;
             startSelect.selectedIndex = 0;
             endSelect.selectedIndex = 0;
@@ -1053,8 +1059,11 @@
         const units = JSON.parse('<%- unitsString %>');
 
         // Check overlap with existing units:
-        if (units.some(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart))) {
-            alert("This timing overlaps with the timing of an existing lesson/task/assignment!");
+        const overlappedUnit = units.find(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart));
+        if (overlappedUnit) {
+            const overlappedTiming = overlappedUnit.timings.find(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart);
+            const alertMessage = overlappedUnit.type == 'Assignment' ? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
+            alert(alertMessage);
             daySelect.selectedIndex = 0;
             startSelect.selectedIndex = 0;
             endSelect.selectedIndex = 0;
@@ -1108,7 +1117,7 @@
         const units = JSON.parse('<%- unitsString %>');
 
         // Check overlap with existing units:
-        if (units.some(unit => unit.timings.some(timing => {
+        const overlappedUnit = units.find(unit => unit.timings.some(timing => {
             let isSameDate = false;
             if (unit.type == 'Assignment') {
                 isSameDate =  selectedDate === timing.date;
@@ -1116,9 +1125,12 @@
                 isSameDate = timing.day == selectedDay;
             }
             return (isSameDate && (timing.timingStart < selectedEnd && timing.timingEnd > selectedStart))
-        }))) {
-            alert("This timing overlaps with the timing of an existing lesson/task/assignment!");
-            dateSelect.value = '';
+        }));
+        if (overlappedUnit) {
+            const overlappedTiming = overlappedUnit.timings.find(timing => (timing.day == selectedDay || timing.date == selectedDate) && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart);
+            const alertMessage = overlappedUnit.type == 'Assignment' ? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
+            alert(alertMessage);
+            daySelect.selectedIndex = 0;
             startSelect.selectedIndex = 0;
             endSelect.selectedIndex = 0;
             startSelect.disabled = true;
