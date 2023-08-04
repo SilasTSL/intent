@@ -562,6 +562,10 @@ a {
   font-weight: 800;
 }
 
+#navbarLogout {
+  margin-right: 3rem;
+}
+
 .nabarLogoutIcon {
   height: 2rem;
   width: 2rem;
