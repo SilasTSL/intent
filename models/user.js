@@ -9,6 +9,9 @@ const UserSchema = new Schema({
         required: true,
         unique: true
     },
+    time: {
+        type: Date
+    }
 });
 UserSchema.plugin(passportLocalMongoose);
 
