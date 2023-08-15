@@ -42,7 +42,7 @@ app.use(express.urlencoded({ extended: true }));
 //Allow us to override method types (can use PUT etc.):
 app.use(methodOverride('_method'));
 //Public folder:
-app.use(express.static('public'));
+app.use(express.static(__dirname + "/public/"));
 
 //Configuring Session:
 const secret = process.env.SECRET || 'thisshouldbeabettersecret!'
