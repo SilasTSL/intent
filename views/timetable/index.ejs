@@ -43,7 +43,7 @@
                     <label class="form-label" for="editLessonNewTimingStart">Start</label>
                     <select class="form-select" id="editLessonNewTimingStart" onchange="handleEditStartChange('Lesson')" disabled required>
                         <option value="" selected disabled>Select a starting time</option>
-                        <% for (let j = 8; j <= 18; j++) { %>
+                        <% for (let j = 8; j <= 22; j++) { %>
                             <% let time = j < 10 ? '0' + j : j; %>
                             <option value="<%= time %>00"><%= time %>:00</option>
                         <% } %>
@@ -53,7 +53,7 @@
                     <label class="form-label" for="editLessonNewTimingEnd">End</label>
                     <select class="form-select" id="editLessonNewTimingEnd" onchange="handleEditLessonEndChange(this)" disabled required>
                         <option value="" selected disabled>Select an ending time</option>
-                        <% for (let j = 8; j <= 18; j++) { %>
+                        <% for (let j = 8; j <= 22; j++) { %>
                             <% let time = j < 10 ? '0' + j : j; %>
                             <option value="<%= time %>00"><%= time %>:00</option>
                         <% } %>
@@ -94,7 +94,7 @@
                     <label class="form-label" for="editTaskNewTimingStart">Start</label>
                     <select class="form-select" id="editTaskNewTimingStart" onchange="handleEditStartChange('Task')" disabled required>
                         <option value="" selected disabled>Select a starting time</option>
-                        <% for (let j = 8; j <= 18; j++) { %>
+                        <% for (let j = 8; j <= 22; j++) { %>
                             <% let time = j < 10 ? '0' + j : j; %>
                             <option value="<%= time %>00"><%= time %>:00</option>
                         <% } %>
@@ -104,7 +104,7 @@
                     <label class="form-label" for="editTaskNewTimingEnd">End</label>
                     <select class="form-select" id="editTaskNewTimingEnd" onchange="handleEditTaskEndChange(this)" disabled required>
                         <option value="" selected disabled>Select an ending time</option>
-                        <% for (let j = 8; j <= 18; j++) { %>
+                        <% for (let j = 8; j <= 22; j++) { %>
                             <% let time = j < 10 ? '0' + j : j; %>
                             <option value="<%= time %>00"><%= time %>:00</option>
                         <% } %>
@@ -136,7 +136,7 @@
                     <label class="form-label" for="editAssignmentNewTimingStart">Start</label>
                     <select class="form-select" id="editAssignmentNewTimingStart" onchange="handleEditStartChange('Assignment')" disabled required>
                         <option value="" selected disabled>Select a starting time</option>
-                        <% for (let j = 8; j <= 18; j++) { %>
+                        <% for (let j = 8; j <= 22; j++) { %>
                             <% let time = j < 10 ? '0' + j : j; %>
                             <option value="<%= time %>00"><%= time %>:00</option>
                         <% } %>
@@ -146,7 +146,7 @@
                     <label class="form-label" for="editAssignmentNewTimingEnd">End</label>
                     <select class="form-select" id="editAssignmentNewTimingEnd" onchange="handleEditAssignmentEndChange(this)" disabled required>
                         <option value="" selected disabled>Select an ending time</option>
-                        <% for (let j = 8; j <= 18; j++) { %>
+                        <% for (let j = 8; j <= 22; j++) { %>
                             <% let time = j < 10 ? '0' + j : j; %>
                             <option value="<%= time %>00"><%= time %>:00</option>
                         <% } %>
@@ -179,7 +179,7 @@
     <div class="timetableContainer">
         <% if (weekOrMonth == 'week') { %>
             <div class="timingColumn">
-                <% for (let r=8; r <= 18; r++) { %>
+                <% for (let r=8; r <= 22; r++) { %>
                     <div class="timingLabel"><%= r + ":00" %></div>
                 <% } %>        
             </div>
@@ -195,7 +195,7 @@
                     <% const dayDate = new Date(startOfWeekDate.getTime()); %>
                     <% dayDate.setDate(dayDate.getDate() + daysOfWeek.indexOf(day)); %>
                     <% const dayString = `${dayDate.getFullYear()}-${(dayDate.getMonth() + 1).toString().padStart(2, '0')}-${dayDate.getDate().toString().padStart(2, '0')}`; %>
-                    <% for (let r=8; r < 18; r++) { %>
+                    <% for (let r=8; r < 22; r++) { %>
                         <% let unitFound = units.filter(unit => unit.type != 'Assignment').find(unit => unit.timings.some(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
                         <% if (!unitFound) { %>
                             <% unitFound = units.filter(unit => unit.type == 'Assignment').find(unit => unit.timings.some(timing => timing.date === dayString && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
@@ -391,7 +391,7 @@
                 <label class="form-label" for="timingStart">Start</label>
                 <select class="form-select" id="timingStart" onchange="handleStartChange(this)" disabled required>
                     <option value="" selected disabled>Select a starting time</option>
-                    <% for (let j = 8; j <= 18; j++) { %>
+                    <% for (let j = 8; j <= 22; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
                         <option value="<%= time %>00"><%= time %>:00</option>
                     <% } %>
@@ -401,7 +401,7 @@
                 <label class="form-label" for="timingEnd">End</label>
                 <select class="form-select" id="timingEnd" onchange="handleEndChange(this)" disabled required>
                     <option value="" selected disabled>Select an ending time</option>
-                    <% for (let j = 8; j <= 18; j++) { %>
+                    <% for (let j = 8; j <= 22; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
                         <option value="<%= time %>00"><%= time %>:00</option>
                     <% } %>
@@ -739,7 +739,6 @@
             'LEC': 'Lecture',
             'REC': 'Recitation'
         }
-        const currentSem = 0 // Must get from somewhr
         try {
             showLoadingScreen();
             const nusModsFormInput = document.getElementById('nusModsFormInput');
@@ -759,7 +758,7 @@
                 }
                 const responseJson = await response.json();
                 const moduleTitle = `${moduleCode} - ${responseJson['title']}`;
-                const moduleTimetable = responseJson['semesterData'][currentSem]['timetable'];
+                const moduleTimetable = responseJson['semesterData'][currentSem - 1]['timetable'];
 
                 const moduleTimings = [];
                 for (let classInfo of moduleClassList) {
@@ -1069,7 +1068,7 @@
     let timingIndex = 0;
     const colourList = ["", "#C62828", "#1565C0", "#2E7D32", "#FFA000", "#6A1B9A", "#F08731"];
     const dayList = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-    const timingsList = ["", "0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800"];
+    const timingsList = ["", "0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200"];
     
     // Function to append a new timing row
     function createTimingRow(index, type) {
@@ -1109,7 +1108,7 @@
                 <label class="form-label">Start</label>
                 <select class="form-select ${"edit" + type + "TimingStart"}" id="${"edit" + type + "TimingStart" + index}" required>
                     <option value="" selected>Select a starting time</option>
-                    <% for (let j = 8; j <= 18; j++) { %>
+                    <% for (let j = 8; j <= 22; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
                         <option value="<%= time %>00"><%= time %>:00</option>
                     <% } %>
@@ -1119,7 +1118,7 @@
                 <label class="form-label">End</label>
                 <select class="form-select ${"edit" + type + "TimingEnd"}"" id="${"edit" + type + "TimingEnd" + index}" required>
                     <option value="" selected>Select an ending time</option>
-                    <% for (let j = 8; j <= 18; j++) { %>
+                    <% for (let j = 8; j <= 22; j++) { %>
                         <% let time = j < 10 ? '0' + j : j; %>
                         <option value="<%= time %>00"><%= time %>:00</option>
                     <% } %>
