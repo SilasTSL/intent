@@ -724,6 +724,12 @@
         return dateString;
     }
     nusModsImportSubmitButton.addEventListener('click', async () => {
+
+        // Ask if confirm delete all other lessons:
+        if (!confirm('Are you sure you want to import your NUSMods Timetable? (This will delete all your existing module and assignments)')) {
+            return;
+        }
+
         const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
         const lessonTypeMapping = {

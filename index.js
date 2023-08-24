@@ -286,7 +286,10 @@ app.put('/assignments/:id', validateIsLoggedIn, (async (req, res) => {
 
 //POST nusmods import
 app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
-    // TO BE IMPLEMENTED!
+    // Delete all existing modules first:
+    await Unit.deleteMany({userId: {$regex: req.user.id}});
+
+    // Add new modules:
     const body = req.body.newUnits;
     const units = JSON.parse(body);
     for (let unit of units) {
