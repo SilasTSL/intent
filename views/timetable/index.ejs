@@ -216,30 +216,41 @@
         <% } else if (weekOrMonth == 'month') { %>
             <% 
                 // Helper functions for month display:
-                function getDaysInMonth(month) {
+                function getDaysInMonth(formattedPeriod) {
                     const monthNames = [
                         "January", "February", "March", "April", "May", "June",
                         "July", "August", "September", "October", "November", "December"
                     ];
-                    const year = new Date().getFullYear(); // Assuming current year
-                                
+                    const month = formattedPeriod.split(' ')[0];
                     const monthIndex = monthNames.findIndex(m => m === month);
-                    const date = new Date(year, monthIndex + 1, 0);
+                    const date = new Date(2023, monthIndex + 1, 0);
                     return date.getDate();
                 }
             
-                function getStartingDay(month) {
+                function getStartingDay(formattedPeriod) {
                     const monthNames = [
                         "January", "February", "March", "April", "May", "June",
                         "July", "August", "September", "October", "November", "December"
                     ];
-                    const year = new Date().getFullYear(); // Assuming current year
+                    const month = formattedPeriod.split(' ')[0];
+                    const year = formattedPeriod.split(' ')[1];
                                 
                     const monthIndex = monthNames.findIndex(m => m === month);
                     const date = new Date(year, monthIndex, 1);
                     const startingDay = date.getDay();
                                 
                     return (startingDay + 6) % 7 + 1;
+                }
+
+                function getPreviousMonth() {
+                    const monthNames = [
+                        "January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"
+                    ];
+                    const currentMonth = formattedPeriod.split(' ')[0];
+                    const currentMonthIndex = monthNames.indexOf(currentMonth);
+                    const previousMonthIndex = (currentMonthIndex + 11) % 12;
+                    return monthNames[previousMonthIndex];
                 }
             
                 function getDayNumber(column, row, startingDay, daysInMonth) {
@@ -251,23 +262,11 @@
                         return dayNumber;
                     } else if (dayNumber <= 0) {
                         const prevMonthDays = getDaysInMonth(getPreviousMonth());
-                        return -(prevMonthDays + dayNumber); // Return negative to have class for not current month day
+                        console.log('PrevMonthDays: ' + prevMonthDays)
+                        return -(prevMonthDays + dayNumber);
                     } else {
-                        return -(dayNumber - daysInMonth); // Return negative to have class for not current month day
+                        return -(dayNumber - daysInMonth);
                     }
-                }
-            
-                function getPreviousMonth() {
-                    // Assuming you have access to the formattedPeriod variable
-                    // that contains the selected month, you can modify this function accordingly
-                    const monthNames = [
-                        "January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"
-                    ];
-                    const currentMonth = formattedPeriod;
-                    const currentMonthIndex = monthNames.indexOf(currentMonth);
-                    const previousMonthIndex = (currentMonthIndex + 11) % 12;
-                    return monthNames[previousMonthIndex];
                 }
             %>
             
@@ -308,8 +307,7 @@
                                                 }
                                             }
                                         }
-                                        const dayDate = new Date(year, month, Math.abs(dayNumber) + 1);
-                                        const dayDateString = `${dayDate.getFullYear()}-${(dayDate.getMonth() + 1).toString().padStart(2, '0')}-${dayDate.getDate().toString().padStart(2, '0')}`;
+                                        const dayDateString = `${year}-${(month+1).toString().padStart(2, '0')}-${Math.abs(dayNumber).toString().padStart(2, '0')}`;
                                         const unitsToday = units.reduce((result, unit) => {
                                             let timings = [];
                                             if (unit.type != 'Assignment') {
@@ -348,6 +346,14 @@
     </div>
 </div>
 <div class="indexSideContainer">
+    <div class="nusModsFormContainer">
+        <h2 class="nusModsFormTitle">Use your NUSMods Link here</h2>
+        <p class="nusModsFormDescription">Simply fill in your timetable in NUSMods and click Share/Sync, then paste your timetable's link here!</p>
+        <div class="nusModsFormInputRow">
+            <input id="nusModsFormInput" class="nusModsFormInput" type="text">
+            <div id="nusModsFormSubmitButton" class="nusModsFormSubmitButton button">Import</div>
+        </div>      
+    </div>
     <div class="indexNewLessonFormDropdownButton button" onclick="expandNewForm('Lesson')">+ New Lesson</div>
     <form id="indexNewLessonForm" action='/timetable' method='POST'>
         <div class="indexInputRow">
@@ -670,6 +676,145 @@
         document.getElementById('loadingScreenWrapper').style.display = 'none';
     }
 
+    // NUSMods Import Submit:
+    const nusModsImportSubmitButton = document.getElementById('nusModsFormSubmitButton');
+
+    function getNthWeekdayOfMonth(year, month, weekday, nth) {
+        const firstDayOfMonth = new Date(year, month, 1);
+        const dayOffset = (weekday - firstDayOfMonth.getDay() + 7) % 7;
+        const targetDay = 1 + (nth - 1) * 7 + dayOffset;
+        return new Date(year, month, targetDay);
+    }
+    function getCurrentSemesterStartDate() {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth();
+        const currentDay = currentDate.getDate();
+
+        if ((currentMonth > 5 && currentMonth < 11) ||
+            (currentMonth === 5 && currentDay >= 16) ||
+            (currentMonth === 11 && currentDay <= 15)) {
+            // First semester, which starts in August
+            return [1, getNthWeekdayOfMonth(currentYear, 7, 1, 2)];
+        } else {
+            // Second semester, which starts in January
+            return [2, getNthWeekdayOfMonth(currentYear, 0, 1, 2)];
+        }
+    }
+    
+    const currentSem = getCurrentSemesterStartDate()[0];
+    const semesterStartDate = getCurrentSemesterStartDate()[1];
+    console.log("Start date of current semester:", semesterStartDate.toDateString());
+
+    function addWeeksToDate(date, weeks) {
+        const millisecondsPerWeek = 7 * 24 * 60 * 60 * 1000;
+        const targetTimestamp = date.getTime() + (millisecondsPerWeek * weeks);
+        return new Date(targetTimestamp);
+    }
+    function getXDayOfWeekInSameWeek(date, xDay) {
+        const dayOfWeek = date.getDay(); // 0 (Sunday) to 6 (Saturday)
+        const difference = xDay - dayOfWeek;
+        const newXDay = new Date(date);
+        newXDay.setDate(newXDay.getDate() + difference);
+        const year = newXDay.getFullYear();
+        const month = String(newXDay.getMonth() + 1).padStart(2, '0');
+        const day = String(newXDay.getDate()).padStart(2, '0');
+
+        const dateString = `${year}-${month}-${day}`;
+        return dateString;
+    }
+    nusModsImportSubmitButton.addEventListener('click', async () => {
+        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        const lessonTypeMapping = {
+            'SEC': 'Sectional Teaching',
+            'LAB': 'Laboratory',
+            'TUT': 'Tutorial',
+            'LEC': 'Lecture',
+            'REC': 'Recitation'
+        }
+        const currentSem = 0 // Must get from somewhr
+        try {
+            showLoadingScreen();
+            const nusModsFormInput = document.getElementById('nusModsFormInput');
+            const nusModsUrl = nusModsFormInput.value;
+
+            // Parse information into units from url: (Example url: https://nusmods.com/timetable/sem-2/share?CM2122=TUT:2,LAB:1,LEC:1&CS1101S=TUT:06,REC:02,LEC:1&CS2040S=LEC:1,REC:09,TUT:13)
+            const unparsedString = nusModsUrl.split('?')[1];
+            const listOfModules = unparsedString.split('&');
+            const newUnits = [];
+            for (let module of listOfModules) { // CS1101S=TUT:06,REC:02,LEC:1
+                const moduleDetailList = module.split('=');
+                const moduleCode = moduleDetailList[0];
+                const moduleClassList = moduleDetailList[1].split(',');
+                const response = await fetch(`https://api.nusmods.com/v2/2023-2024/modules/${moduleCode}.json`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const responseJson = await response.json();
+                const moduleTitle = `${moduleCode} - ${responseJson['title']}`;
+                const moduleTimetable = responseJson['semesterData'][currentSem]['timetable'];
+
+                const moduleTimings = [];
+                for (let classInfo of moduleClassList) {
+                    const classSplit = classInfo.split(':');
+                    const classType = classSplit[0];
+                    const classNumber = classSplit[1];
+                    const lessonType = lessonTypeMapping[classType];
+                    const unitList = moduleTimetable.filter(time => (time['classNo'] == classNumber) && (time['lessonType'] == lessonType));
+                    
+                    // Each unit list add as new timing
+                    for (let unit of unitList) {
+                        const timingStart = unit['startTime'];
+                        const timingEnd = unit['endTime'];
+                        const dates = [];
+                        for (let week of unit['weeks']) {
+                            const mondayOfWeek = addWeeksToDate(semesterStartDate, week - 1);
+                            const date = getXDayOfWeekInSameWeek(mondayOfWeek, daysOfWeek.indexOf(unit['day']));
+                            dates.push(date);
+                        }
+
+                        for (let date of dates) {
+                            moduleTimings.push({
+                                timingStart: timingStart,
+                                timingEnd: timingEnd,
+                                date: date,
+                                day: unit['day']
+                            })
+                        }
+                    }
+                }
+                newUnits.push({
+                    title: moduleTitle,
+                    timings: moduleTimings
+                })
+            }
+
+
+            // Append unit information into requestBody:
+            const requestBody = new URLSearchParams();
+            requestBody.append('newUnits', JSON.stringify(newUnits));
+
+            // Post request to add units:
+            fetch('/nus-mods', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: requestBody.toString()
+            })
+            .then(data => {
+                window.location.href = '/timetable/week/today';
+            })
+            .catch(err => {
+                alert("There was a problem importing your NUSMods timetable!");
+                hideLoadingScreen();
+            })
+        } catch (error) {
+            console.log(error);
+            alert("There was a problem importing your NUSMods Timetable!");
+            hideLoadingScreen();
+        }
+    })
+
     // New Lesson Submit:
     const newLessonSubmitButton = document.getElementsByClassName('indexSubmitNewLessonButton')[0];
     newLessonSubmitButton.addEventListener('click', () => {
@@ -887,7 +1032,7 @@
         return `${nextMonth} ${nextYear}`;
     }
 
-    function getPreviousMonth(currentMonthYear) {
+    function getPreviousMonthFromMonthYear(currentMonthYear) {
         const [month, year] = currentMonthYear.split(' ');
         const date = new Date(`${month} 1, ${year}`);
         date.setMonth(date.getMonth() - 1);
@@ -903,7 +1048,7 @@
         previousPeriod = getPreviousWeek(period);
     } else {
         nextPeriod = getNextMonth(period);
-        previousPeriod = getPreviousMonth(period);
+        previousPeriod = getPreviousMonthFromMonthYear(period);
     }
 
     leftArrowButton.addEventListener('click', () => {

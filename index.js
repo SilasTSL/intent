@@ -284,6 +284,21 @@ app.put('/assignments/:id', validateIsLoggedIn, (async (req, res) => {
     res.redirect('/timetable/week/today');
 }))
 
+//POST nusmods import
+app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
+    // TO BE IMPLEMENTED!
+    const body = req.body.newUnits;
+    const units = JSON.parse(body);
+    for (let unit of units) {
+        unit.type = 'Assignment';
+        unit.isAssigned = true;
+        unit.userId = req.user.id;
+        unit.colour = '#696969';
+        const newUnit = new Unit(unit);
+        await newUnit.save();
+    }
+    res.sendStatus(200);
+}))
 
 //ACCOUNT PAGES:
 //GET register page
