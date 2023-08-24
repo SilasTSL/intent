@@ -288,7 +288,19 @@ app.put('/assignments/:id', validateIsLoggedIn, (async (req, res) => {
 app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
     // Delete all existing modules first:
     await Unit.deleteMany({userId: {$regex: req.user.id}});
-
+    const colours = [
+        "#96C9DC",
+        "#F06C9B",
+        "#F5D491",
+        "#8AAA79",
+        "#DE1A1A",
+        "#E88EED",
+        "#632A50",
+        "#433A3F",
+        "#A8763E",
+        "#D72483"
+    ];
+    let counter = 0;
     // Add new modules:
     const body = req.body.newUnits;
     const units = JSON.parse(body);
@@ -296,9 +308,10 @@ app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
         unit.type = 'Assignment';
         unit.isAssigned = true;
         unit.userId = req.user.id;
-        unit.colour = '#696969';
+        unit.colour = colours[counter];
         const newUnit = new Unit(unit);
         await newUnit.save();
+        counter++;
     }
     res.sendStatus(200);
 }))
