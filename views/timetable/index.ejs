@@ -189,9 +189,11 @@
             <% var today = daysOfWeek[todayNum == 0 ? 6 : todayNum - 1]; %>
             <% const parts = formattedPeriod.split(" - "); %>
             <% const startOfWeekDate = new Date(parts[0]); %>
+            <% const timeDifference = startOfWeekDate.getTime() - todayDate.getTime(); %>
+            <% console.log(timeDifference); %>
             <% for (let day of daysOfWeek) { %>
                 <div class="dayColumn">
-                    <p class="dayLabel <%= day == today ? 'glowing-text' : '' %>"><%= day %></p>
+                    <p class="dayLabel <%= ((day == today) && (timeDifference > 0) && (timeDifference <= 7 * 24 * 60 * 60 * 1000)) ? 'glowing-text' : '' %>"><%= day %></p>
                     <% const dayDate = new Date(startOfWeekDate.getTime()); %>
                     <% dayDate.setDate(dayDate.getDate() + daysOfWeek.indexOf(day)); %>
                     <% const dayString = `${dayDate.getFullYear()}-${(dayDate.getMonth() + 1).toString().padStart(2, '0')}-${dayDate.getDate().toString().padStart(2, '0')}`; %>
@@ -208,7 +210,7 @@
                             </div>
                             <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>
                         <% } else { %>
-                        <div class="timetableBlock <%= day == today ? 'glowingBlock' : '' %>"></div>
+                        <div class="timetableBlock <%= ((day == today) && (timeDifference > 0) && (timeDifference <= 7 * 24 * 60 * 60 * 1000)) ? 'glowingBlock' : '' %>"></div>
                         <% } %>
                     <% } %>
                 </div>
