@@ -17,14 +17,16 @@ function calculateScore(schedule) {
             return a.timingStart.localeCompare(b.timingStart);
         }
     });
-    const backToBackPenalty = 10;
-    const mealTimePenalty = 50;
+    const backToBackPenalty = 100;
+    const mealTimePenalty = 100;
     const eveningTimePlus = 10;
-    const singleUnitPenalty = 20;
-    const tooLongUnitPenalty = 15;
+    const singleUnitPenalty = 100;
+    const tooLongUnitPenalty = 100;
 
     const lunchStart = "1200";
     const lunchEnd = "1400";
+    const dinnerStart = "1700";
+    const dinnerEnd = "2000";
 
     const eveningTime = "1500";
 
@@ -46,7 +48,7 @@ function calculateScore(schedule) {
 
     for (let timing of timings) {
         // Check for units during meal times
-        if (timing.timingStart <= lunchEnd && timing.timingEnd >= lunchStart) {
+        if ((timing.timingStart <= lunchEnd && timing.timingEnd >= lunchStart) || (timing.timingStart <= dinnerEnd && timing.timingEnd >= dinnerStart)) {
             score -= mealTimePenalty;
         }
         // Check for units in evening (+)
@@ -119,7 +121,7 @@ function generateNeighbors(schedule) {
         return [];
     }
     const possibleTimings = new Set();
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 100; i++) {
         let taskDuration = pickedTask.duration;
         const currentTiming = [];
         while (taskDuration > 0) {
@@ -148,7 +150,7 @@ function generateAvailableSlots(schedule) {
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const availableSlots = [];
     for (const day of days) {
-        for (let i = 8; i <= 17; i++) {
+        for (let i = 8; i <= 22; i++) {
             const timingStart = (i * 100).toString().padStart(4, "0");
             const timingEnd = ((i + 1) * 100).toString().padStart(4, "0");
     
@@ -224,7 +226,7 @@ function hillclimb(assignedUnits, unassignedTask) {
 
         // If no better neighbor is found, stop the iteration
         if (!bestNeighbor || bestNeighborScore <= currentScore) {
-        break;
+            break;
         }
 
         // Move to the best neighbor
