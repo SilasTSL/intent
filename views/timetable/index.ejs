@@ -189,8 +189,7 @@
             <% var today = daysOfWeek[todayNum == 0 ? 6 : todayNum - 1]; %>
             <% const parts = formattedPeriod.split(" - "); %>
             <% const startOfWeekDate = new Date(parts[0]); %>
-            <% const timeDifference = startOfWeekDate.getTime() - todayDate.getTime(); %>
-            <% console.log(timeDifference); %>
+            <% const timeDifference = todayDate.getTime() - startOfWeekDate.getTime(); %>
             <% for (let day of daysOfWeek) { %>
                 <div class="dayColumn">
                     <p class="dayLabel <%= ((day == today) && (timeDifference > 0) && (timeDifference <= 7 * 24 * 60 * 60 * 1000)) ? 'glowing-text' : '' %>"><%= day %></p>
@@ -264,7 +263,6 @@
                         return dayNumber;
                     } else if (dayNumber <= 0) {
                         const prevMonthDays = getDaysInMonth(getPreviousMonth());
-                        console.log('PrevMonthDays: ' + prevMonthDays)
                         return -(prevMonthDays + dayNumber);
                     } else {
                         return -(dayNumber - daysInMonth);
@@ -903,7 +901,6 @@
         requestBody.append('duration', newTaskDuration);
         requestBody.append('releasedOn', newTaskReleasedOn);
         requestBody.append('deadline', newTaskDeadline);
-        console.log(requestBody.toString())
         fetch('/weekly-tasks', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
