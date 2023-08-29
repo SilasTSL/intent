@@ -11,7 +11,7 @@ const LocalStrategy = require('passport-local');
 const MongoDBStore = require('connect-mongo');
 
 const User = require('./models/user');
-const Unit = require('./models/unit');
+const Module = require('./models/module');
 
 const app = express();
 
@@ -114,6 +114,7 @@ function sortUnitsByTimings(objects) {
         }
     });
 }
+
 //GET Index page with parameters
 app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async (req, res) => {
     const weekOrMonth = req.params.weekOrMonth;
@@ -141,37 +142,37 @@ app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async 
         formattedPeriod = monthString + " " + currentYear;
     }
 
-    var units = await Unit.find({userId: req.user.id, isAssigned: true});
-    units = sortUnitsByTimings(units);
-    res.render('timetable/index', { units, unitsString: JSON.stringify(units), weekOrMonth, formattedPeriod });
+    var modules = await Module.find({userId: req.user.id});
+    modules = sortUnitsByTimings(modules);
+    res.render('timetable/index', { modules, modulesString: JSON.stringify(modules), weekOrMonth, formattedPeriod });
 }))
 
-//POST make new lessons
+//POST make new modules
 app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const newLessonBody = req.body;
+    /* const newLessonBody = req.body;
     newLessonBody.timings = JSON.parse(newLessonBody.timings);
     newLessonBody.userId = req.user.id;
     newLessonBody.type = "Lesson";
     newLessonBody.isAssigned = true;
 
     const newLesson = new Unit(newLessonBody);
-    await newLesson.save();
+    await newLesson.save(); */
     res.sendStatus(200);
 }))
 
-//PUT edit lesson
+//PUT edit module
 app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const { id } = req.params;
+    /* const { id } = req.params;
     const edittedBody = req.body;
     edittedBody.timings = JSON.parse(edittedBody.timings);
     await Unit.findByIdAndUpdate(id, { $set: edittedBody });
-    res.sendStatus(200);
+    res.sendStatus(200); */
 }))
 
 //DELETE lesson
 app.delete('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
-    await Unit.findByIdAndDelete(id);
+    await Module.findByIdAndDelete(id);
     res.redirect('/timetable/week/today');
 }))
 
@@ -181,7 +182,7 @@ const hillclimb = require('./hillclimbing.js').hillclimb;
 
 //POST make new weekly task
 app.post('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
-    // Create new weekly task unit:
+    /* // Create new weekly task unit:
     var newWeeklyTaskBody = req.body;
     newWeeklyTaskBody.userId = req.user.id;
     newWeeklyTaskBody.type = "WeeklyTask";
@@ -205,7 +206,7 @@ app.post('/weekly-tasks', validateIsLoggedIn, catchAsync(async (req, res) => {
             unit.isAssigned = true;
             await Unit.findByIdAndUpdate(unit._id, unit);
         }
-    }
+    } */
     res.sendStatus(200);
 }))
 
@@ -221,7 +222,7 @@ function calculateTimeDifference(timingStart, timingEnd) {
 
 //PUT edit weekly task
 app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const { id } = req.params;
+    /* const { id } = req.params;
     const edittedBody = req.body;
     edittedBody.timings = JSON.parse(edittedBody.timings);
 
@@ -231,7 +232,7 @@ app.put('/weekly-tasks/:id', validateIsLoggedIn, catchAsync(async (req, res) => 
         totalTime += timeDiff;
     }
     edittedBody.duration = totalTime;
-    await Unit.findByIdAndUpdate(id, { $set: edittedBody });
+    await Unit.findByIdAndUpdate(id, { $set: edittedBody }); */
     res.redirect('/timetable/week/today');
 }))
 
@@ -242,6 +243,7 @@ const hillclimbAssignment = require('./hillclimbing.js').hillclimbAssignment;
 
 // POST make new assignment:
 app.post('/assignments', validateIsLoggedIn, (async (req, res) => {
+    /*
     // Create new assignment unit:
     var newAssignmentBody = req.body;
     newAssignmentBody.userId = req.user.id;
@@ -267,27 +269,75 @@ app.post('/assignments', validateIsLoggedIn, (async (req, res) => {
             unit.isAssigned = true;
             await Unit.findByIdAndUpdate(unit._id.toString(), unit);
         }
-    }
+    } */
     res.sendStatus(200);
 }))
 
 //PUT edit assignment
 app.put('/assignments/:id', validateIsLoggedIn, (async (req, res) => {
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    /* const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const { id } = req.params;
     const edittedBody = req.body;
     edittedBody.timings = JSON.parse(edittedBody.timings);
     for (let timing of edittedBody.timings) {
         timing.day = days[new Date(timing.date).getDay()];
     }
-    await Unit.findByIdAndUpdate(id, { $set: edittedBody });
+    await Unit.findByIdAndUpdate(id, { $set: edittedBody }); */
     res.redirect('/timetable/week/today');
 }))
 
 //POST nusmods import
+
+function getNthWeekdayOfMonth(year, month, weekday, nth) {
+    const firstDayOfMonth = new Date(year, month, 1);
+    const dayOffset = (weekday - firstDayOfMonth.getDay() + 7) % 7;
+    const targetDay = 1 + (nth - 1) * 7 + dayOffset;
+    return new Date(year, month, targetDay);
+}
+
+function getCurrentSemesterStartDate() {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentDay = currentDate.getDate();
+
+    if ((currentMonth > 5 && currentMonth < 11) ||
+        (currentMonth === 5 && currentDay >= 16) ||
+        (currentMonth === 11 && currentDay <= 15)) {
+        // First semester, which starts in August
+        return [1, getNthWeekdayOfMonth(currentYear, 7, 1, 2)];
+    } else {
+        // Second semester, which starts in January
+        return [2, getNthWeekdayOfMonth(currentYear, 0, 1, 2)];
+    }
+}
+
+const currentSem = getCurrentSemesterStartDate()[0];
+const semesterStartDate = getCurrentSemesterStartDate()[1];
+console.log("Start date of current semester:", semesterStartDate.toDateString());
+
+function addWeeksToDate(date, weeks) {
+    const millisecondsPerWeek = 7 * 24 * 60 * 60 * 1000;
+    const targetTimestamp = date.getTime() + (millisecondsPerWeek * weeks);
+    return new Date(targetTimestamp);
+}
+
+function getXDayOfWeekInSameWeek(date, xDay) {
+    const dayOfWeek = date.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const difference = xDay - dayOfWeek;
+    const newXDay = new Date(date);
+    newXDay.setDate(newXDay.getDate() + difference);
+    const year = newXDay.getFullYear();
+    const month = String(newXDay.getMonth() + 1).padStart(2, '0');
+    const day = String(newXDay.getDate()).padStart(2, '0');
+
+    const dateString = `${year}-${month}-${day}`;
+    return dateString;
+}
+
 app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
     // Delete all existing modules first:
-    await Unit.deleteMany({userId: {$regex: req.user.id}});
+    await Module.deleteMany({userId: {$regex: req.user.id}});
     const colours = [
         "#943126",
         "#1A5276",
@@ -300,18 +350,37 @@ app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
         "#A8763E",
         "#D72483"
     ];
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    
     let counter = 0;
     // Add new modules:
     const body = req.body.newUnits;
-    const units = JSON.parse(body);
-    for (let unit of units) {
-        unit.type = 'Assignment';
-        unit.isAssigned = true;
-        unit.userId = req.user.id;
-        unit.colour = colours[counter];
-        const newUnit = new Unit(unit);
-        await newUnit.save();
+    const modules = JSON.parse(body);
+    for (let module of modules) {
+        module.userId = req.user.id;
+        module.colour = colours[counter];
+        const moduleUnits = [];
+        for (let unit of module['units']) {
+            const unitDates = [];
+            for (let week of unit['weeks']) {
+                const mondayOfWeek = addWeeksToDate(semesterStartDate, week - 1);
+                const date = getXDayOfWeekInSameWeek(mondayOfWeek, daysOfWeek.indexOf(unit['day']));
+                unitDates.push(date);
+            }
+            moduleUnits.add({
+                type: timings['type'],
+                timingStart: timing['timingStart'],
+                timingEnd: timing['timingEnd'],
+                dates: unitDates
+            })
+        }
+        module.units = moduleUnits;
+        const newModule = new Module(module);
+        await newModule.save();
         counter++;
+        if (counter >= colours.length) {
+            counter = 0;
+        }
     }
     res.sendStatus(200);
 }))
