@@ -197,9 +197,9 @@
                     <% dayDate.setDate(dayDate.getDate() + daysOfWeek.indexOf(day)); %>
                     <% const dayString = `${dayDate.getFullYear()}-${(dayDate.getMonth() + 1).toString().padStart(2, '0')}-${dayDate.getDate().toString().padStart(2, '0')}`; %>
                     <% for (let r=8; r < 22; r++) { %>
-                        <% let unitFound = units.filter(unit => unit.type != 'Assignment').find(unit => unit.timings.some(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
+                        <% let unitFound = units.filter(unit => unit.type != 'Assignment' && unit.type != 'Module').find(unit => unit.timings.some(timing => timing.day == day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
                         <% if (!unitFound) { %>
-                            <% unitFound = units.filter(unit => unit.type == 'Assignment').find(unit => unit.timings.some(timing => timing.date === dayString && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
+                            <% unitFound = units.filter(unit => unit.type == 'Assignment' || unit.type == 'Module').find(unit => unit.timings.some(timing => timing.date === dayString && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
                         <% } %>
                         <% if (unitFound) { %>
                             <% const unitTiming = unitFound.timings.find(timing => (timing.day == day || timing.date == dayString) && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
@@ -310,7 +310,7 @@
                                         const dayDateString = `${year}-${(month+1).toString().padStart(2, '0')}-${Math.abs(dayNumber).toString().padStart(2, '0')}`;
                                         const unitsToday = units.reduce((result, unit) => {
                                             let timings = [];
-                                            if (unit.type != 'Assignment') {
+                                            if (unit.type != 'Assignment' && unit.type != 'Module') {
                                                 timings = unit.timings.filter(timing => timing.day === daysOfWeekMonthly[c]);
                                             } else {
                                                 timings = unit.timings.filter(timing => timing.date === dayDateString);
@@ -490,7 +490,7 @@
         <% var today = daysOfWeek[todayNum == 0 ? 6 : todayNum - 1]; %>
         <% const todaysUnits = units.reduce((result, unit) => {
             let timings = [];
-            if (unit.type != 'Assignment') {
+            if (unit.type != 'Assignment' && unit.type != 'Module') {
                 timings = unit.timings.filter(timing => timing.day === today);
             } else {
                 timings = unit.timings.filter(timing => timing.date === todayDateString);
@@ -589,7 +589,7 @@
         const overlappedUnit = units.find(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart));
         if (overlappedUnit) {
             const overlappedTiming = overlappedUnit.timings.find(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart);
-            const alertMessage = overlappedUnit.type == 'Assignment' ? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
+            const alertMessage = (overlappedUnit.type == 'Assignment' ||  overlappedUnit.type == 'Module') ? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
             alert(alertMessage);
             daySelect.selectedIndex = 0;
             startSelect.selectedIndex = 0;
@@ -1074,13 +1074,12 @@
         const timingRow = document.createElement('div');
         timingRow.classList.add('editTimingRow');
         timingRow.setAttribute('edit-timing-index', index);
-        if (type == 'Assignment') {
+        if (type == 'Assignment' || type == 'Module') {
             innerHTML = `
                 <div class="indexTimingColumn">
-                    <label class="form-label" for="editAssignmentDate${index}">Date</label>
-                    <input class="editAssignmentDate" type="date" id="editAssignmentDate${index}">           
+                    <label class="form-label" for="edit${type}Date${index}">Date</label>
+                    <input class="edit${type}Date" type="date" id="edit${type}Date${index}">           
                 </div>
-                
             `;
         } else {
             innerHTML = `
@@ -1156,7 +1155,7 @@
         const overlappedUnit = units.find(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart));
         if (overlappedUnit) {
             const overlappedTiming = overlappedUnit.timings.find(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart);
-            const alertMessage = overlappedUnit.type == 'Assignment' ? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
+            const alertMessage = (overlappedUnit.type == 'Assignment' || overlappedUnit.type == 'Module')? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
             alert(alertMessage);
             daySelect.selectedIndex = 0;
             startSelect.selectedIndex = 0;
@@ -1211,7 +1210,7 @@
         const overlappedUnit = units.find(unit => unit.timings.some(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart));
         if (overlappedUnit) {
             const overlappedTiming = overlappedUnit.timings.find(timing => timing.day == selectedDay && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart);
-            const alertMessage = overlappedUnit.type == 'Assignment' ? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
+            const alertMessage = (overlappedUnit.type == 'Assignment' || overlappedUnit.type == 'Module') ? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
             alert(alertMessage);
             daySelect.selectedIndex = 0;
             startSelect.selectedIndex = 0;
@@ -1268,7 +1267,7 @@
         // Check overlap with existing units:
         const overlappedUnit = units.find(unit => unit.timings.some(timing => {
             let isSameDate = false;
-            if (unit.type == 'Assignment') {
+            if (unit.type == 'Assignment' || unit.type == 'Module') {
                 isSameDate =  selectedDate === timing.date;
             } else {
                 isSameDate = timing.day == selectedDay;
@@ -1277,7 +1276,7 @@
         }));
         if (overlappedUnit) {
             const overlappedTiming = overlappedUnit.timings.find(timing => (timing.day == selectedDay || timing.date == selectedDate) && timing.timingStart < selectedEnd && timing.timingEnd > selectedStart);
-            const alertMessage = overlappedUnit.type == 'Assignment' ? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
+            const alertMessage = (overlappedUnit.type == 'Assignment' || overlappedUnit.type == 'Module') ? `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.date}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!` : `This timing overlaps with the timing of [${overlappedUnit.type}] ${overlappedUnit.title} at ${overlappedTiming.day}, ${overlappedTiming.timingStart} - ${overlappedTiming.timingEnd}!`;
             alert(alertMessage);
             daySelect.selectedIndex = 0;
             startSelect.selectedIndex = 0;

@@ -8,7 +8,7 @@ const UnitSchema = new Schema({
     },
     type: {
         type: String,
-        enum: ['Lesson', 'WeeklyTask', 'Assignment'],
+        enum: ['Lesson', 'WeeklyTask', 'Assignment', 'Module'],
         required: true
     },
     isAssigned: {

@@ -305,7 +305,7 @@ app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
     const body = req.body.newUnits;
     const units = JSON.parse(body);
     for (let unit of units) {
-        unit.type = 'Assignment';
+        unit.type = 'Module';
         unit.isAssigned = true;
         unit.userId = req.user.id;
         unit.colour = colours[counter];
