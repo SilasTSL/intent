@@ -12,6 +12,7 @@ const MongoDBStore = require('connect-mongo');
 
 const User = require('./models/user');
 const Unit = require('./models/unit');
+const Module = require('./models/module');
 
 const app = express();
 
@@ -141,31 +142,17 @@ app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async 
         formattedPeriod = monthString + " " + currentYear;
     }
 
-    var units = await Unit.find({userId: req.user.id, isAssigned: true});
+    var modules = await Module.find({userId: req.user.id});
+    var units = [];
+    for (let module of modules) {
+        var moduleUnits = await Unit.find({moduleId: module._id.toString()});
+        for (let moduleUnit of moduleUnits) {
+            units.push(moduleUnit);
+        }
+    }
+
     units = sortUnitsByTimings(units);
     res.render('timetable/index', { units, unitsString: JSON.stringify(units), weekOrMonth, formattedPeriod });
-}))
-
-//POST make new lessons
-app.post('/timetable', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const newLessonBody = req.body;
-    newLessonBody.timings = JSON.parse(newLessonBody.timings);
-    newLessonBody.userId = req.user.id;
-    newLessonBody.type = "Lesson";
-    newLessonBody.isAssigned = true;
-
-    const newLesson = new Unit(newLessonBody);
-    await newLesson.save();
-    res.sendStatus(200);
-}))
-
-//PUT edit lesson
-app.put('/timetable/:id', validateIsLoggedIn, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const edittedBody = req.body;
-    edittedBody.timings = JSON.parse(edittedBody.timings);
-    await Unit.findByIdAndUpdate(id, { $set: edittedBody });
-    res.sendStatus(200);
 }))
 
 //DELETE lesson
@@ -287,32 +274,52 @@ app.put('/assignments/:id', validateIsLoggedIn, (async (req, res) => {
 //POST nusmods import
 app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
     // Delete all existing modules first:
+    await Module.deleteMany({userId: {$regex: req.user.id}});
     await Unit.deleteMany({userId: {$regex: req.user.id}});
-    const colours = [
-        "#943126",
-        "#1A5276",
-        "#196F3D",
-        "#F1C40F",
-        "#717D7E",
-        "#148F77",
-        "#873600",
-        "#433A3F",
-        "#A8763E",
-        "#D72483"
+    const colourMapping = [
+        {'LEC': '#F1767A', 'REC': '#DE6569', 'LAB': '#DE6569', 'TUT': '#DE6569', 'SEC': '#DE6569'}, // Red
+        {'LEC': '#F99256', 'REC': '#E9874E', 'LAB': '#E9874E', 'TUT': '#E9874E', 'SEC': '#E9874E'}, // Orange
+        {'LEC': '#FECC67', 'REC': '#F6C665', 'LAB': '#F6C665', 'TUT': '#F6C665', 'SEC': '#F6C665'}, // Yellow
+        {'LEC': '#99CC98', 'REC': '#85B984', 'LAB': '#85B984', 'TUT': '#85B984', 'SEC': '#85B984'}, // Green
+        {'LEC': '#65CDCC', 'REC': '#5EC0BF', 'LAB': '#5EC0BF', 'TUT': '#5EC0BF', 'SEC': '#5EC0BF'}, // Turqoise
+        {'LEC': '#6499CC', 'REC': '#5B8DBD', 'LAB': '#5B8DBD', 'TUT': '#5B8DBD', 'SEC': '#5B8DBD'}, // Blue
+        {'LEC': '#CC99CD', 'REC': '#B887B9', 'LAB': '#B887B9', 'TUT': '#B887B9', 'SEC': '#B887B9'}, // Purple
+        {'LEC': '#D27B53', 'REC': '#C2724D', 'LAB': '#C2724D', 'TUT': '#C2724D', 'SEC': '#C2724D'} // Brown
+
     ];
     let counter = 0;
     // Add new modules:
-    const body = req.body.newUnits;
-    const units = JSON.parse(body);
-    for (let unit of units) {
-        unit.type = 'Module';
-        unit.isAssigned = true;
-        unit.userId = req.user.id;
-        unit.colour = colours[counter];
-        const newUnit = new Unit(unit);
-        await newUnit.save();
-        counter++;
-    }
+    const body = JSON.parse(req.body.newModules);
+    for (let newModuleBody of body) {
+       const moduleCode = newModuleBody.code;
+
+       const newModule = new Module({
+           userId: req.user.id,
+           code: moduleCode
+       });
+       await newModule.save();
+       const moduleId = newModule._id;
+
+       const moduleUnits = newModuleBody.units;
+       for (let moduleUnitBody of moduleUnits) {
+            const newUnit = new Unit({
+                userId: req.user.id,
+                moduleCode: moduleCode,
+                moduleId: moduleId,
+                class: moduleUnitBody.class,
+                type: moduleUnitBody.type,
+                timings: moduleUnitBody.timings,
+                colour: colourMapping[counter][moduleUnitBody.type]
+            })
+            newUnit.save();
+       }
+
+       counter++;
+       if (counter >= colourMapping.length) {
+           counter = 0;
+       }
+   }
+    
     res.sendStatus(200);
 }))
 

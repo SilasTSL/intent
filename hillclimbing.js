@@ -150,7 +150,7 @@ function generateAvailableSlots(schedule) {
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const availableSlots = [];
     for (const day of days) {
-        for (let i = 8; i <= 22; i++) {
+        for (let i = 8; i <= 21; i++) {
             const timingStart = (i * 100).toString().padStart(4, "0");
             const timingEnd = ((i + 1) * 100).toString().padStart(4, "0");
     

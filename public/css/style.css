@@ -70,6 +70,7 @@ a {
   flex-direction: row;
   justify-content: space-between;
   width: 20vw;
+  margin-bottom: 2vh;
 }
 
 .timetablePeriodButton {
@@ -599,7 +600,6 @@ a {
   width: 100%;
   padding-left: 2%;
   padding-right: 2%;
-  margin-top: 3vh;
 }
 
 #timetableBodyContainer {
@@ -673,12 +673,15 @@ a {
 .unitBlock {
   cursor: pointer;
   transition-duration: 0.3s;
-  font-size: 0.7rem;
-  color: white;
+  font-size: 0.9vw;
+  color: rgb(37, 37, 37);
   padding: 0.5rem;
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
-  overflow: hidden;  
+  overflow: hidden;
+  border: none;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+  border-left: 2px solid rgba(0, 0, 0, 0.15);
 }
 
 .indexNewLessonFormDropdownButton {
@@ -706,7 +709,6 @@ a {
   padding-right: 1.3rem;
   transition-duration: 0.3s;
   margin: 1rem;
-  margin-left: 0;
   width: 100%;
 }
 
@@ -723,7 +725,6 @@ a {
   padding-right: 1.3rem;
   transition-duration: 0.3s;
   margin: 1rem;
-  margin-left: 0;
   width: 100%;
 }
 
@@ -848,6 +849,7 @@ a {
 .indexFormBorder {
   border-bottom: 1px solid black;
   width: 100%;
+  z-index: 0;
 }
 
 .indexListContainer {
@@ -866,7 +868,7 @@ a {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   width: 100%;
-  color: white;
+  color: rgb(37, 37, 37);
   margin-top: 0.5rem;
   border-radius: 5px;
   font-size: 0.8rem;
@@ -1065,6 +1067,124 @@ a {
   font-size: 1vw;
   padding: 0.1rem 0.3rem;
   width: fit-content;
+}
+
+/* Index Hours Form */
+#indexHoursFormContainer {
+  display: none;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  height: 50vh;
+  width: 70vw;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 10px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid black;
+  padding: calc(1vh + 1rem) calc(1vw + 1rem);
+  z-index: 100;
+  overflow-y: scroll;
+}
+
+.indexHourInputModuleContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.indexHoursFormTitle {
+  font-size: calc(1rem + 1vw);
+}
+
+.indexHoursFormInputRowTitle {
+  font-size: calc(0.5rem + 0.5vw);
+  margin: 0;
+  margin-right: 2vw;
+}
+
+.indexHoursFormIndividualLabel {
+  font-size: calc(0.4rem + 0.4vw);
+  margin: 0;
+  margin-right: 0.5vw;
+}
+
+.indexHoursFormInputUnitsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.indexHoursFormInputLabelContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 20vw;
+  margin: 0.5vh 0.5vw;
+
+}
+
+.indexHoursFormIndividualInput {
+  width: 100%;
+}
+
+.indexHoursFormIndividualInputContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  z-index: 100;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 1vh 2vw;
+  width: 100%;
+  margin-bottom: 1vh;
+}
+
+.indexHoursFormButtonRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 2vh;
+}
+
+.indexHoursButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(0.7rem + 0.7vw);
+  padding: 0.5vh 1vw;
+  border-radius: 5px;
+  transition-duration: 0.3s;
+  cursor: pointer;
+}
+
+.indexHoursCancelButton {
+  background-color: white;
+  color: #8f8f8f;
+  border: 1px solid #8f8f8f;
+}
+
+.indexHoursCancelButton:hover {
+  color: #4e4e4e;
+  background-color: #c5c5c5;
+}
+
+.indexHoursSubmitButton {
+  background-color: #24a0ed;
+  color: white;
+}
+
+.indexHoursSubmitButton:hover {
+  background-color: #0b82cc;
 }
 
 /* Profile page */
