@@ -323,6 +323,21 @@ app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
     res.sendStatus(200);
 }))
 
+const optimise = require('./hillclimbing.js').optimise;
+
+//Hillclimbing POST request:
+app.post('/optimise', (req, res) => {
+    const { units, hours } = req.body;
+    console.log('UNITS: ');
+    console.log(JSON.parse(units));
+    console.log('HOURS: ');
+    console.log(JSON.parse(hours));
+
+    optimise(units, hours);
+
+    res.redirect('/timetable/week/today');
+})
+
 //ACCOUNT PAGES:
 //GET register page
 app.get('/register', (req, res) => {

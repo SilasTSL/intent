@@ -626,6 +626,8 @@
                 const indexFormInputContainer = document.getElementById('indexHoursFormContainer');
                 const indexFormButtonRow = document.getElementsByClassName('indexHoursFormButtonRow')[0];
                 indexFormInputContainer.style.display = 'flex';
+                hideLoadingScreen();
+
                 for (let module of newModules) {
                     const nonLectureUnits = module.units.filter(unit => unit.type != 'LEC');
                     if (nonLectureUnits.length <= 0) {
@@ -633,7 +635,6 @@
                     }
                     indexFormButtonRow.parentNode.insertBefore(createIndexHourInputContainer(nonLectureUnits), indexFormButtonRow);
                 }
-                hideLoadingScreen();
             })
             .catch(err => {
                 alert("There was a problem importing your NUSMods timetable!");
@@ -1337,6 +1338,24 @@
         Array.from(document.getElementsByClassName('indexHoursFormIndividualInput')).map(element => element.value = '');
         document.getElementById('indexHoursFormContainer').style.display = 'none';
         document.getElementById('indexOverlay').style.display = 'none';
+
+        const units = JSON.parse('<%- unitsString %>');
+
+        const requestBody = new URLSearchParams();
+        requestBody.append('units', JSON.stringify(units));
+        requestBody.append('hours', JSON.stringify(hoursMapping));
+        fetch('/optimise', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: requestBody.toString()
+        })
+        .then(res => {
+            window.location.href = '/timetable/week/today';
+        })
+        .catch(err => {
+            alert("Something went wrong with optimising your schedule!");
+            hideLoadingScreen();
+        })
     });
 </script>
 
