@@ -531,6 +531,35 @@ function sortTimings(timings) {
     // Use the custom sorting function to sort the timings
     return timings.sort(compareTimings);
 }
+
+function mergeConsecutiveTimings(unmergedTimings) {
+    if (unmergedTimings.length === 0) {
+      return [];
+    }
+  
+    // Sort the timings by date and start time
+    const timings = sortTimings(unmergedTimings);
+  
+    const mergedTimings = [timings[0]];
+  
+    for (let i = 1; i < timings.length; i++) {
+      const currentTiming = timings[i];
+      const lastMergedTiming = mergedTimings[mergedTimings.length - 1];
+  
+      if (
+        currentTiming.date === lastMergedTiming.date &&
+        parseInt(currentTiming.timingStart) <= parseInt(lastMergedTiming.timingEnd)
+      ) {
+        // Timings are consecutive, merge them
+        lastMergedTiming.timingEnd = currentTiming.timingEnd;
+      } else {
+        // Timings are not consecutive, add the current timing as a new entry
+        mergedTimings.push(currentTiming);
+      }
+    }
+  
+    return mergedTimings;
+}
   
 function deepObjectCompare(obj1, obj2) {
     const keys1 = Object.keys(obj1);
@@ -644,7 +673,7 @@ function generateInitialSchedule(units, tasks, semStartDate) {
             moduleCode: moduleCode,
             class: taskUnit.class,
             type: type,
-            timings: timingsForTask,
+            timings: mergeConsecutiveTimings(timingsForTask),
             isTask: true
         });
     }

@@ -286,7 +286,6 @@ app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
         {'LEC': '#6499CC', 'REC': '#5B8DBD', 'LAB': '#5B8DBD', 'TUT': '#5B8DBD', 'SEC': '#5B8DBD'}, // Blue
         {'LEC': '#CC99CD', 'REC': '#B887B9', 'LAB': '#B887B9', 'TUT': '#B887B9', 'SEC': '#B887B9'}, // Purple
         {'LEC': '#D27B53', 'REC': '#C2724D', 'LAB': '#C2724D', 'TUT': '#C2724D', 'SEC': '#C2724D'} // Brown
-
     ];
     let counter = 0;
     // Add new modules:
@@ -328,6 +327,17 @@ const optimise = require('./hillclimbing.js').optimise;
 
 //Hillclimbing POST request:
 app.post('/optimise', async (req, res) => {
+    const colourMapping = {
+        '#DE6569': '#FF8D99',
+        '#E9874E': '#FFAB80',
+        '#F6C665': '#FFD595',
+        '#85B984': '#A8E5AC',
+        '#5EC0BF': '#A0D6D4',
+        '#5B8DBD': '#93A2B9',
+        '#B887B9': '#CEB1C5',
+        '#C2724D': '#D38667'
+    };
+
     try {
         var modules = await Module.find({userId: req.user.id});
         var units = [];
@@ -347,7 +357,7 @@ app.post('/optimise', async (req, res) => {
                 class: task.class,
                 type: task.type,
                 timings: task.timings,
-                colour: task.colour
+                colour: colourMapping[task.colour]
             })
             await newUnit.save();
         }
