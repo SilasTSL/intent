@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const UnitSchema = new Schema({
+    userId: {
+        type: String,
+        required: true
+    },
     moduleId: {
         type: String,
         required: true
@@ -20,7 +24,7 @@ const UnitSchema = new Schema({
     },
     type: {
         type: String,
-        enum: ['LEC', 'TUT', 'REC', 'LAB', 'SEC', 'TSK', 'ASS'],
+        enum: ['LEC', 'TUT', 'REC', 'LAB', 'SEC'],
         required: true
     },
     timings: {
@@ -32,6 +36,7 @@ const UnitSchema = new Schema({
         }],
         default: []
     }
+
 
 });
 

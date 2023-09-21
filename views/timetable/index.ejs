@@ -140,10 +140,7 @@
                     <% dayDate.setDate(dayDate.getDate() + daysOfWeek.indexOf(day)); %>
                     <% const dayString = `${dayDate.getFullYear()}-${(dayDate.getMonth() + 1).toString().padStart(2, '0')}-${dayDate.getDate().toString().padStart(2, '0')}`; %>
                     <% for (let r=8; r < 22; r++) { %>
-                        <% let unitFound = units.filter(unit => unit.type != 'TSK').find(unit => unit.timings.some(timing => timing.date == dayString && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
-                        <% if (!unitFound) { %>
-                            <% unitFound = units.filter(unit => unit.type == 'TSK').find(unit => unit.timings.some(timing => timing.day === day && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
-                        <% } %>
+                        <% let unitFound = units.find(unit => unit.timings.some(timing => timing.date == dayString && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
                         <% if (unitFound) { %>
                             <% const unitTiming = unitFound.timings.find(timing => (timing.day == day || timing.date == dayString) && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                             <% let unitDuration = parseInt(unitTiming.timingEnd.substring(0, 2)) - parseInt(unitTiming.timingStart.substring(0, 2)); %>
@@ -253,11 +250,8 @@
                                         const dayDateString = `${year}-${(month+1).toString().padStart(2, '0')}-${Math.abs(dayNumber).toString().padStart(2, '0')}`;
                                         const unitsToday = units.reduce((result, unit) => {
                                             let timings = [];
-                                            if (unit.type != 'TSK') {
-                                                timings = unit.timings.filter(timing => timing.date === dayDateString);
-                                            } else {
-                                                timings = unit.timings.filter(timing => timing.day === daysOfWeekMonthly[c]);
-                                            }
+                  
+                                            timings = unit.timings.filter(timing => timing.day === daysOfWeekMonthly[c]);
                                             
                                             if (timings.length > 0) {
                                                 timings.forEach(timing => {
@@ -374,11 +368,7 @@
         <% var today = daysOfWeek[todayNum == 0 ? 6 : todayNum - 1]; %>
         <% const todaysUnits = units.reduce((result, unit) => {
             let timings = [];
-            if (unit.type != 'TSK') {
-                timings = unit.timings.filter(timing => timing.date === todayDateString);
-            } else {
-                timings = unit.timings.filter(timing => timing.day === today);
-            }
+            timings = unit.timings.filter(timing => timing.date === todayDateString);
             
             if (timings.length > 0) {
                 timings.forEach(timing => {
@@ -1325,25 +1315,27 @@
 
     // Hours Submit Button
     document.getElementsByClassName('indexHoursSubmitButton')[0].addEventListener('click', () => {
-        const hoursInputs = document.getElementsByClassName('indexHoursFormIndividualInput');
+        const taskInputs = document.getElementsByClassName('indexHoursFormIndividualInput');
         
-        const hoursMapping = {};
-        for (let input of hoursInputs) {
-            const string = input.id;
-            hoursMapping[string] = input.value;
+        const tasksList = [];
+        for (let input of taskInputs) {
+            tasksList.push({
+                moduleCode: input.id.split(' ')[0],
+                type: input.id.split(' ')[1],
+                hours: input.value
+            });
         }
-        console.log('Hours Mapping:')
-        console.log(hoursMapping);
+        console.log('Tasks:')
+        console.log(tasksList);
 
         Array.from(document.getElementsByClassName('indexHoursFormIndividualInput')).map(element => element.value = '');
         document.getElementById('indexHoursFormContainer').style.display = 'none';
         document.getElementById('indexOverlay').style.display = 'none';
 
-        const units = JSON.parse('<%- unitsString %>');
 
         const requestBody = new URLSearchParams();
-        requestBody.append('units', JSON.stringify(units));
-        requestBody.append('hours', JSON.stringify(hoursMapping));
+        requestBody.append('hours', JSON.stringify(tasksList));
+        requestBody.append('semStartDate', semesterStartDate.toDateString());
         fetch('/optimise', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

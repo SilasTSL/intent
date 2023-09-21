@@ -1,5 +1,3 @@
-const { array } = require("joi");
-
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 
@@ -508,8 +506,203 @@ const unassignedAssignment = {'title': 'CS2105', 'type': 'Assignment', 'colour':
 const bestSchedule = hillclimbAssignment(assignedUnits, unassignedAssignment);
 console.log(bestSchedule[3].timings);
 */
+// Helper functions:
+const exampleUnits = [
+    {colour: '#123456', moduleCode: 'CS2109S', class: '1A', type: 'LEC', timings: [{day: 'Thursday', timingStart:'0900', timingEnd: '1000', date: '2023-09-14'}, {day: 'Thursday', timingStart:'1200', timingEnd: '1300', date: '2023-09-14'}, {day: 'Sunday', timingStart:'0900', timingEnd: '1000', date: '2023-09-17'}]},
+    {colour: '#123456', moduleCode: 'CS2102', class: '1A', type: 'REC', timings: [{day: 'Friday', timingStart:'0900', timingEnd: '1000', date: '2023-09-15'}, {day: 'Thursday', timingStart:'1600', timingEnd: '1700', date: '2023-09-14'}, {day: 'Saturday', timingStart:'0900', timingEnd: '1000', date: '2023-09-16'}]},
+    {colour: '#123456', moduleCode: 'CS2109S', class: '1A', type: 'TUT', timings: [{day: 'Monday', timingStart:'1100', timingEnd: '1400', date: '2023-09-12'}, {day: 'Thursday', timingStart:'1900', timingEnd: '2000', date: '2023-09-14'}, {day: 'Saturday', timingStart:'1100', timingEnd: '1200', date: '2023-09-16'}]}
+]
+
+function sortTimings(timings) {
+    // Define a custom sorting function
+    function compareTimings(a, b) {
+    
+        // If the days are the same, compare dates
+        if (new Date(a.date) < new Date(b.date)) return -1;
+        if (new Date(a.date) > new Date(b.date)) return 1;
+    
+        // If the days and dates are the same, compare timingStart
+        if (a.timingStart < b.timingStart) return -1;
+        if (a.timingStart > b.timingStart) return 1;
+    
+        return 0; // Timings are equal
+    }
+  
+    // Use the custom sorting function to sort the timings
+    return timings.sort(compareTimings);
+}
+  
+function deepObjectCompare(obj1, obj2) {
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+  
+    if (keys1.length !== keys2.length) {
+        return false;
+    }
+  
+    for (const key of keys1) {
+        const val1 = obj1[key];
+        const val2 = obj2[key];
+    
+        if (Array.isArray(val1) && Array.isArray(val2)) {
+            if (!deepArrayObjectCompare(val1, val2)) {
+                return false;
+            }
+        } else if (typeof val1 === 'object' && typeof val2 === 'object') {
+            if (!deepObjectCompare(val1, val2)) {
+                return false;
+            }
+        } else if (val1 !== val2) {
+            return false;
+        }
+    }
+  
+    return true;
+}
+
+function dateToString(currentDate) {
+    // Get the year, month, and day components
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is 0-based, so add 1 and pad with leading zero
+    const day = String(currentDate.getDate()).padStart(2, '0');
+
+    // Create the yyyy-mm-dd formatted string
+    const formattedDate = `${year}-${month}-${day}`;
+    return formattedDate;
+}
+
+function getAllAvailableTimings(units, semStartDate) {
+    // Get all possible non-occupied timings from semStartDate to last unit timing:
+    let availableTimings = [];
+
+    let unavailableTimings = [];
+
+    for (let unit of units) {
+        unavailableTimings = unavailableTimings.concat(unit.timings);
+    }
+
+    const sortedUnavailableTimings = sortTimings(unavailableTimings);
+    
+    let currentDate = new Date(semStartDate);
+    const lastUnitTimingsDate = new Date(sortedUnavailableTimings[sortedUnavailableTimings.length - 1].date);
+    while (currentDate < lastUnitTimingsDate) {
+        for (let i = 8; i < 22; i++) {
+            const timingStartInt = i;
+            const timingEndInt = i + 1;
+            let currentDateString = dateToString(currentDate);
+            
+            if (!sortedUnavailableTimings.some(timing => timing.date == currentDateString && (parseInt(timing.timingStart.substring(0, 2) <= timingEndInt) && timing.timingEnd.substring(0, 2) >= timingStartInt))) {
+                availableTimings.push({
+                    date: currentDateString,
+                    timingStart: timingStartInt.toString().padStart(2, '0') + '00',
+                    timingEnd: timingEndInt.toString().padStart(2, '0') + '00',
+                    day: currentDate.toLocaleDateString('en-US', {weekday: 'long'})
+                })
+            }
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return availableTimings;
+}
+
+function getAvailableTimingsForTask(availableTimings, taskTiming) {
+    // Gets all timings < 1 week before due day:
+    const availableTimingsForTask = availableTimings.filter(timing => {
+        const timeDifference = new Date(taskTiming.date) - new Date(timing.date);
+        const daysApart = Math.ceil(timeDifference / (24 * 60 * 60 * 1000));
+        return daysApart < 7 && daysApart > 0;
+    })
+    return availableTimingsForTask;
+}
+
+function generateInitialSchedule(units, tasks, semStartDate) {
+    const initialSchedule = [...units];
+    let availableTimings = getAllAvailableTimings(initialSchedule, semStartDate);
+
+    // Pick last few possible slots from due timing:
+    for (let task of tasks) { // From form (E.g. {moduleCode: 'CS1101S', type: 'TUT', hours: '3'})
+        const { moduleCode, type, hours } = task;
+
+        const taskUnit = units.find(unit => unit.moduleCode == moduleCode && unit.type == type);
+        let timingsForTask = [];
+        for (let taskUnitTiming of taskUnit.timings) { // Every timing of the lesson (e.g. every timing of CS1101S Tutorial)
+            const availableTimingsForTask = getAvailableTimingsForTask(availableTimings, taskUnitTiming);
+
+            timingsForTask = timingsForTask.concat(availableTimingsForTask.slice(-1 * hours));
+
+            availableTimings = availableTimings.filter(timing => {
+                return !timingsForTask.some(taskTiming => {
+                    return taskTiming.date == timing.date && taskTiming.timingStart == timing.timingStart && taskTiming.timingEnd == timing.timingEnd;
+                })
+            })
+        }
+
+        initialSchedule.push({
+            moduleId: taskUnit.moduleId,
+            colour: taskUnit.colour,
+            moduleCode: moduleCode,
+            class: taskUnit.class,
+            type: type,
+            timings: timingsForTask,
+            isTask: true
+        });
+    }
+
+    return initialSchedule;
+    
+}
+
+function calculateScore(schedule) {
+    return 0;
+}
+
+function generateNeighbours(schedule) {
+    // Pick a random current task timing, then randomise:
+    return [];
+}
 
 
+// Optimise: (Basically hillclimbing v2)
+function optimise(units, hours, semStartDate) {
+    try {
+        // Generate initial schedule:
+
+        let currentSchedule = generateInitialSchedule(units, hours, semStartDate);
+        // Calculate score:
+        let currentScore = calculateScore(currentSchedule);
+        
+        // Loop until no better neighbour:
+        while (true) {
+            let betterScoreExists = false;
+
+            // Generate neighbours:
+            let neighbours = generateNeighbours(currentSchedule);
+
+            // Loop through neighbour to find best neighbour:
+            for (let neighbourSchedule of neighbours) {
+                const neighbourScore = calculateScore(neighbourSchedule);
+    
+                if (neighbourScore >= currentScore) { // If neighbour score is better, take neighbour
+                    betterScoreExists = true;
+                    currentScore = neighbourScore;
+                    currentSchedule = neighbourSchedule;
+                }
+            }
+
+            if (!betterScoreExists) { // No neighbours with better score (Local maxima)
+                break;
+            }
+        }
+
+        const optimisedTasks = currentSchedule.filter(unit => unit.isTask);
+        return optimisedTasks;
+    } catch (e) {
+        console.log('Problem with optimising:');
+        console.log(e);
+    }
+
+}
 
 
-module.exports = { hillclimb, hillclimbAssignment };
+module.exports = { hillclimb, hillclimbAssignment, optimise };

@@ -152,6 +152,7 @@ app.get('/timetable/:weekOrMonth/:period', validateIsLoggedIn, catchAsync(async 
     }
 
     units = sortUnitsByTimings(units);
+
     res.render('timetable/index', { units, unitsString: JSON.stringify(units), weekOrMonth, formattedPeriod });
 }))
 
@@ -274,8 +275,8 @@ app.put('/assignments/:id', validateIsLoggedIn, (async (req, res) => {
 //POST nusmods import
 app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
     // Delete all existing modules first:
-    await Module.deleteMany({userId: {$regex: req.user.id}});
-    await Unit.deleteMany({userId: {$regex: req.user.id}});
+    await Module.deleteMany({userId: req.user.id});
+    await Unit.deleteMany({userId: req.user.id});
     const colourMapping = [
         {'LEC': '#F1767A', 'REC': '#DE6569', 'LAB': '#DE6569', 'TUT': '#DE6569', 'SEC': '#DE6569'}, // Red
         {'LEC': '#F99256', 'REC': '#E9874E', 'LAB': '#E9874E', 'TUT': '#E9874E', 'SEC': '#E9874E'}, // Orange
@@ -311,7 +312,7 @@ app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
                 timings: moduleUnitBody.timings,
                 colour: colourMapping[counter][moduleUnitBody.type]
             })
-            newUnit.save();
+            await newUnit.save();
        }
 
        counter++;
@@ -326,16 +327,37 @@ app.post('/nus-mods', validateIsLoggedIn, catchAsync(async (req, res) => {
 const optimise = require('./hillclimbing.js').optimise;
 
 //Hillclimbing POST request:
-app.post('/optimise', (req, res) => {
-    const { units, hours } = req.body;
-    console.log('UNITS: ');
-    console.log(JSON.parse(units));
-    console.log('HOURS: ');
-    console.log(JSON.parse(hours));
+app.post('/optimise', async (req, res) => {
+    try {
+        var modules = await Module.find({userId: req.user.id});
+        var units = [];
+        for (let module of modules) {
+            var moduleUnits = await Unit.find({moduleId: module._id.toString()});
+            for (let moduleUnit of moduleUnits) {
+                units.push(moduleUnit);
+            }
+        }
+        const { hours, semStartDate } = req.body;
+        const optimisedTasks = optimise(units, JSON.parse(hours), semStartDate);
+        for (let task of optimisedTasks) {
+            const newUnit = new Unit({
+                userId: req.user.id,
+                moduleCode: '[TASK] ' + task.moduleCode,
+                moduleId: task.moduleId,
+                class: task.class,
+                type: task.type,
+                timings: task.timings,
+                colour: task.colour
+            })
+            await newUnit.save();
+        }
+    
+        res.redirect('/timetable/week/today');
+    } catch (err) {
+        console.log(err);
+        res.redirect('/timetable/week/today');
+    }
 
-    optimise(units, hours);
-
-    res.redirect('/timetable/week/today');
 })
 
 //ACCOUNT PAGES:
