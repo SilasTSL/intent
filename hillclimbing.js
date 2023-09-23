@@ -514,9 +514,11 @@ const exampleUnits = [
 ]
 
 function sortTimings(timings) {
+    // Create a copy of the input array to avoid modifying the original
+    const sortedTimings = [...timings];
+    
     // Define a custom sorting function
     function compareTimings(a, b) {
-    
         // If the days are the same, compare dates
         if (new Date(a.date) < new Date(b.date)) return -1;
         if (new Date(a.date) > new Date(b.date)) return 1;
@@ -528,8 +530,9 @@ function sortTimings(timings) {
         return 0; // Timings are equal
     }
   
-    // Use the custom sorting function to sort the timings
-    return timings.sort(compareTimings);
+    // Use the custom sorting function to sort the copied array
+    sortedTimings.sort(compareTimings);
+    return sortedTimings;
 }
 
 function mergeConsecutiveTimings(unmergedTimings) {
@@ -560,34 +563,26 @@ function mergeConsecutiveTimings(unmergedTimings) {
   
     return mergedTimings;
 }
-  
-function deepObjectCompare(obj1, obj2) {
-    const keys1 = Object.keys(obj1);
-    const keys2 = Object.keys(obj2);
-  
-    if (keys1.length !== keys2.length) {
-        return false;
+
+function doTimingsOverlap(timing1, timing2) {
+    // Check if the days are the same
+    if (timing1.date !== timing2.date) {
+      return false; // Timings cannot overlap on different days
     }
   
-    for (const key of keys1) {
-        const val1 = obj1[key];
-        const val2 = obj2[key];
-    
-        if (Array.isArray(val1) && Array.isArray(val2)) {
-            if (!deepArrayObjectCompare(val1, val2)) {
-                return false;
-            }
-        } else if (typeof val1 === 'object' && typeof val2 === 'object') {
-            if (!deepObjectCompare(val1, val2)) {
-                return false;
-            }
-        } else if (val1 !== val2) {
-            return false;
-        }
+    // Convert timingStart and timingEnd to numerical values for easier comparison
+    const start1 = parseInt(timing1.timingStart, 10);
+    const end1 = parseInt(timing1.timingEnd, 10);
+    const start2 = parseInt(timing2.timingStart, 10);
+    const end2 = parseInt(timing2.timingEnd, 10);
+  
+    // Check if the timings overlap
+    if (end1 <= start2 || start1 >= end2) {
+      return false; // Timings do not overlap
     }
   
-    return true;
-}
+    return true; // Timings overlap
+  }
 
 function dateToString(currentDate) {
     // Get the year, month, and day components
@@ -683,7 +678,47 @@ function generateInitialSchedule(units, tasks, semStartDate) {
 }
 
 function calculateScore(schedule) {
-    return 0;
+    let score = 0;
+
+    const mealTimePenalty = 10;
+    const contextSwitchingPenalty = 2;
+
+    const tasksTimings = sortTimings(schedule.filter(unit => unit.isTask).map(task => task.timings));
+
+    for (let taskTiming of tasksTimings) {
+        // Avoid timings during meal times:
+        if (!(parseInt(taskTiming.timingEnd, 10) <= 12 || parseInt(taskTiming.timingStart, 10) >= 14)) {
+            score -= mealTimePenalty;
+        } 
+        if (!(parseInt(taskTiming.timingEnd, 10) <= 17 || parseInt(taskTiming.timingStart, 10) >= 20)) {
+            score -= mealTimePenalty;
+        }
+    }
+
+    console.log('Penalty from meal timings: ', score)
+
+    let consecutiveTasks = 0;
+
+    // Avoid context switching
+    console.log('Sorted task timings: ')
+    console.log(tasksTimings)
+    for (let i = 0; i < tasksTimings.length - 1; i++) {
+        const currentTiming = tasksTimings[i];
+        const nextTiming = tasksTimings[i + 1];
+    
+        if (
+            currentTiming.date === nextTiming.date &&
+            currentTiming.timingEnd === nextTiming.timingStart
+        ) {
+            consecutiveTasks++;
+        }
+    }
+
+    console.log('Penalty from context switching: ', consecutiveTasks * contextSwitchingPenalty);
+
+    score -= consecutiveTasks * contextSwitchingPenalty
+
+    return score;
 }
 
 function generateNeighbours(schedule) {
@@ -700,7 +735,7 @@ function optimise(units, hours, semStartDate) {
         let currentSchedule = generateInitialSchedule(units, hours, semStartDate);
         // Calculate score:
         let currentScore = calculateScore(currentSchedule);
-        
+        console.log('Initial score: ', currentScore)
         // Loop until no better neighbour:
         while (true) {
             let betterScoreExists = false;

@@ -399,15 +399,13 @@
         cell.addEventListener('mouseover', () => {
             const sameUnitCells = document.querySelectorAll(`[unit_code="${cell.getAttribute('unit_code')}"]`);
             for (const sameUnitCell of sameUnitCells) {
-                sameUnitCell.style.opacity = 0.8;
-                sameUnitCell.style.transform = 'scale(1.04)';
+                sameUnitCell.classList.add('unitBlockHovered');
             }
         })
         cell.addEventListener('mouseout', function() {
             const sameUnitCells = document.querySelectorAll(`[unit_code="${cell.getAttribute('unit_code')}"]`);
             for (const sameUnitCell of sameUnitCells) {
-                sameUnitCell.style.opacity = 1;
-                sameUnitCell.style.transform = 'scale(1)';
+                sameUnitCell.classList.remove('unitBlockHovered');
             }
         });
     });
