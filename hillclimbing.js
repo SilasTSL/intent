@@ -582,7 +582,7 @@ function doTimingsOverlap(timing1, timing2) {
     }
   
     return true; // Timings overlap
-  }
+}
 
 function dateToString(currentDate) {
     // Get the year, month, and day components
@@ -614,14 +614,15 @@ function getAllAvailableTimings(units, semStartDate) {
             const timingStartInt = i;
             const timingEndInt = i + 1;
             let currentDateString = dateToString(currentDate);
+            const currentTiming = {
+                date: currentDateString,
+                timingStart: timingStartInt.toString().padStart(2, '0') + '00',
+                timingEnd: timingEndInt.toString().padStart(2, '0') + '00',
+                day: currentDate.toLocaleDateString('en-US', {weekday: 'long'})
+            }
             
-            if (!sortedUnavailableTimings.some(timing => timing.date == currentDateString && (parseInt(timing.timingStart.substring(0, 2) <= timingEndInt) && timing.timingEnd.substring(0, 2) >= timingStartInt))) {
-                availableTimings.push({
-                    date: currentDateString,
-                    timingStart: timingStartInt.toString().padStart(2, '0') + '00',
-                    timingEnd: timingEndInt.toString().padStart(2, '0') + '00',
-                    day: currentDate.toLocaleDateString('en-US', {weekday: 'long'})
-                })
+            if (!sortedUnavailableTimings.some(unavailableTiming => doTimingsOverlap(unavailableTiming, currentTiming))) {
+                availableTimings.push(currentTiming);
             }
         }
         currentDate.setDate(currentDate.getDate() + 1);
@@ -683,46 +684,58 @@ function calculateScore(schedule) {
     const mealTimePenalty = 10;
     const contextSwitchingPenalty = 2;
 
-    const tasksTimings = sortTimings(schedule.filter(unit => unit.isTask).map(task => task.timings));
+    let unitsTimings = [];
+    for (let unit of schedule) {
+        unitsTimings = unitsTimings.concat(unit.timings);
+    }
 
-    for (let taskTiming of tasksTimings) {
+    for (let unitTiming of unitsTimings) {
         // Avoid timings during meal times:
-        if (!(parseInt(taskTiming.timingEnd, 10) <= 12 || parseInt(taskTiming.timingStart, 10) >= 14)) {
+        if (!(parseInt(unitTiming.timingEnd, 10) <= 12 || parseInt(unitTiming.timingStart, 10) >= 14)) {
             score -= mealTimePenalty;
         } 
-        if (!(parseInt(taskTiming.timingEnd, 10) <= 17 || parseInt(taskTiming.timingStart, 10) >= 20)) {
+        if (!(parseInt(unitTiming.timingEnd, 10) <= 17 || parseInt(unitTiming.timingStart, 10) >= 20)) {
             score -= mealTimePenalty;
         }
     }
 
     console.log('Penalty from meal timings: ', score)
 
-    let consecutiveTasks = 0;
+    let consecutiveUnits = 0;
+    unitsTimings = sortTimings(unitsTimings);
+    console.log('sorted timings: ', unitsTimings)
 
     // Avoid context switching
-    console.log('Sorted task timings: ')
-    console.log(tasksTimings)
-    for (let i = 0; i < tasksTimings.length - 1; i++) {
-        const currentTiming = tasksTimings[i];
-        const nextTiming = tasksTimings[i + 1];
+    for (let i = 0; i < unitsTimings.length - 1; i++) {
+        const currentTiming = unitsTimings[i];
+        const nextTiming = unitsTimings[i + 1];
     
         if (
-            currentTiming.date === nextTiming.date &&
-            currentTiming.timingEnd === nextTiming.timingStart
+            currentTiming.date == nextTiming.date &&
+            currentTiming.timingEnd == nextTiming.timingStart
         ) {
-            consecutiveTasks++;
+            console.log('Current Timing: ', currentTiming)
+            console.log('Next Timing:', nextTiming)
+            consecutiveUnits++;
         }
     }
 
-    console.log('Penalty from context switching: ', consecutiveTasks * contextSwitchingPenalty);
+    console.log('Penalty from context switching: ', consecutiveUnits * contextSwitchingPenalty);
 
-    score -= consecutiveTasks * contextSwitchingPenalty
+    score -= consecutiveUnits * contextSwitchingPenalty
 
     return score;
 }
 
 function generateNeighbours(schedule) {
-    // Pick a random current task timing, then randomise:
+    // Pick a random current task timing, then randomise the timings for each instance:
+    const tasks = schedule.filter(unit => unit.isTask);
+
+    const selectedTask = tasks[Math.floor(Math.random() * tasks.length)];
+
+
+
+
     return [];
 }
 
