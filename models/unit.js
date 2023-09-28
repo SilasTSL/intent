@@ -6,21 +6,25 @@ const UnitSchema = new Schema({
         type: String,
         required: true
     },
-    type: {
-        type: String,
-        enum: ['Lesson', 'WeeklyTask', 'Assignment'],
-        required: true
-    },
-    isAssigned: {
-        type: Boolean,
-        required: true
-    },
-    title: {
+    moduleId: {
         type: String,
         required: true
     },
     colour: {
         type: String,
+        required: true
+    },
+    moduleCode: {
+        type: String,
+        required: true
+    },
+    class: {
+        type: String,
+        required: true
+    },
+    type: {
+        type: String,
+        enum: ['LEC', 'TUT', 'REC', 'LAB', 'SEC'],
         required: true
     },
     timings: {
@@ -31,12 +35,8 @@ const UnitSchema = new Schema({
             date: String
         }],
         default: []
-    },
-    releasedOn: String, // Specific to weekly task only
-    deadline: String, // Specific to weekly task only
-    duration: Number, // Specific to weekly task only
-    releasedOnDate: String, // Specific to assignment only
-    deadlineDate: String // Specific to assignment only
+    }
+
 
 });
 
