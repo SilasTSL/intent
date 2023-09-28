@@ -349,6 +349,7 @@ app.post('/optimise', async (req, res) => {
         }
         const { hours, semStartDate } = req.body;
         const optimisedTasks = optimise(units, JSON.parse(hours), semStartDate);
+
         for (let task of optimisedTasks) {
             const newUnit = new Unit({
                 userId: req.user.id,

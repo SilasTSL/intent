@@ -40,7 +40,7 @@ a {
 }
 
 .glowingBlock {
-  background-color: #e0e0e0;
+  background-color: #e7e7e7;
 }
 
 .timetableHeadingContainer {
@@ -192,6 +192,15 @@ a {
 
 .monthDayUnit:hover {
   transform: scale(1.2);
+}
+
+.monthDayToday {
+  border: 2px solid #f9744b;
+  background-color: #e7e7e7;
+}
+
+.monthDayToday .monthDayUnit {
+  border: 1.5px solid #f9744b;
 }
 
 #monthlyUnitPopup {
@@ -693,6 +702,10 @@ a {
   opacity: 0.8;
   transform: scale(1.04);
   color: black;
+}
+
+.unitTaskBlock {
+  border: 1.5px solid rgba(0, 0, 0, 0.4);
 }
 
 .indexNewLessonFormDropdownButton {

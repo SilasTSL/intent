@@ -13,98 +13,6 @@
             <div class="indexHoursSubmitButton indexHoursButton">Submit</div>
         </div>
     </div>
-    <div id="indexEditTaskContainer" class="indexEditContainer">
-        <h3 class="indexEditTaskTitle">Edit Task:</h3>
-        <div class="editInputRow">
-            <label class="form-label" for="editTaskTitle">Title</label>
-            <input class="form-control" type="text" id="editTaskTitle" required>
-        </div>
-        <div class="editInputRow" id="editTaskTimingContainer">
-            <div class="editNewTaskTimingRow editTimingRow">
-                <div class="indexTimingColumn">
-                    <label class="form-label" for="editTaskNewDay">Day</label>
-                    <select class="form-select" id="editTaskNewDay" onchange="handleEditDayChange('Task')" required>
-                        <option value="" selected disabled>Select a day</option>
-                        <option value="Monday">Monday</option>
-                        <option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option>
-                        <option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                        <option value="Saturday">Saturday</option>
-                        <option value="Sunday">Sunday</option>
-                    </select>            
-                </div>
-                <div class="indexTimingColumn">
-                    <label class="form-label" for="editTaskNewTimingStart">Start</label>
-                    <select class="form-select" id="editTaskNewTimingStart" onchange="handleEditStartChange('Task')" disabled required>
-                        <option value="" selected disabled>Select a starting time</option>
-                        <% for (let j = 8; j <= 22; j++) { %>
-                            <% let time = j < 10 ? '0' + j : j; %>
-                            <option value="<%= time %>00"><%= time %>:00</option>
-                        <% } %>
-                    </select>
-                </div>
-                <div class="indexTimingColumn">
-                    <label class="form-label" for="editTaskNewTimingEnd">End</label>
-                    <select class="form-select" id="editTaskNewTimingEnd" onchange="handleEditTaskEndChange(this)" disabled required>
-                        <option value="" selected disabled>Select an ending time</option>
-                        <% for (let j = 8; j <= 22; j++) { %>
-                            <% let time = j < 10 ? '0' + j : j; %>
-                            <option value="<%= time %>00"><%= time %>:00</option>
-                        <% } %>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="indexEditButtonsRow">
-            <div class="indexEditCancelButton button" onclick="hideEditContainer('Task')">Cancel</div>
-            <div class="indexEditDeleteButton button">Delete</div>
-            <div class="indexEditSubmitButton button" id="indexEditTaskSubmitButton">Submit</div>
-        </div>
-    </div>
-
-    <div id="indexEditAssignmentContainer" class="indexEditContainer">
-        <h3 class="indexEditAssignmentTitle">Edit Assignment:</h3>
-        <div class="editInputRow">
-            <label class="form-label" for="editAssignmentTitle">Title</label>
-            <input class="form-control" type="text" id="editAssignmentTitle" required>
-        </div>
-        <div class="editInputRow" id="editAssignmentTimingContainer">
-            <div class="editNewAssignmentTimingRow editTimingRow">
-                <div class="indexTimingColumn">
-                    <label class="form-label" for="editAssignmentDate">Date</label>
-                    <input type="date" id="editAssignmentDate" onchange="handleEditDayChange('Assignment')">        
-                </div>
-                <div class="indexTimingColumn">
-                    <label class="form-label" for="editAssignmentNewTimingStart">Start</label>
-                    <select class="form-select" id="editAssignmentNewTimingStart" onchange="handleEditStartChange('Assignment')" disabled required>
-                        <option value="" selected disabled>Select a starting time</option>
-                        <% for (let j = 8; j <= 22; j++) { %>
-                            <% let time = j < 10 ? '0' + j : j; %>
-                            <option value="<%= time %>00"><%= time %>:00</option>
-                        <% } %>
-                    </select>
-                </div>
-                <div class="indexTimingColumn">
-                    <label class="form-label" for="editAssignmentNewTimingEnd">End</label>
-                    <select class="form-select" id="editAssignmentNewTimingEnd" onchange="handleEditAssignmentEndChange(this)" disabled required>
-                        <option value="" selected disabled>Select an ending time</option>
-                        <% for (let j = 8; j <= 22; j++) { %>
-                            <% let time = j < 10 ? '0' + j : j; %>
-                            <option value="<%= time %>00"><%= time %>:00</option>
-                        <% } %>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="indexEditButtonsRow">
-            <div class="indexEditCancelButton button" onclick="hideEditContainer('Assignment')">Cancel</div>
-            <div class="indexEditDeleteButton button">Delete</div>
-            <div class="indexEditSubmitButton button" id="indexEditAssignmentSubmitButton">Submit</div>
-        </div>
-    </div>
 
     <div class="timetableHeadingContainer">
         <div class="timetableOptionsContainer">
@@ -122,7 +30,7 @@
     <div class="timetableContainer">
         <% if (weekOrMonth == 'week') { %>
             <div class="timingColumn">
-                <% for (let r=8; r <= 22; r++) { %>
+                <% for (let r=8; r <= 23; r++) { %>
                     <div class="timingLabel"><%= r + ":00" %></div>
                 <% } %>        
             </div>
@@ -139,12 +47,12 @@
                     <% const dayDate = new Date(startOfWeekDate.getTime()); %>
                     <% dayDate.setDate(dayDate.getDate() + daysOfWeek.indexOf(day)); %>
                     <% const dayString = `${dayDate.getFullYear()}-${(dayDate.getMonth() + 1).toString().padStart(2, '0')}-${dayDate.getDate().toString().padStart(2, '0')}`; %>
-                    <% for (let r=8; r < 22; r++) { %>
+                    <% for (let r=8; r < 23; r++) { %>
                         <% let unitFound = units.find(unit => unit.timings.some(timing => timing.date == dayString && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
                         <% if (unitFound) { %>
                             <% const unitTiming = unitFound.timings.find(timing => (timing.day == day || timing.date == dayString) && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                             <% let unitDuration = parseInt(unitTiming.timingEnd.substring(0, 2)) - parseInt(unitTiming.timingStart.substring(0, 2)); %>
-                            <div class="timetableBlock unitBlock" unit_code="<%= unitFound.moduleId %>" style="background-color: <%= unitFound.colour %>; height: <%= (50 * unitDuration) + (4 * (unitDuration - 1)) %>px;" >
+                            <div class="timetableBlock unitBlock <%=unitFound.moduleCode.includes('[TASK]') ? 'unitTaskBlock' : ''%>" unit_code="<%= unitFound.moduleId %>" style="background-color: <%= unitFound.colour %>; height: <%= (50 * unitDuration) + (4 * (unitDuration - 1)) %>px;" >
                                 <%= `${unitFound.moduleCode} ${unitFound.type}` %>
                             </div>
                             <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>
@@ -218,55 +126,57 @@
                     ]; %>
                 <% const daysInMonth = getDaysInMonth(formattedPeriod); %>
                 <% const startingDay = getStartingDay(formattedPeriod); %>
+                <% const year = formattedPeriod.split(' ')[1]; %>
+                <% const currentMonth = formattedPeriod.split(' ')[0]; %>
+                <% const currentMonthIndex = monthNames.indexOf(currentMonth); %>
                 
                 <% for (let c = 0; c < 7; c++) { %>
                     <div class="monthColumn">
                         <h4 class="monthHeader"><%= daysOfWeekMonthly[c] %></h4>
                         <% for (let r = 0; r < 6; r++) { %>
                             <% const dayNumber = getDayNumber(c, r, startingDay, daysInMonth); %>
-                            <div class="monthDay <%= dayNumber < 0 ? 'notCurrentMonthDay' : '' %>">
+                            <% 
+                                const parts = formattedPeriod.split(' ');
+                                const year = parts[1];
+                                let month = monthNames.indexOf(parts[0]);
+                                if (dayNumber < 0) {
+                                    if (Math.abs(dayNumber) > 15) {
+                                        month -= 1;
+                                        if (month < 0) {
+                                            month = 11;
+                                        }
+                                    } else {
+                                        month += 1;
+                                        if (month > 11) {
+                                            month = 0;
+                                        }
+                                    }
+                                }
+                                const dayDateString = `${year}-${(month+1).toString().padStart(2, '0')}-${Math.abs(dayNumber).toString().padStart(2, '0')}`;
+                                const unitsToday = units.reduce((result, unit) => {
+                                    let timings = [];
+                                    timings = unit.timings.filter(timing => timing.date == dayDateString);
+                                    
+                                    if (timings.length > 0) {
+                                        timings.forEach(timing => {
+                                            result.push({
+                                            _id: unit._id,
+                                            moduleCode: unit.moduleCode,
+                                            type: unit.type,
+                                            timing: { timingStart: timing.timingStart, timingEnd: timing.timingEnd },
+                                            colour: unit.colour
+                                            });
+                                        });
+                                    }
+                                    return result;
+                                }, []);
+                            %>
+                            <div class="monthDay <%= dayNumber < 0 ? 'notCurrentMonthDay' : '' %> <%= dayDateString == new Date().toISOString().substring(0, 10) ? 'monthDayToday' : ''%>">
                                 <div class="notCurrentMonthDayOverlay"></div>
                                 <div class="monthDayTopRow">
                                     <%= Math.abs(dayNumber) %>
                                 </div>
                                 <div class="monthDayBottomRow">
-                                    <% 
-                                        const parts = formattedPeriod.split(' ');
-                                        const year = parts[1];
-                                        let month = monthNames.indexOf(parts[0]);
-                                        if (dayNumber < 0) {
-                                            if (Math.abs(dayNumber) > 15) {
-                                                month -= 1;
-                                                if (month < 0) {
-                                                    month = 11;
-                                                }
-                                            } else {
-                                                month += 1;
-                                                if (month > 11) {
-                                                    month = 0;
-                                                }
-                                            }
-                                        }
-                                        const dayDateString = `${year}-${(month+1).toString().padStart(2, '0')}-${Math.abs(dayNumber).toString().padStart(2, '0')}`;
-                                        const unitsToday = units.reduce((result, unit) => {
-                                            let timings = [];
-                  
-                                            timings = unit.timings.filter(timing => timing.day === daysOfWeekMonthly[c]);
-                                            
-                                            if (timings.length > 0) {
-                                                timings.forEach(timing => {
-                                                    result.push({
-                                                    _id: unit._id,
-                                                    moduleCode: unit.moduleCode,
-                                                    type: unit.type,
-                                                    timing: { timingStart: timing.timingStart, timingEnd: timing.timingEnd },
-                                                    colour: unit.colour
-                                                    });
-                                                });
-                                            }
-                                            return result;
-                                        }, []);
-                                    %>
                                     <% for (let unitFound of unitsToday) { %>
                                         <div class="monthDayUnit" unit-title="<%= `${unitFound.moduleCode} ${unitFound.type}` %>" unit-timing="<%= unitFound.timing.timingStart + ' - ' + unitFound.timing.timingEnd %>" style="background-color: <%= unitFound.colour %>;"  ></div>
                                     <% } %>
@@ -292,72 +202,6 @@
             <div id="nusModsFormSubmitButton" class="nusModsFormSubmitButton button">Import</div>
         </div>      
     </div>
-    <div class="indexNewTaskFormDropdownButton button" onclick="expandNewForm('Task')">+ New Task</div>
-    <form id="indexNewTaskForm">
-        <div class="indexInputRow">
-            <label class="form-label" for="taskTitle">Title</label>
-            <input class="form-control" type="text" id="taskTitle" required>
-        </div>
-        <div class="indexInputRow">
-            <label class="form-label" for="duration">Duration (in hours)</label>
-            <input class="form-control" type="number" id="taskDuration" required>
-        </div>
-        <div class="indexInputRow">
-            <label class="form-label" for="releasedOn">Released On</label>
-            <select class="form-select" id="releasedOn" required>
-                <option value="" selected disabled>Select a day</option>
-                <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-                <option value="Saturday">Saturday</option>
-                <option value="Sunday">Sunday</option>
-            </select>
-            <label class="form-label previousWeekLabel" for="previousWeekOption">Previous Week</label>
-            <input id="previousWeekOption" type="checkbox">
-        </div>
-        <div class="indexInputRow">
-            <label class="form-label" for="deadline">Deadline</label>
-            <select class="form-select" id="deadline" required>
-                <option value="" selected disabled>Select a day</option>
-                <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-                <option value="Saturday">Saturday</option>
-                <option value="Sunday">Sunday</option>
-            </select>
-        </div>
-        <div class="indexFormsBottomRow">
-            <div class="indexCancelNewTaskButton indexCancelButton button" onclick="cancelNewForm('Task')">Cancel</div>
-            <div class="indexSubmitNewTaskButton indexSubmitButton button">Submit</div>
-        </div>
-    </form>
-    <div class="indexNewAssignmentFormDropdownButton button" onclick="expandNewForm('Assignment')">+ New Assignment</div>
-    <form id="indexNewAssignmentForm">
-        <div class="indexInputRow">
-            <label class="form-label" for="assignmentTitle">Title</label>
-            <input class="form-control" type="text" id="assignmentTitle" required>
-        </div>
-        <div class="indexInputRow">
-            <label class="form-label" for="assignmentDuration">Duration (in hours)</label>
-            <input class="form-control" type="number" id="assignmentDuration" required>
-        </div>
-        <div class="indexInputRow">
-            <label class="form-label" for="releasedOnDate">Released On (Date)</label>
-            <input type="date" class="form-label" id="releasedOnDate">
-        </div>
-        <div class="indexInputRow">
-            <label class="form-label" for="deadlineDate">Deadline (Date)</label>
-            <input type="date" class="form-label" id="deadlineDate">
-        </div>
-        <div class="indexFormsBottomRow">
-            <div class="indexCancelNewAssignmentButton indexCancelButton button" onclick="cancelNewForm('Assignment')">Cancel</div>
-            <div class="indexSubmitNewAssignmentButton indexSubmitButton button">Submit</div>
-        </div>
-    </form>
     <hr class="indexFormBorder">
     <h2 class="indexListHeader">TODAY</h2>
     <div class="indexListContainer">
@@ -634,110 +478,6 @@
             alert("There was a problem importing your NUSMods Timetable!");
             hideLoadingScreen();
         }
-    })
-
-    // New Task Submit:
-    const newTaskSubmitButton = document.getElementsByClassName('indexSubmitNewTaskButton')[0];
-    newTaskSubmitButton.addEventListener('click', () => {
-        const newTaskTitle = document.getElementById('taskTitle').value;
-        const newTaskDuration = document.getElementById('taskDuration').value;
-        const newTaskReleasedOn = document.getElementById('releasedOn').value;
-        const newPreviousWeek = document.getElementById('previousWeekOption').checked;
-        const newTaskDeadline = document.getElementById('deadline').value;
-
-        // Check fields:
-        if (!newTaskTitle) {
-            alert('Please fill in the Task Title!');
-            return;
-        }
-        if (!newTaskDuration) {
-            alert('Please fill in the Task Duration!');
-            return;
-        }
-        if (!newTaskReleasedOn && !newPreviousWeek) {
-            alert('Please pick a day the Task is Released!');
-            return;
-        }
-        if (!newTaskDeadline) {
-            alert('Please pick a day the Task is Due!');
-            return;
-        }
-
-        // Display loading screen:
-        showLoadingScreen();
-
-        const requestBody = new URLSearchParams();
-        requestBody.append('title', newTaskTitle);
-        requestBody.append('duration', newTaskDuration);
-        requestBody.append('releasedOn', newTaskReleasedOn);
-        requestBody.append('deadline', newTaskDeadline);
-        fetch('/weekly-tasks', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: requestBody.toString()
-        })
-        .then(res => {
-            if (res.status == 401) {
-                alert("There's not enough time to finish this task before it's deadline! Either clear up your schedule or estimate a shorter duration...");
-            }
-            window.location.href = '/timetable/week/today';
-        })
-        .catch(err => {
-            alert("Something went wrong creating your task!");
-            hideLoadingScreen();
-        })
-    })
-
-    // New Assignment Submit:
-    const newAssignmentSubmitButton = document.getElementsByClassName('indexSubmitNewAssignmentButton')[0];
-    newAssignmentSubmitButton.addEventListener('click', () => {
-        const newAssignmentTitle = document.getElementById('assignmentTitle').value;
-        const newAssignmentDuration = document.getElementById('assignmentDuration').value;
-        const newAssignmentReleasedOnDate = document.getElementById('releasedOnDate').value;
-        const newAssignmentDeadlineDate = document.getElementById('deadlineDate').value;
-
-        // Check fields:
-        if (!newAssignmentTitle) {
-            alert('Please fill in the Assignment Title!');
-            return;
-        }
-        if (!newAssignmentDuration) {
-            alert('Please fill in the Assignment Duration!');
-            return;
-        }
-        if (!newAssignmentReleasedOnDate) {
-            alert('Please pick a date the Assignment is Released!');
-            return;
-        }
-        if (!newAssignmentDeadlineDate) {
-            alert('Please pick a date the Assignment is Due!');
-            return;
-        }
-
-        // Display loading screen:
-        showLoadingScreen();
-
-        const requestBody = new URLSearchParams();
-        requestBody.append('title', newAssignmentTitle);
-        requestBody.append('duration', newAssignmentDuration);
-        requestBody.append('releasedOnDate', newAssignmentReleasedOnDate);
-        requestBody.append('deadlineDate', newAssignmentDeadlineDate);
-
-        fetch('/assignments', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: requestBody.toString()
-        })
-        .then(res => {
-            if (res.status == 401) {
-                alert("There's not enough time to finish this assignment before it's deadline! Either clear up your schedule or estimate a shorter duration...");
-            }
-            window.location.href = '/timetable/week/today';
-        })
-        .catch(err => {
-            alert("Something went wrong creating your assignment!");
-            hideLoadingScreen();
-        })
     })
 
     // Onclick for arrow buttons:
@@ -1313,6 +1053,7 @@
 
     // Hours Submit Button
     document.getElementsByClassName('indexHoursSubmitButton')[0].addEventListener('click', () => {
+        showLoadingScreen();
         const taskInputs = document.getElementsByClassName('indexHoursFormIndividualInput');
         
         const tasksList = [];
@@ -1340,6 +1081,7 @@
             body: requestBody.toString()
         })
         .then(res => {
+            hideLoadingScreen();
             window.location.href = '/timetable/week/today';
         })
         .catch(err => {
