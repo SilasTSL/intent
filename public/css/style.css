@@ -1,8 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Quicksand:wght@400;700&display=swap');
 /* General */
-html {
-  background-color: #303030;
-}
 
 #mainBody {
   display: flex;
