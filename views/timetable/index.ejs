@@ -32,7 +32,7 @@
             <div class="timingColumn">
                 <% for (let r=8; r <= 23; r++) { %>
                     <div class="timingLabel"><%= r + ":00" %></div>
-                <% } %>        
+                <% } %>
             </div>
             <% var todayDate = new Date(); %>
             <% var todayNum = todayDate.getDay(); %>
@@ -50,12 +50,12 @@
                     <% for (let r=8; r < 23; r++) { %>
                         <% let unitFound = units.find(unit => unit.timings.some(timing => timing.date == dayString && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r)) %>
                         <% if (unitFound) { %>
-                            <% const unitTiming = unitFound.timings.find(timing => (timing.day == day || timing.date == dayString) && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
+                            <% const unitTiming = unitFound.timings.find(timing => (timing.date == dayString) && parseInt(timing.timingStart.substring(0, 2)) <= r && parseInt(timing.timingEnd.substring(0, 2)) > r) %>
                             <% let unitDuration = parseInt(unitTiming.timingEnd.substring(0, 2)) - parseInt(unitTiming.timingStart.substring(0, 2)); %>
                             <div class="timetableBlock unitBlock <%=unitFound.moduleCode.includes('[TASK]') ? 'unitTaskBlock' : ''%>" unit_code="<%= unitFound.moduleId %>" style="background-color: <%= unitFound.colour %>; height: <%= (50 * unitDuration) + (4 * (unitDuration - 1)) %>px;" >
                                 <%= `${unitFound.moduleCode} ${unitFound.type}` %>
                             </div>
-                            <% r = parseInt(unitTiming.timingEnd.substring(0, 2)) - 1; %>
+                            <% r += (unitDuration - 1); %>
                         <% } else { %>
                         <div class="timetableBlock <%= ((day == today) && (timeDifference > 0) && (timeDifference <= 7 * 24 * 60 * 60 * 1000)) ? 'glowingBlock' : '' %>"></div>
                         <% } %>

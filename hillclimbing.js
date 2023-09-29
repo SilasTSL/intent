@@ -687,7 +687,7 @@ function calculateScore(schedule) {
     const singleHourPenalty = 5;
     const latePenalty = 10;
     const earlyPenalty = 10;
-    const standardDeviationPenalty = 100000;
+    const standardDeviationPenalty = 100;
 
     let unitsTimings = [];
 
@@ -712,8 +712,12 @@ function calculateScore(schedule) {
             consecutiveUnits++;
         }
     }
-    score -= consecutiveUnits * contextSwitchingPenalty;
+    score -= (consecutiveUnits * contextSwitchingPenalty) / (unitsTimings.length - 1);
 
+    let mealTimeUnits = 0;
+    let lateUnits = 0;
+    let earlyUnits = 0;
+    let singleHourUnits = 0;
     for (let unitTiming of unitsTimings) {
         const date = unitTiming.date;
         const startHour = parseInt(unitTiming.timingStart, 10) / 100;
@@ -729,26 +733,29 @@ function calculateScore(schedule) {
 
         // Avoid timings during meal times:
         if (unitTiming.timingStart < "1200" && unitTiming.timingEnd > "1100") {
-            score -= mealTimePenalty;
+            mealTimeUnits++;
         } 
         if (unitTiming.timingStart < "1800" && unitTiming.timingEnd > "1700") {
-            score -= mealTimePenalty;
+            mealTimeUnits++;
         }
         // Avoid timings too late at night:
         if (unitTiming.timingEnd >= "2100") {
-            score -= latePenalty;
+            lateUnits++;
         }
 
         // Avoid timings too early in the morning:
         if (unitTiming.timingStart <= "0900") {
-            score -= earlyPenalty;
+            earlyUnits++;
         }
 
         // Avoid single hour units:
         if ((parseInt(unitTiming.timingEnd, 10) - parseInt(unitTiming.timingStart, 10)) == 100) {
-            score -= singleHourPenalty;
+            singleHourUnits++;
         }
     }
+
+    score -= ((mealTimeUnits * mealTimePenalty) + (lateUnits * latePenalty) + (earlyUnits * earlyPenalty) + (singleHourUnits * singleHourPenalty)) / unitsTimings.length;
+
     
     // Calculate mean of hours
     const days = Object.keys(hoursPerDay);
