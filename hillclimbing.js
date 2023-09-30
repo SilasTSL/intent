@@ -856,6 +856,7 @@ function optimise(units, hours, semStartDate) {
         // Calculate score:
         let currentScore = calculateScore(currentSchedule);
         console.log('Initial Score: ', currentScore);
+        console.log('Test')
         // Loop until no better neighbour:
         while (true) {
             let betterScoreExists = false;
