@@ -774,6 +774,7 @@ function calculateScore(schedule) {
 }
 
 function generateNeighbours(schedule, semStartDate) {
+    console.log('Hello from neighbours')
     // For all tasks, create a decomposition of the task, find blocks of time in the available time for each decomposition:
     const neighbours = [];
 
@@ -856,11 +857,12 @@ function optimise(units, hours, semStartDate) {
         // Calculate score:
         let currentScore = calculateScore(currentSchedule);
         console.log('Initial Score: ', currentScore);
-        console.log('Test')
         // Loop until no better neighbour:
+        let counter = 0;
         while (true) {
             let betterScoreExists = false;
-
+            counter++;
+            console.log(counter)
             // Generate neighbours:
             let neighbours = generateNeighbours(currentSchedule, semStartDate);
 
