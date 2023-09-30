@@ -780,6 +780,7 @@ function generateNeighbours(schedule, semStartDate) {
 
     const tasks = schedule.filter(unit => unit.isTask);
 
+    let counter = 0;
     // Pick random task:
     for (let selectedTask of tasks) {
 
@@ -795,6 +796,8 @@ function generateNeighbours(schedule, semStartDate) {
         const deadlineTimings = schedule.find(unit => unit.moduleId == selectedTask.moduleId && unit.type == selectedTask.type).timings;
         const timings = [];
         for (let i = 0; i < 100; i++) { // Pick 100 new timings for the selected task
+            counter++;
+            console.log('Timing no.: ', counter)
             availableTimings.map(timing => {
                 if ((parseInt(timing.timingEnd, 10) - parseInt(timing.timingStart, 10)) > 100) {
                     console.log('error')
