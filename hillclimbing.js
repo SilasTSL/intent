@@ -782,68 +782,66 @@ function generateNeighbours(schedule, semStartDate) {
 
     let counter = 0;
     // Pick random task:
-    for (let selectedTask of tasks) {
+    const selectedTask = tasks[Math.floor(Math.random() * (tasks.length - 1))]
 
-        // Remove selected task timings from schedule:
-        const newSchedule = schedule.filter(unit => !(unit.moduleId == selectedTask.moduleId && unit.type == selectedTask.type && unit.isTask));
+    // Remove selected task timings from schedule:
+    const newSchedule = schedule.filter(unit => !(unit.moduleId == selectedTask.moduleId && unit.type == selectedTask.type && unit.isTask));
 
-        // Get available timings for schedule with selected task removed
-        const availableTimings = getAllAvailableTimings(newSchedule, semStartDate);
+    // Get available timings for schedule with selected task removed
+    const availableTimings = getAllAvailableTimings(newSchedule, semStartDate);
 
-        // Assign 100 new timings to selected task:
-        const hoursNeeded = selectedTask.hoursNeeded;
+    // Assign 100 new timings to selected task:
+    const hoursNeeded = selectedTask.hoursNeeded;
 
-        const deadlineTimings = schedule.find(unit => unit.moduleId == selectedTask.moduleId && unit.type == selectedTask.type).timings;
-        const timings = [];
-        for (let i = 0; i < 100; i++) { // Pick 100 new timings for the selected task
-            counter++;
-            console.log('Timing no.: ', counter)
-            availableTimings.map(timing => {
-                if ((parseInt(timing.timingEnd, 10) - parseInt(timing.timingStart, 10)) > 100) {
-                    console.log('error')
-                }
-            })
-            const currentTimings = [];
-            for (let deadlineTiming of deadlineTimings) { // For each deadline for the selected task
-                const availableTimingsForTask = getAvailableTimingsForTask(availableTimings, deadlineTiming);
-                
-                let currentHoursNeeded = hoursNeeded;
-                while (currentHoursNeeded > 0) {
-                    if (currentHoursNeeded >= 2) {
-                        const randomlySelectedIndex = Math.floor(Math.random() * (availableTimingsForTask.length - 2));
-                        let randomlySelectedSlots = availableTimingsForTask.splice(randomlySelectedIndex, 2);
-                        currentHoursNeeded -= 2;
-                        for (let randomlySelectedSlot of randomlySelectedSlots) {
-                            currentTimings.push(randomlySelectedSlot);
-                        }
-                    } else {
-                        const randomlySelectedIndex = Math.floor(Math.random() * (availableTimingsForTask.length - 1));
-                        let randomlySelectedSlot = availableTimingsForTask.splice(randomlySelectedIndex, 1)[0];
-                        currentHoursNeeded -= 1;
+    const deadlineTimings = schedule.find(unit => unit.moduleId == selectedTask.moduleId && unit.type == selectedTask.type).timings;
+    const timings = [];
+    for (let i = 0; i < 200; i++) { // Pick 100 new timings for the selected task
+        counter++;
+        availableTimings.map(timing => {
+            if ((parseInt(timing.timingEnd, 10) - parseInt(timing.timingStart, 10)) > 100) {
+                console.log('error')
+            }
+        })
+        const currentTimings = [];
+        for (let deadlineTiming of deadlineTimings) { // For each deadline for the selected task
+            const availableTimingsForTask = getAvailableTimingsForTask(availableTimings, deadlineTiming);
+            
+            let currentHoursNeeded = hoursNeeded;
+            while (currentHoursNeeded > 0) {
+                if (currentHoursNeeded >= 2) {
+                    const randomlySelectedIndex = Math.floor(Math.random() * (availableTimingsForTask.length - 2));
+                    let randomlySelectedSlots = availableTimingsForTask.splice(randomlySelectedIndex, 2);
+                    currentHoursNeeded -= 2;
+                    for (let randomlySelectedSlot of randomlySelectedSlots) {
                         currentTimings.push(randomlySelectedSlot);
                     }
-                }    
-            }
-            timings.push(mergeConsecutiveTimings([...currentTimings]));
-        }
-        
-        // For each of the 100 new timings, create a new neighbour:
-        for (let timing of timings) {
-            const newNeighbour = [...newSchedule];
-            newNeighbour.push(
-                {
-                    moduleId: selectedTask.moduleId,
-                    colour: selectedTask.colour,
-                    moduleCode: selectedTask.moduleCode,
-                    class: selectedTask.class,
-                    type: selectedTask.type,
-                    timings: timing,
-                    isTask: true,
-                    hoursNeeded: hoursNeeded
+                } else {
+                    const randomlySelectedIndex = Math.floor(Math.random() * (availableTimingsForTask.length - 1));
+                    let randomlySelectedSlot = availableTimingsForTask.splice(randomlySelectedIndex, 1)[0];
+                    currentHoursNeeded -= 1;
+                    currentTimings.push(randomlySelectedSlot);
                 }
-            );
-            neighbours.push(newNeighbour);
+            }    
         }
+        timings.push(mergeConsecutiveTimings([...currentTimings]));
+    }
+    
+    // For each of the 100 new timings, create a new neighbour:
+    for (let timing of timings) {
+        const newNeighbour = [...newSchedule];
+        newNeighbour.push(
+            {
+                moduleId: selectedTask.moduleId,
+                colour: selectedTask.colour,
+                moduleCode: selectedTask.moduleCode,
+                class: selectedTask.class,
+                type: selectedTask.type,
+                timings: timing,
+                isTask: true,
+                hoursNeeded: hoursNeeded
+            }
+        );
+        neighbours.push(newNeighbour);
     }
 
     return neighbours;
@@ -854,42 +852,59 @@ function generateNeighbours(schedule, semStartDate) {
 function optimise(units, hours, semStartDate) {
     try {
         // Generate initial schedule:
+        let localMaximas = {};
+        let localMaximaCounter = 0;
 
-        let currentSchedule = generateInitialSchedule(units, hours, semStartDate);
+        while (localMaximaCounter < 5) {
+            let currentSchedule = generateInitialSchedule(units, hours, semStartDate);
         
-        // Calculate score:
-        let currentScore = calculateScore(currentSchedule);
-        console.log('Initial Score: ', currentScore);
-        // Loop until no better neighbour:
-        let counter = 0;
-        while (true) {
-            let betterScoreExists = false;
-            counter++;
-            console.log(counter)
-            // Generate neighbours:
-            let neighbours = generateNeighbours(currentSchedule, semStartDate);
-
-            // Loop through neighbour to find best neighbour:
-            for (let neighbourSchedule of neighbours) {
-                const neighbourScore = calculateScore(neighbourSchedule);
-                console.log('Neighbour Score: ', neighbourScore);
+            // Calculate score:
+            let currentScore = calculateScore(currentSchedule);
+            console.log('Initial Score: ', currentScore);
+            // Loop until no better neighbour:
+            let counter = 0;
+            while (true) {
+                let betterScoreExists = false;
+                counter++;
+                console.log(counter)
+                // Generate neighbours:
+                let neighbours = generateNeighbours(currentSchedule, semStartDate);
     
-                if (neighbourScore > currentScore) { // If neighbour score is better, take neighbour
-                    betterScoreExists = true;
-                    currentScore = neighbourScore;
-                    currentSchedule = neighbourSchedule;
+                // Loop through neighbour to find best neighbour:
+                for (let neighbourSchedule of neighbours) {
+                    const neighbourScore = calculateScore(neighbourSchedule);
+                    console.log('Neighbour Score: ', neighbourScore);
+        
+                    if (neighbourScore > currentScore) { // If neighbour score is better, take neighbour
+                        betterScoreExists = true;
+                        currentScore = neighbourScore;
+                        currentSchedule = neighbourSchedule;
+                    }
+                }
+    
+                if (!betterScoreExists) { // No neighbours with better score (Local maxima)
+                    break;
                 }
             }
+            console.log('Best Score: ', currentScore);
+    
+            const bestNeighbour = currentSchedule.filter(unit => unit.isTask);
+            localMaximas[currentScore] = bestNeighbour;
+            localMaximaCounter++;
+        }
 
-            if (!betterScoreExists) { // No neighbours with better score (Local maxima)
-                break;
+        let highestScore = -Infinity;
+        for (const score in localMaximas) {
+            console.log('Local Maxima Score: ', score)
+            if (parseFloat(score) > highestScore) {
+                highestScore = parseFloat(score);
             }
         }
-        console.log('Best Score: ', currentScore);
+        console.log('Overall Best Score: ', highestScore)
 
-        const optimisedTasks = currentSchedule.filter(unit => unit.isTask);
+        const bestOptimisedTasks = localMaximas[highestScore];
 
-        return optimisedTasks;
+        return bestOptimisedTasks;
     } catch (e) {
         console.log('Problem with optimising:');
         console.log(e);
